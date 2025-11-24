@@ -5,6 +5,30 @@ option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pb
 
 import "google/protobuf/timestamp.proto";
 
+// Transaction type imports
+import "sf/xrpl/type/v1/payment.proto";
+import "sf/xrpl/type/v1/offer.proto";
+import "sf/xrpl/type/v1/trustline.proto";
+import "sf/xrpl/type/v1/account.proto";
+import "sf/xrpl/type/v1/escrow.proto";
+import "sf/xrpl/type/v1/nft.proto";
+import "sf/xrpl/type/v1/payment_channel.proto";
+import "sf/xrpl/type/v1/check.proto";
+import "sf/xrpl/type/v1/deposit_preauth.proto";
+import "sf/xrpl/type/v1/ticket.proto";
+import "sf/xrpl/type/v1/clawback.proto";
+import "sf/xrpl/type/v1/amm.proto";
+import "sf/xrpl/type/v1/xchain.proto";
+import "sf/xrpl/type/v1/did.proto";
+import "sf/xrpl/type/v1/oracle.proto";
+import "sf/xrpl/type/v1/mptoken.proto";
+import "sf/xrpl/type/v1/credential.proto";
+import "sf/xrpl/type/v1/permissioned_domain.proto";
+import "sf/xrpl/type/v1/vault.proto";
+import "sf/xrpl/type/v1/delegate.proto";
+import "sf/xrpl/type/v1/contract.proto";
+import "sf/xrpl/type/v1/system.proto";
+
 // Block represents an XRPL validated ledger
 message Block {
   // Ledger sequence number (ledger_index)
@@ -69,17 +93,14 @@ message Transaction {
   uint32 index = 3;
 
   // Raw transaction blob (XRPL binary format)
-  // Downstream processors can decode this to extract:
-  // - Transaction type (Payment, OfferCreate, etc.)
-  // - Account, Destination, Amount, etc.
+  // Kept for backward compatibility and advanced decoding
   bytes tx_blob = 4;
 
   // Transaction metadata blob (XRPL binary format)
   // Contains: AffectedNodes, delivered_amount, etc.
   bytes meta_blob = 5;
 
-  // Optional: Decoded transaction type for filtering
-  // (avoids decoding tx_blob for simple filtering)
+  // Transaction type for filtering
   TransactionType tx_type = 6;
 
   // Account that initiated this transaction
@@ -90,6 +111,121 @@ message Transaction {
 
   // Transaction sequence number
   uint32 sequence = 9;
+
+  // Decoded transaction details based on tx_type
+  oneof tx_details {
+    // Payment transactions
+    Payment payment = 20;
+
+    // DEX transactions
+    OfferCreate offer_create = 21;
+    OfferCancel offer_cancel = 22;
+
+    // Trustline
+    TrustSet trust_set = 23;
+
+    // Account management
+    AccountSet account_set = 24;
+    AccountDelete account_delete = 25;
+    SetRegularKey set_regular_key = 26;
+    SignerListSet signer_list_set = 27;
+
+    // Escrow
+    EscrowCreate escrow_create = 30;
+    EscrowFinish escrow_finish = 31;
+    EscrowCancel escrow_cancel = 32;
+
+    // Payment channels
+    PaymentChannelCreate payment_channel_create = 33;
+    PaymentChannelFund payment_channel_fund = 34;
+    PaymentChannelClaim payment_channel_claim = 35;
+
+    // Checks
+    CheckCreate check_create = 36;
+    CheckCash check_cash = 37;
+    CheckCancel check_cancel = 38;
+
+    // Other account features
+    DepositPreauth deposit_preauth = 39;
+    TicketCreate ticket_create = 40;
+
+    // NFT transactions
+    NFTokenMint nftoken_mint = 50;
+    NFTokenBurn nftoken_burn = 51;
+    NFTokenCreateOffer nftoken_create_offer = 52;
+    NFTokenCancelOffer nftoken_cancel_offer = 53;
+    NFTokenAcceptOffer nftoken_accept_offer = 54;
+
+    // Clawback
+    Clawback clawback = 60;
+
+    // AMM transactions
+    AMMCreate amm_create = 70;
+    AMMDeposit amm_deposit = 71;
+    AMMWithdraw amm_withdraw = 72;
+    AMMVote amm_vote = 73;
+    AMMBid amm_bid = 74;
+    AMMDelete amm_delete = 75;
+    AMMClawback amm_clawback = 76;
+
+    // Cross-chain bridge transactions
+    XChainCreateBridge xchain_create_bridge = 80;
+    XChainModifyBridge xchain_modify_bridge = 81;
+    XChainCreateClaimID xchain_create_claim_id = 82;
+    XChainCommit xchain_commit = 83;
+    XChainClaim xchain_claim = 84;
+    XChainAccountCreateCommit xchain_account_create_commit = 85;
+    XChainAddClaimAttestation xchain_add_claim_attestation = 86;
+    XChainAddAccountCreateAttestation xchain_add_account_create_attestation = 87;
+
+    // DID transactions
+    DIDSet did_set = 90;
+    DIDDelete did_delete = 91;
+
+    // Oracle transactions
+    OracleSet oracle_set = 92;
+    OracleDelete oracle_delete = 93;
+
+    // MPToken transactions
+    MPTokenIssuanceCreate mptoken_issuance_create = 100;
+    MPTokenIssuanceDestroy mptoken_issuance_destroy = 101;
+    MPTokenIssuanceSet mptoken_issuance_set = 102;
+    MPTokenAuthorize mptoken_authorize = 103;
+
+    // Credential transactions
+    CredentialCreate credential_create = 110;
+    CredentialAccept credential_accept = 111;
+    CredentialDelete credential_delete = 112;
+
+    // Permissioned domain transactions
+    PermissionedDomainSet permissioned_domain_set = 120;
+    PermissionedDomainDelete permissioned_domain_delete = 121;
+
+    // Delegate transactions
+    DelegateSet delegate_set = 122;
+
+    // Vault transactions
+    VaultCreate vault_create = 130;
+    VaultSet vault_set = 131;
+    VaultDelete vault_delete = 132;
+    VaultDeposit vault_deposit = 133;
+    VaultWithdraw vault_withdraw = 134;
+    VaultClawback vault_clawback = 135;
+
+    // Smart contract transactions
+    ContractCreate contract_create = 140;
+    ContractModify contract_modify = 141;
+    ContractDelete contract_delete = 142;
+    ContractClawback contract_clawback = 143;
+    ContractUserDelete contract_user_delete = 144;
+    ContractCall contract_call = 145;
+
+    // System transactions (pseudo-transactions)
+    EnableAmendment enable_amendment = 200;
+    SetFee set_fee = 201;
+    UNLModify unl_modify = 202;
+    LedgerStateFix ledger_state_fix = 203;
+  }
 }
 
 // Transaction result code
@@ -151,24 +287,54 @@ enum TransactionType {
   TX_NFT_CANCEL_OFFER = 28;
   TX_NFT_ACCEPT_OFFER = 29;
   TX_CLAWBACK = 30;
+  TX_AMM_CLAWBACK = 31;
   TX_AMM_CREATE = 35;
   TX_AMM_DEPOSIT = 36;
   TX_AMM_WITHDRAW = 37;
   TX_AMM_VOTE = 38;
   TX_AMM_BID = 39;
   TX_AMM_DELETE = 40;
-  TX_XCHAIN_CREATE_BRIDGE = 41;
-  TX_XCHAIN_CREATE_CLAIM_ID = 42;
-  TX_XCHAIN_COMMIT = 43;
-  TX_XCHAIN_CLAIM = 44;
-  TX_XCHAIN_ACCOUNT_CREATE_COMMIT = 45;
-  TX_XCHAIN_ADD_CLAIM_ATTESTATION = 46;
-  TX_XCHAIN_ADD_ACCOUNT_CREATE_ATTESTATION = 47;
-  TX_XCHAIN_MODIFY_BRIDGE = 48;
+  TX_XCHAIN_CREATE_CLAIM_ID = 41;
+  TX_XCHAIN_COMMIT = 42;
+  TX_XCHAIN_CLAIM = 43;
+  TX_XCHAIN_ACCOUNT_CREATE_COMMIT = 44;
+  TX_XCHAIN_ADD_CLAIM_ATTESTATION = 45;
+  TX_XCHAIN_ADD_ACCOUNT_CREATE_ATTESTATION = 46;
+  TX_XCHAIN_MODIFY_BRIDGE = 47;
+  TX_XCHAIN_CREATE_BRIDGE = 48;
   TX_DID_SET = 49;
   TX_DID_DELETE = 50;
   TX_ORACLE_SET = 51;
   TX_ORACLE_DELETE = 52;
+  TX_LEDGER_STATE_FIX = 53;
+  TX_MPTOKEN_ISSUANCE_CREATE = 54;
+  TX_MPTOKEN_ISSUANCE_DESTROY = 55;
+  TX_MPTOKEN_ISSUANCE_SET = 56;
+  TX_MPTOKEN_AUTHORIZE = 57;
+  TX_CREDENTIAL_CREATE = 58;
+  TX_CREDENTIAL_ACCEPT = 59;
+  TX_CREDENTIAL_DELETE = 60;
+  TX_NFTOKEN_MODIFY = 61;
+  TX_PERMISSIONED_DOMAIN_SET = 62;
+  TX_PERMISSIONED_DOMAIN_DELETE = 63;
+  TX_DELEGATE_SET = 64;
+  TX_VAULT_CREATE = 65;
+  TX_VAULT_SET = 66;
+  TX_VAULT_DELETE = 67;
+  TX_VAULT_DEPOSIT = 68;
+  TX_VAULT_WITHDRAW = 69;
+  TX_VAULT_CLAWBACK = 70;
+  TX_BATCH = 71;
+  TX_CONTRACT_CREATE = 72;
+  TX_CONTRACT_MODIFY = 73;
+  TX_CONTRACT_DELETE = 74;
+  TX_CONTRACT_CLAWBACK = 75;
+  TX_CONTRACT_USER_DELETE = 76;
+  TX_CONTRACT_CALL = 77;
+  // System/pseudo-transactions
+  TX_ENABLE_AMENDMENT = 100;
+  TX_SET_FEE = 101;
+  TX_UNL_MODIFY = 102;
 }
 
 // Ledger state object change (for archival/state tracking)
@@ -217,4 +383,10 @@ enum LedgerEntryType {
   ENTRY_XCHAIN_OWNED_CREATE_ACCOUNT_CLAIM_ID = 18;
   ENTRY_DID = 19;
   ENTRY_ORACLE = 20;
+  ENTRY_MPTOKEN_ISSUANCE = 21;
+  ENTRY_MPTOKEN = 22;
+  ENTRY_CREDENTIAL = 23;
+  ENTRY_PERMISSIONED_DOMAIN = 24;
+  ENTRY_VAULT = 25;
+  ENTRY_CONTRACT = 26;
 }

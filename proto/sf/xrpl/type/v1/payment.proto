@@ -1,0 +1,35 @@
+syntax = "proto3";
+package sf.xrpl.type.v1;
+
+option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrpl";
+
+import "sf/xrpl/type/v1/amount.proto";
+
+// Payment transaction - transfers value from one account to another
+// Reference: https://xrpl.org/payment.html
+message Payment {
+  // Destination account
+  string destination = 1;
+
+  // Amount to deliver to destination
+  Amount amount = 2;
+
+  // (Optional) Maximum amount to send, including transfer fees
+  Amount send_max = 3;
+
+  // (Optional) Minimum amount to deliver (for partial payments)
+  Amount deliver_min = 4;
+
+  // (Optional) Payment paths for cross-currency payments
+  repeated Path paths = 5;
+
+  // (Optional) Arbitrary 256-bit hash for invoice/reference
+  string invoice_id = 6;
+
+  // (Optional) Destination tag
+  uint32 destination_tag = 7;
+
+  // --- From metadata ---
+  // Actual amount delivered (may differ from amount for partial payments)
+  Amount delivered_amount = 10;
+}

@@ -3,8 +3,10 @@ firecore \
     substreams-tier2 \
     --config-file= \
     --log-format=stackdriver \
-    --common-merged-blocks-store-url=data/merged \
-    --common-first-streamable-block=0 \
+    --advertise-chain-name=xrpl \
+    --advertise-block-id-encoding=hex \
+    --common-merged-blocks-store-url=data/storage/merged-blocks \
+    --common-first-streamable-block=80000000 \
     --common-one-block-store-url=data/oneblock \
     --substreams-tier1-grpc-listen-addr=9000 \
     --substreams-tier2-grpc-listen-addr=:9001 \

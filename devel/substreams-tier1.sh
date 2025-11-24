@@ -4,13 +4,15 @@ firecore \
     --config-file= \
     --log-format=stackdriver \
     --log-to-file=false \
+    --advertise-chain-name=xrpl \
+    --advertise-block-id-encoding=hex \
     --common-auto-max-procs \
     --common-auto-mem-limit-percent=90 \
     --common-system-shutdown-signal-delay=30s \
-    --common-merged-blocks-store-url=data/merged \
-    --common-first-streamable-block=0 \
+    --common-merged-blocks-store-url=data/storage/merged-blocks \
+    --common-first-streamable-block=80000000 \
     --common-one-block-store-url=data/oneblock \
-    --common-forked-blocks-store-url=data/forked \
+    --common-forked-blocks-store-url=data/storage/forked-blocks \
     --substreams-tier1-grpc-listen-addr=:9000 \
     --substreams-tier1-subrequests-insecure=true \
     --substreams-tier1-subrequests-plaintext=false \

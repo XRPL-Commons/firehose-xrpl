@@ -1,0 +1,19 @@
+syntax = "proto3";
+package sf.xrpl.type.v1;
+
+option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrpl";
+
+import "sf/xrpl/type/v1/amount.proto";
+
+// TrustSet - Creates or modifies a trust line
+// Reference: https://xrpl.org/trustset.html
+message TrustSet {
+  // The limit of the trust line (currency/issuer defines the line)
+  Amount limit_amount = 1;
+
+  // (Optional) Incoming value transfer fee (0-100%, scaled by 1 billion)
+  uint32 quality_in = 2;
+
+  // (Optional) Outgoing value transfer fee
+  uint32 quality_out = 3;
+}

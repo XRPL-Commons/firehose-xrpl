@@ -1,0 +1,77 @@
+syntax = "proto3";
+package sf.xrpl.type.v1;
+
+option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrpl";
+
+import "sf/xrpl/type/v1/amount.proto";
+
+// NFTokenMint - Mints a new NFT
+// Reference: https://xrpl.org/nftokenmint.html
+message NFTokenMint {
+  // Taxon for this NFT (issuer-defined category)
+  uint32 nftoken_taxon = 1;
+
+  // (Optional) Issuer if minting on behalf of another
+  string issuer = 2;
+
+  // (Optional) Transfer fee (0-50000, representing 0-50%)
+  uint32 transfer_fee = 3;
+
+  // (Optional) URI pointing to token metadata (decoded from hex)
+  string uri = 4;
+
+  // Transaction flags
+  uint32 flags = 5;
+}
+
+// NFTokenBurn - Burns an existing NFT
+// Reference: https://xrpl.org/nftokenburn.html
+message NFTokenBurn {
+  // ID of the NFT to burn (64 hex chars)
+  string nftoken_id = 1;
+
+  // (Optional) Owner if burning on behalf of another
+  string owner = 2;
+}
+
+// NFTokenCreateOffer - Creates an offer to buy or sell an NFT
+// Reference: https://xrpl.org/nftokencreateoffer.html
+message NFTokenCreateOffer {
+  // ID of the NFT
+  string nftoken_id = 1;
+
+  // Amount offered (0 for free transfer)
+  Amount amount = 2;
+
+  // (Optional) For buy offers, the NFT owner
+  string owner = 3;
+
+  // (Optional) Specific account that can accept
+  string destination = 4;
+
+  // (Optional) Expiration time
+  uint32 expiration = 5;
+
+  // Flags (1 = sell offer)
+  uint32 flags = 6;
+}
+
+// NFTokenCancelOffer - Cancels NFT offers
+// Reference: https://xrpl.org/nftokencanceloffer.html
+message NFTokenCancelOffer {
+  // List of offer IDs to cancel
+  repeated string nftoken_offers = 1;
+}
+
+// NFTokenAcceptOffer - Accepts an NFT offer
+// Reference: https://xrpl.org/nftokenacceptoffer.html
+message NFTokenAcceptOffer {
+  // (Optional) Sell offer to accept
+  string nftoken_sell_offer = 1;
+
+  // (Optional) Buy offer to accept
+  string nftoken_buy_offer = 2;
+
+  // (Optional) Broker fee for brokered trades
+  Amount nftoken_broker_fee = 3;
+}
