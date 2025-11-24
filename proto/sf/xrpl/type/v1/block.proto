@@ -1,0 +1,220 @@
+syntax = "proto3";
+package sf.xrpl.type.v1;
+
+option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrpl";
+
+import "google/protobuf/timestamp.proto";
+
+// Block represents an XRPL validated ledger
+message Block {
+  // Ledger sequence number (ledger_index)
+  uint64 number = 1;
+
+  // Ledger hash (32 bytes)
+  bytes hash = 2;
+
+  // Ledger header information
+  Header header = 3;
+
+  // Schema version for this protobuf
+  int64 version = 4;
+
+  // Transactions in this ledger
+  repeated Transaction transactions = 5;
+
+  // Ledger close time
+  google.protobuf.Timestamp close_time = 6;
+
+  // State changes (optional, for full archival)
+  repeated LedgerObject state_changes = 7;
+}
+
+message Header {
+  // Parent ledger hash
+  bytes parent_hash = 1;
+
+  // Total XRP in drops (int64 for 10^17 max)
+  int64 total_drops = 2;
+
+  // Account state hash (state tree root)
+  bytes account_hash = 3;
+
+  // Transaction tree hash
+  bytes transaction_hash = 4;
+
+  // Close time resolution in seconds
+  uint32 close_time_resolution = 5;
+
+  // Close flags
+  uint32 close_flags = 6;
+
+  // Base fee in drops
+  uint64 base_fee = 7;
+
+  // Reserve base in drops
+  uint64 reserve_base = 8;
+
+  // Reserve increment in drops
+  uint64 reserve_increment = 9;
+}
+
+message Transaction {
+  // Transaction hash (32 bytes)
+  bytes hash = 1;
+
+  // Transaction result
+  TransactionResult result = 2;
+
+  // Position in ledger (0-indexed)
+  uint32 index = 3;
+
+  // Raw transaction blob (XRPL binary format)
+  // Downstream processors can decode this to extract:
+  // - Transaction type (Payment, OfferCreate, etc.)
+  // - Account, Destination, Amount, etc.
+  bytes tx_blob = 4;
+
+  // Transaction metadata blob (XRPL binary format)
+  // Contains: AffectedNodes, delivered_amount, etc.
+  bytes meta_blob = 5;
+
+  // Optional: Decoded transaction type for filtering
+  // (avoids decoding tx_blob for simple filtering)
+  TransactionType tx_type = 6;
+
+  // Account that initiated this transaction
+  string account = 7;
+
+  // Fee paid in drops
+  uint64 fee = 8;
+
+  // Transaction sequence number
+  uint32 sequence = 9;
+}
+
+// Transaction result code
+enum TransactionResult {
+  RESULT_UNKNOWN = 0;
+  TES_SUCCESS = 1;        // tesSUCCESS - fully applied
+  TEC_CLAIMED = 2;        // tecCLAIMED - fee claimed, tx failed
+  TEC_PATH_PARTIAL = 3;   // tecPATH_PARTIAL
+  TEC_UNFUNDED_ADD = 4;   // tecUNFUNDED_ADD
+  TEC_UNFUNDED_OFFER = 5; // tecUNFUNDED_OFFER
+  TEC_UNFUNDED_PAYMENT = 6; // tecUNFUNDED_PAYMENT
+  TEC_FAILED_PROCESSING = 7; // tecFAILED_PROCESSING
+  TEC_DIR_FULL = 8;       // tecDIR_FULL
+  TEC_INSUF_RESERVE_LINE = 9; // tecINSUF_RESERVE_LINE
+  TEC_INSUF_RESERVE_OFFER = 10; // tecINSUF_RESERVE_OFFER
+  TEC_NO_DST = 11;        // tecNO_DST
+  TEC_NO_DST_INSUF_XRP = 12; // tecNO_DST_INSUF_XRP
+  TEC_NO_LINE_INSUF_RESERVE = 13; // tecNO_LINE_INSUF_RESERVE
+  TEC_NO_LINE_REDUNDANT = 14; // tecNO_LINE_REDUNDANT
+  TEC_PATH_DRY = 15;      // tecPATH_DRY
+  TEC_UNFUNDED = 16;      // tecUNFUNDED
+  TEC_NO_ALTERNATIVE_KEY = 17; // tecNO_ALTERNATIVE_KEY
+  TEC_NO_REGULAR_KEY = 18; // tecNO_REGULAR_KEY
+  TEC_OTHER = 100;        // Other tec* codes
+  TEF_FAILURE = 200;      // tef* - local failure
+  TEM_MALFORMED = 300;    // tem* - malformed
+  TER_RETRY = 400;        // ter* - retry
+}
+
+// Common XRPL transaction types for filtering
+enum TransactionType {
+  TX_UNKNOWN = 0;
+  TX_PAYMENT = 1;
+  TX_ESCROW_CREATE = 2;
+  TX_ESCROW_FINISH = 3;
+  TX_ACCOUNT_SET = 4;
+  TX_ESCROW_CANCEL = 5;
+  TX_SET_REGULAR_KEY = 6;
+  TX_NICKNAME_SET = 7;       // Deprecated
+  TX_OFFER_CREATE = 8;
+  TX_OFFER_CANCEL = 9;
+  TX_CONTRACT = 10;          // Deprecated
+  TX_TICKET_CREATE = 11;
+  TX_TICKET_CANCEL = 12;     // Deprecated
+  TX_SIGNER_LIST_SET = 13;
+  TX_PAYMENT_CHANNEL_CREATE = 14;
+  TX_PAYMENT_CHANNEL_FUND = 15;
+  TX_PAYMENT_CHANNEL_CLAIM = 16;
+  TX_CHECK_CREATE = 17;
+  TX_CHECK_CASH = 18;
+  TX_CHECK_CANCEL = 19;
+  TX_DEPOSIT_PREAUTH = 20;
+  TX_TRUST_SET = 21;
+  TX_ACCOUNT_DELETE = 22;
+  TX_SET_HOOK = 23;
+  TX_NFT_MINT = 25;
+  TX_NFT_BURN = 26;
+  TX_NFT_CREATE_OFFER = 27;
+  TX_NFT_CANCEL_OFFER = 28;
+  TX_NFT_ACCEPT_OFFER = 29;
+  TX_CLAWBACK = 30;
+  TX_AMM_CREATE = 35;
+  TX_AMM_DEPOSIT = 36;
+  TX_AMM_WITHDRAW = 37;
+  TX_AMM_VOTE = 38;
+  TX_AMM_BID = 39;
+  TX_AMM_DELETE = 40;
+  TX_XCHAIN_CREATE_BRIDGE = 41;
+  TX_XCHAIN_CREATE_CLAIM_ID = 42;
+  TX_XCHAIN_COMMIT = 43;
+  TX_XCHAIN_CLAIM = 44;
+  TX_XCHAIN_ACCOUNT_CREATE_COMMIT = 45;
+  TX_XCHAIN_ADD_CLAIM_ATTESTATION = 46;
+  TX_XCHAIN_ADD_ACCOUNT_CREATE_ATTESTATION = 47;
+  TX_XCHAIN_MODIFY_BRIDGE = 48;
+  TX_DID_SET = 49;
+  TX_DID_DELETE = 50;
+  TX_ORACLE_SET = 51;
+  TX_ORACLE_DELETE = 52;
+}
+
+// Ledger state object change (for archival/state tracking)
+message LedgerObject {
+  // Object key (256-bit identifier)
+  bytes key = 1;
+
+  // Object data (XRPL binary format)
+  // Empty if deleted
+  bytes data = 2;
+
+  // Modification type
+  ModificationType mod_type = 3;
+
+  // Ledger entry type
+  LedgerEntryType entry_type = 4;
+
+  enum ModificationType {
+    MOD_UNSPECIFIED = 0;
+    MOD_CREATED = 1;
+    MOD_MODIFIED = 2;
+    MOD_DELETED = 3;
+  }
+}
+
+// XRPL Ledger entry types
+enum LedgerEntryType {
+  ENTRY_UNKNOWN = 0;
+  ENTRY_ACCOUNT_ROOT = 1;
+  ENTRY_DIRECTORY_NODE = 2;
+  ENTRY_RIPPLE_STATE = 3;
+  ENTRY_OFFER = 4;
+  ENTRY_LEDGER_HASHES = 5;
+  ENTRY_AMENDMENTS = 6;
+  ENTRY_FEE_SETTINGS = 7;
+  ENTRY_ESCROW = 8;
+  ENTRY_PAY_CHANNEL = 9;
+  ENTRY_CHECK = 10;
+  ENTRY_DEPOSIT_PREAUTH = 11;
+  ENTRY_NEGATIVE_UNL = 12;
+  ENTRY_NFTOKEN_OFFER = 13;
+  ENTRY_NFTOKEN_PAGE = 14;
+  ENTRY_AMM = 15;
+  ENTRY_BRIDGE = 16;
+  ENTRY_XCHAIN_OWNED_CLAIM_ID = 17;
+  ENTRY_XCHAIN_OWNED_CREATE_ACCOUNT_CLAIM_ID = 18;
+  ENTRY_DID = 19;
+  ENTRY_ORACLE = 20;
+}
