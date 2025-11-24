@@ -1,0 +1,35 @@
+syntax = "proto3";
+package sf.xrpl.type.v1;
+
+option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrpl";
+
+// Amount can be XRP (drops) or issued currency/MPT
+message Amount {
+  // For XRP: value in drops as string
+  // For issued currency: decimal value as string
+  string value = 1;
+
+  // Empty for XRP, currency code for issued currencies (3-char or 40-hex)
+  string currency = 2;
+
+  // Issuer address (empty for XRP)
+  string issuer = 3;
+}
+
+// Currency asset identifier (for AMM, etc.)
+message Asset {
+  string currency = 1;
+  string issuer = 2;
+}
+
+// Path element for cross-currency payments
+message PathElement {
+  string account = 1;
+  string currency = 2;
+  string issuer = 3;
+}
+
+// A full path is a sequence of path elements
+message Path {
+  repeated PathElement elements = 1;
+}

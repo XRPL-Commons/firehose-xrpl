@@ -1,0 +1,60 @@
+syntax = "proto3";
+package sf.xrpl.type.v1;
+
+option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrpl";
+
+import "sf/xrpl/type/v1/amount.proto";
+
+// PaymentChannelCreate - Creates a new unidirectional XRP payment channel
+// Reference: https://xrpl.org/paymentchannelcreate.html
+message PaymentChannelCreate {
+  // Recipient of funds from channel
+  string destination = 1;
+
+  // Amount of XRP to set aside for this channel
+  Amount amount = 2;
+
+  // Time in seconds to wait after close request before channel closes
+  uint32 settle_delay = 3;
+
+  // Public key for signing claims (hex)
+  string public_key = 4;
+
+  // (Optional) Time after which channel can be closed
+  uint32 cancel_after = 5;
+
+  // (Optional) Destination tag
+  uint32 destination_tag = 6;
+}
+
+// PaymentChannelFund - Adds XRP to an existing payment channel
+// Reference: https://xrpl.org/paymentchannelfund.html
+message PaymentChannelFund {
+  // Channel ID (64 hex chars)
+  string channel = 1;
+
+  // Amount to add to the channel
+  Amount amount = 2;
+
+  // (Optional) New expiration for the channel
+  uint32 expiration = 3;
+}
+
+// PaymentChannelClaim - Claims XRP from a payment channel
+// Reference: https://xrpl.org/paymentchannelclaim.html
+message PaymentChannelClaim {
+  // Channel ID (64 hex chars)
+  string channel = 1;
+
+  // (Optional) Amount of XRP to claim
+  Amount amount = 2;
+
+  // (Optional) Total amount delivered by this channel
+  Amount balance = 3;
+
+  // (Optional) Signature authorizing claim (hex)
+  string signature = 4;
+
+  // (Optional) Public key of signature (hex)
+  string public_key = 5;
+}

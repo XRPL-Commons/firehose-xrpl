@@ -1,0 +1,93 @@
+syntax = "proto3";
+package sf.xrpl.type.v1;
+
+option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrpl";
+
+import "sf/xrpl/type/v1/amount.proto";
+
+// VaultCreate - Creates a single-asset vault
+// Reference: https://xrpl.org/vaultcreate.html
+message VaultCreate {
+  // Asset the vault holds
+  Asset asset = 1;
+
+  // (Optional) Maximum assets the vault can hold
+  Amount assets_maximum = 2;
+
+  // (Optional) Metadata for LP tokens (hex)
+  string mptoken_metadata = 3;
+
+  // (Optional) Domain ID
+  string domain_id = 4;
+
+  // (Optional) Withdrawal policy
+  uint32 withdrawal_policy = 5;
+
+  // (Optional) Data field (hex)
+  string data = 6;
+
+  // (Optional) Scale for LP tokens
+  uint32 scale = 7;
+}
+
+// VaultSet - Updates a vault
+// Reference: https://xrpl.org/vaultset.html
+message VaultSet {
+  // Vault ID
+  string vault_id = 1;
+
+  // (Optional) New maximum assets
+  Amount assets_maximum = 2;
+
+  // (Optional) New domain ID
+  string domain_id = 3;
+
+  // (Optional) New data field (hex)
+  string data = 4;
+}
+
+// VaultDelete - Deletes a vault
+// Reference: https://xrpl.org/vaultdelete.html
+message VaultDelete {
+  // Vault ID to delete
+  string vault_id = 1;
+}
+
+// VaultDeposit - Deposits assets into a vault
+// Reference: https://xrpl.org/vaultdeposit.html
+message VaultDeposit {
+  // Vault ID
+  string vault_id = 1;
+
+  // Amount to deposit
+  Amount amount = 2;
+}
+
+// VaultWithdraw - Withdraws assets from a vault
+// Reference: https://xrpl.org/vaultwithdraw.html
+message VaultWithdraw {
+  // Vault ID
+  string vault_id = 1;
+
+  // Amount of LP tokens to burn
+  Amount amount = 2;
+
+  // (Optional) Destination for withdrawn assets
+  string destination = 3;
+
+  // (Optional) Destination tag
+  uint32 destination_tag = 4;
+}
+
+// VaultClawback - Claws back tokens from a vault holder
+// Reference: https://xrpl.org/vaultclawback.html
+message VaultClawback {
+  // Vault ID
+  string vault_id = 1;
+
+  // Holder to claw back from
+  string holder = 2;
+
+  // (Optional) Amount to claw back
+  Amount amount = 3;
+}
