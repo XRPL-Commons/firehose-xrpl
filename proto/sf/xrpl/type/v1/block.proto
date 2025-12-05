@@ -48,9 +48,6 @@ message Block {
 
   // Ledger close time
   google.protobuf.Timestamp close_time = 6;
-
-  // State changes (optional, for full archival)
-  repeated LedgerObject state_changes = 7;
 }
 
 message Header {
@@ -71,15 +68,6 @@ message Header {
 
   // Close flags
   uint32 close_flags = 6;
-
-  // Base fee in drops
-  uint64 base_fee = 7;
-
-  // Reserve base in drops
-  uint64 reserve_base = 8;
-
-  // Reserve increment in drops
-  uint64 reserve_increment = 9;
 }
 
 message Transaction {
@@ -176,7 +164,8 @@ message Transaction {
     XChainClaim xchain_claim = 84;
     XChainAccountCreateCommit xchain_account_create_commit = 85;
     XChainAddClaimAttestation xchain_add_claim_attestation = 86;
-    XChainAddAccountCreateAttestation xchain_add_account_create_attestation = 87;
+    XChainAddAccountCreateAttestation xchain_add_account_create_attestation =
+        87;
 
     // DID transactions
     DIDSet did_set = 90;
@@ -231,28 +220,28 @@ message Transaction {
 // Transaction result code
 enum TransactionResult {
   RESULT_UNKNOWN = 0;
-  TES_SUCCESS = 1;        // tesSUCCESS - fully applied
-  TEC_CLAIMED = 2;        // tecCLAIMED - fee claimed, tx failed
-  TEC_PATH_PARTIAL = 3;   // tecPATH_PARTIAL
-  TEC_UNFUNDED_ADD = 4;   // tecUNFUNDED_ADD
-  TEC_UNFUNDED_OFFER = 5; // tecUNFUNDED_OFFER
-  TEC_UNFUNDED_PAYMENT = 6; // tecUNFUNDED_PAYMENT
-  TEC_FAILED_PROCESSING = 7; // tecFAILED_PROCESSING
-  TEC_DIR_FULL = 8;       // tecDIR_FULL
-  TEC_INSUF_RESERVE_LINE = 9; // tecINSUF_RESERVE_LINE
-  TEC_INSUF_RESERVE_OFFER = 10; // tecINSUF_RESERVE_OFFER
-  TEC_NO_DST = 11;        // tecNO_DST
-  TEC_NO_DST_INSUF_XRP = 12; // tecNO_DST_INSUF_XRP
+  TES_SUCCESS = 1;                // tesSUCCESS - fully applied
+  TEC_CLAIMED = 2;                // tecCLAIMED - fee claimed, tx failed
+  TEC_PATH_PARTIAL = 3;           // tecPATH_PARTIAL
+  TEC_UNFUNDED_ADD = 4;           // tecUNFUNDED_ADD
+  TEC_UNFUNDED_OFFER = 5;         // tecUNFUNDED_OFFER
+  TEC_UNFUNDED_PAYMENT = 6;       // tecUNFUNDED_PAYMENT
+  TEC_FAILED_PROCESSING = 7;      // tecFAILED_PROCESSING
+  TEC_DIR_FULL = 8;               // tecDIR_FULL
+  TEC_INSUF_RESERVE_LINE = 9;     // tecINSUF_RESERVE_LINE
+  TEC_INSUF_RESERVE_OFFER = 10;   // tecINSUF_RESERVE_OFFER
+  TEC_NO_DST = 11;                // tecNO_DST
+  TEC_NO_DST_INSUF_XRP = 12;      // tecNO_DST_INSUF_XRP
   TEC_NO_LINE_INSUF_RESERVE = 13; // tecNO_LINE_INSUF_RESERVE
-  TEC_NO_LINE_REDUNDANT = 14; // tecNO_LINE_REDUNDANT
-  TEC_PATH_DRY = 15;      // tecPATH_DRY
-  TEC_UNFUNDED = 16;      // tecUNFUNDED
-  TEC_NO_ALTERNATIVE_KEY = 17; // tecNO_ALTERNATIVE_KEY
-  TEC_NO_REGULAR_KEY = 18; // tecNO_REGULAR_KEY
-  TEC_OTHER = 100;        // Other tec* codes
-  TEF_FAILURE = 200;      // tef* - local failure
-  TEM_MALFORMED = 300;    // tem* - malformed
-  TER_RETRY = 400;        // ter* - retry
+  TEC_NO_LINE_REDUNDANT = 14;     // tecNO_LINE_REDUNDANT
+  TEC_PATH_DRY = 15;              // tecPATH_DRY
+  TEC_UNFUNDED = 16;              // tecUNFUNDED
+  TEC_NO_ALTERNATIVE_KEY = 17;    // tecNO_ALTERNATIVE_KEY
+  TEC_NO_REGULAR_KEY = 18;        // tecNO_REGULAR_KEY
+  TEC_OTHER = 100;                // Other tec* codes
+  TEF_FAILURE = 200;              // tef* - local failure
+  TEM_MALFORMED = 300;            // tem* - malformed
+  TER_RETRY = 400;                // ter* - retry
 }
 
 // Common XRPL transaction types for filtering
@@ -264,12 +253,12 @@ enum TransactionType {
   TX_ACCOUNT_SET = 4;
   TX_ESCROW_CANCEL = 5;
   TX_SET_REGULAR_KEY = 6;
-  TX_NICKNAME_SET = 7;       // Deprecated
+  TX_NICKNAME_SET = 7; // Deprecated
   TX_OFFER_CREATE = 8;
   TX_OFFER_CANCEL = 9;
-  TX_CONTRACT = 10;          // Deprecated
+  TX_CONTRACT = 10; // Deprecated
   TX_TICKET_CREATE = 11;
-  TX_TICKET_CANCEL = 12;     // Deprecated
+  TX_TICKET_CANCEL = 12; // Deprecated
   TX_SIGNER_LIST_SET = 13;
   TX_PAYMENT_CHANNEL_CREATE = 14;
   TX_PAYMENT_CHANNEL_FUND = 15;
