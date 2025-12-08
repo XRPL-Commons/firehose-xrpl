@@ -30,10 +30,11 @@ type Batch struct {
 	// (Optional) Signatures for multi-account batch transactions
 	BatchSigners []*BatchSigner `protobuf:"bytes,2,rep,name=batch_signers,json=batchSigners,proto3" json:"batch_signers,omitempty"`
 	// Transaction flags for batch execution mode (required)
-	// tfAllOrNothing = 65536 (0x00010000) - All transactions must succeed or batch fails
-	// tfOnlyOne = 131072 (0x00020000) - Only first successful transaction is applied
-	// tfUntilFailure = 262144 (0x00040000) - Apply until first failure, skip rest
-	// tfIndependent = 524288 (0x00080000) - Apply all transactions regardless of failure
+	// tfAllOrNothing = 65536 (0x00010000) - All transactions must succeed or
+	// batch fails tfOnlyOne = 131072 (0x00020000) - Only first successful
+	// transaction is applied tfUntilFailure = 262144 (0x00040000) - Apply until
+	// first failure, skip rest tfIndependent = 524288 (0x00080000) - Apply all
+	// transactions regardless of failure
 	Flags         uint32 `protobuf:"varint,3,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -150,7 +151,6 @@ type BatchSigner struct {
 	// (Optional) Signature from this account
 	TxnSignature string `protobuf:"bytes,3,opt,name=txn_signature,json=txnSignature,proto3" json:"txn_signature,omitempty"`
 	// (Optional) Multi-signature array (alternative to single signature)
-	// Uses the Signer message type defined in signer.proto
 	Signers       []*Signer `protobuf:"bytes,4,rep,name=signers,proto3" json:"signers,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

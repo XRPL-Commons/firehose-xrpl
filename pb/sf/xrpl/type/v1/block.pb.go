@@ -22,389 +22,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Transaction result code
-type TransactionResult int32
-
-const (
-	TransactionResult_RESULT_UNKNOWN            TransactionResult = 0
-	TransactionResult_TES_SUCCESS               TransactionResult = 1   // tesSUCCESS - fully applied
-	TransactionResult_TEC_CLAIMED               TransactionResult = 2   // tecCLAIMED - fee claimed, tx failed
-	TransactionResult_TEC_PATH_PARTIAL          TransactionResult = 3   // tecPATH_PARTIAL
-	TransactionResult_TEC_UNFUNDED_ADD          TransactionResult = 4   // tecUNFUNDED_ADD
-	TransactionResult_TEC_UNFUNDED_OFFER        TransactionResult = 5   // tecUNFUNDED_OFFER
-	TransactionResult_TEC_UNFUNDED_PAYMENT      TransactionResult = 6   // tecUNFUNDED_PAYMENT
-	TransactionResult_TEC_FAILED_PROCESSING     TransactionResult = 7   // tecFAILED_PROCESSING
-	TransactionResult_TEC_DIR_FULL              TransactionResult = 8   // tecDIR_FULL
-	TransactionResult_TEC_INSUF_RESERVE_LINE    TransactionResult = 9   // tecINSUF_RESERVE_LINE
-	TransactionResult_TEC_INSUF_RESERVE_OFFER   TransactionResult = 10  // tecINSUF_RESERVE_OFFER
-	TransactionResult_TEC_NO_DST                TransactionResult = 11  // tecNO_DST
-	TransactionResult_TEC_NO_DST_INSUF_XRP      TransactionResult = 12  // tecNO_DST_INSUF_XRP
-	TransactionResult_TEC_NO_LINE_INSUF_RESERVE TransactionResult = 13  // tecNO_LINE_INSUF_RESERVE
-	TransactionResult_TEC_NO_LINE_REDUNDANT     TransactionResult = 14  // tecNO_LINE_REDUNDANT
-	TransactionResult_TEC_PATH_DRY              TransactionResult = 15  // tecPATH_DRY
-	TransactionResult_TEC_UNFUNDED              TransactionResult = 16  // tecUNFUNDED
-	TransactionResult_TEC_NO_ALTERNATIVE_KEY    TransactionResult = 17  // tecNO_ALTERNATIVE_KEY
-	TransactionResult_TEC_NO_REGULAR_KEY        TransactionResult = 18  // tecNO_REGULAR_KEY
-	TransactionResult_TEC_OTHER                 TransactionResult = 100 // Other tec* codes
-	TransactionResult_TEF_FAILURE               TransactionResult = 200 // tef* - local failure
-	TransactionResult_TEM_MALFORMED             TransactionResult = 300 // tem* - malformed
-	TransactionResult_TER_RETRY                 TransactionResult = 400 // ter* - retry
-)
-
-// Enum value maps for TransactionResult.
-var (
-	TransactionResult_name = map[int32]string{
-		0:   "RESULT_UNKNOWN",
-		1:   "TES_SUCCESS",
-		2:   "TEC_CLAIMED",
-		3:   "TEC_PATH_PARTIAL",
-		4:   "TEC_UNFUNDED_ADD",
-		5:   "TEC_UNFUNDED_OFFER",
-		6:   "TEC_UNFUNDED_PAYMENT",
-		7:   "TEC_FAILED_PROCESSING",
-		8:   "TEC_DIR_FULL",
-		9:   "TEC_INSUF_RESERVE_LINE",
-		10:  "TEC_INSUF_RESERVE_OFFER",
-		11:  "TEC_NO_DST",
-		12:  "TEC_NO_DST_INSUF_XRP",
-		13:  "TEC_NO_LINE_INSUF_RESERVE",
-		14:  "TEC_NO_LINE_REDUNDANT",
-		15:  "TEC_PATH_DRY",
-		16:  "TEC_UNFUNDED",
-		17:  "TEC_NO_ALTERNATIVE_KEY",
-		18:  "TEC_NO_REGULAR_KEY",
-		100: "TEC_OTHER",
-		200: "TEF_FAILURE",
-		300: "TEM_MALFORMED",
-		400: "TER_RETRY",
-	}
-	TransactionResult_value = map[string]int32{
-		"RESULT_UNKNOWN":            0,
-		"TES_SUCCESS":               1,
-		"TEC_CLAIMED":               2,
-		"TEC_PATH_PARTIAL":          3,
-		"TEC_UNFUNDED_ADD":          4,
-		"TEC_UNFUNDED_OFFER":        5,
-		"TEC_UNFUNDED_PAYMENT":      6,
-		"TEC_FAILED_PROCESSING":     7,
-		"TEC_DIR_FULL":              8,
-		"TEC_INSUF_RESERVE_LINE":    9,
-		"TEC_INSUF_RESERVE_OFFER":   10,
-		"TEC_NO_DST":                11,
-		"TEC_NO_DST_INSUF_XRP":      12,
-		"TEC_NO_LINE_INSUF_RESERVE": 13,
-		"TEC_NO_LINE_REDUNDANT":     14,
-		"TEC_PATH_DRY":              15,
-		"TEC_UNFUNDED":              16,
-		"TEC_NO_ALTERNATIVE_KEY":    17,
-		"TEC_NO_REGULAR_KEY":        18,
-		"TEC_OTHER":                 100,
-		"TEF_FAILURE":               200,
-		"TEM_MALFORMED":             300,
-		"TER_RETRY":                 400,
-	}
-)
-
-func (x TransactionResult) Enum() *TransactionResult {
-	p := new(TransactionResult)
-	*p = x
-	return p
-}
-
-func (x TransactionResult) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (TransactionResult) Descriptor() protoreflect.EnumDescriptor {
-	return file_sf_xrpl_type_v1_block_proto_enumTypes[0].Descriptor()
-}
-
-func (TransactionResult) Type() protoreflect.EnumType {
-	return &file_sf_xrpl_type_v1_block_proto_enumTypes[0]
-}
-
-func (x TransactionResult) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use TransactionResult.Descriptor instead.
-func (TransactionResult) EnumDescriptor() ([]byte, []int) {
-	return file_sf_xrpl_type_v1_block_proto_rawDescGZIP(), []int{0}
-}
-
-// Common XRPL transaction types for filtering
-type TransactionType int32
-
-const (
-	TransactionType_TX_UNKNOWN                               TransactionType = 0
-	TransactionType_TX_PAYMENT                               TransactionType = 1
-	TransactionType_TX_ESCROW_CREATE                         TransactionType = 2
-	TransactionType_TX_ESCROW_FINISH                         TransactionType = 3
-	TransactionType_TX_ACCOUNT_SET                           TransactionType = 4
-	TransactionType_TX_ESCROW_CANCEL                         TransactionType = 5
-	TransactionType_TX_SET_REGULAR_KEY                       TransactionType = 6
-	TransactionType_TX_NICKNAME_SET                          TransactionType = 7 // Deprecated
-	TransactionType_TX_OFFER_CREATE                          TransactionType = 8
-	TransactionType_TX_OFFER_CANCEL                          TransactionType = 9
-	TransactionType_TX_CONTRACT                              TransactionType = 10 // Deprecated
-	TransactionType_TX_TICKET_CREATE                         TransactionType = 11
-	TransactionType_TX_TICKET_CANCEL                         TransactionType = 12 // Deprecated
-	TransactionType_TX_SIGNER_LIST_SET                       TransactionType = 13
-	TransactionType_TX_PAYMENT_CHANNEL_CREATE                TransactionType = 14
-	TransactionType_TX_PAYMENT_CHANNEL_FUND                  TransactionType = 15
-	TransactionType_TX_PAYMENT_CHANNEL_CLAIM                 TransactionType = 16
-	TransactionType_TX_CHECK_CREATE                          TransactionType = 17
-	TransactionType_TX_CHECK_CASH                            TransactionType = 18
-	TransactionType_TX_CHECK_CANCEL                          TransactionType = 19
-	TransactionType_TX_DEPOSIT_PREAUTH                       TransactionType = 20
-	TransactionType_TX_TRUST_SET                             TransactionType = 21
-	TransactionType_TX_ACCOUNT_DELETE                        TransactionType = 22
-	TransactionType_TX_SET_HOOK                              TransactionType = 23
-	TransactionType_TX_NFT_MINT                              TransactionType = 25
-	TransactionType_TX_NFT_BURN                              TransactionType = 26
-	TransactionType_TX_NFT_CREATE_OFFER                      TransactionType = 27
-	TransactionType_TX_NFT_CANCEL_OFFER                      TransactionType = 28
-	TransactionType_TX_NFT_ACCEPT_OFFER                      TransactionType = 29
-	TransactionType_TX_CLAWBACK                              TransactionType = 30
-	TransactionType_TX_AMM_CLAWBACK                          TransactionType = 31
-	TransactionType_TX_AMM_CREATE                            TransactionType = 35
-	TransactionType_TX_AMM_DEPOSIT                           TransactionType = 36
-	TransactionType_TX_AMM_WITHDRAW                          TransactionType = 37
-	TransactionType_TX_AMM_VOTE                              TransactionType = 38
-	TransactionType_TX_AMM_BID                               TransactionType = 39
-	TransactionType_TX_AMM_DELETE                            TransactionType = 40
-	TransactionType_TX_XCHAIN_CREATE_CLAIM_ID                TransactionType = 41
-	TransactionType_TX_XCHAIN_COMMIT                         TransactionType = 42
-	TransactionType_TX_XCHAIN_CLAIM                          TransactionType = 43
-	TransactionType_TX_XCHAIN_ACCOUNT_CREATE_COMMIT          TransactionType = 44
-	TransactionType_TX_XCHAIN_ADD_CLAIM_ATTESTATION          TransactionType = 45
-	TransactionType_TX_XCHAIN_ADD_ACCOUNT_CREATE_ATTESTATION TransactionType = 46
-	TransactionType_TX_XCHAIN_MODIFY_BRIDGE                  TransactionType = 47
-	TransactionType_TX_XCHAIN_CREATE_BRIDGE                  TransactionType = 48
-	TransactionType_TX_DID_SET                               TransactionType = 49
-	TransactionType_TX_DID_DELETE                            TransactionType = 50
-	TransactionType_TX_ORACLE_SET                            TransactionType = 51
-	TransactionType_TX_ORACLE_DELETE                         TransactionType = 52
-	TransactionType_TX_LEDGER_STATE_FIX                      TransactionType = 53
-	TransactionType_TX_MPTOKEN_ISSUANCE_CREATE               TransactionType = 54
-	TransactionType_TX_MPTOKEN_ISSUANCE_DESTROY              TransactionType = 55
-	TransactionType_TX_MPTOKEN_ISSUANCE_SET                  TransactionType = 56
-	TransactionType_TX_MPTOKEN_AUTHORIZE                     TransactionType = 57
-	TransactionType_TX_CREDENTIAL_CREATE                     TransactionType = 58
-	TransactionType_TX_CREDENTIAL_ACCEPT                     TransactionType = 59
-	TransactionType_TX_CREDENTIAL_DELETE                     TransactionType = 60
-	TransactionType_TX_NFTOKEN_MODIFY                        TransactionType = 61
-	TransactionType_TX_PERMISSIONED_DOMAIN_SET               TransactionType = 62
-	TransactionType_TX_PERMISSIONED_DOMAIN_DELETE            TransactionType = 63
-	TransactionType_TX_DELEGATE_SET                          TransactionType = 64
-	TransactionType_TX_VAULT_CREATE                          TransactionType = 65
-	TransactionType_TX_VAULT_SET                             TransactionType = 66
-	TransactionType_TX_VAULT_DELETE                          TransactionType = 67
-	TransactionType_TX_VAULT_DEPOSIT                         TransactionType = 68
-	TransactionType_TX_VAULT_WITHDRAW                        TransactionType = 69
-	TransactionType_TX_VAULT_CLAWBACK                        TransactionType = 70
-	TransactionType_TX_BATCH                                 TransactionType = 71
-	TransactionType_TX_CONTRACT_CREATE                       TransactionType = 72
-	TransactionType_TX_CONTRACT_MODIFY                       TransactionType = 73
-	TransactionType_TX_CONTRACT_DELETE                       TransactionType = 74
-	TransactionType_TX_CONTRACT_CLAWBACK                     TransactionType = 75
-	TransactionType_TX_CONTRACT_USER_DELETE                  TransactionType = 76
-	TransactionType_TX_CONTRACT_CALL                         TransactionType = 77
-	// System/pseudo-transactions
-	TransactionType_TX_ENABLE_AMENDMENT TransactionType = 100
-	TransactionType_TX_SET_FEE          TransactionType = 101
-	TransactionType_TX_UNL_MODIFY       TransactionType = 102
-)
-
-// Enum value maps for TransactionType.
-var (
-	TransactionType_name = map[int32]string{
-		0:   "TX_UNKNOWN",
-		1:   "TX_PAYMENT",
-		2:   "TX_ESCROW_CREATE",
-		3:   "TX_ESCROW_FINISH",
-		4:   "TX_ACCOUNT_SET",
-		5:   "TX_ESCROW_CANCEL",
-		6:   "TX_SET_REGULAR_KEY",
-		7:   "TX_NICKNAME_SET",
-		8:   "TX_OFFER_CREATE",
-		9:   "TX_OFFER_CANCEL",
-		10:  "TX_CONTRACT",
-		11:  "TX_TICKET_CREATE",
-		12:  "TX_TICKET_CANCEL",
-		13:  "TX_SIGNER_LIST_SET",
-		14:  "TX_PAYMENT_CHANNEL_CREATE",
-		15:  "TX_PAYMENT_CHANNEL_FUND",
-		16:  "TX_PAYMENT_CHANNEL_CLAIM",
-		17:  "TX_CHECK_CREATE",
-		18:  "TX_CHECK_CASH",
-		19:  "TX_CHECK_CANCEL",
-		20:  "TX_DEPOSIT_PREAUTH",
-		21:  "TX_TRUST_SET",
-		22:  "TX_ACCOUNT_DELETE",
-		23:  "TX_SET_HOOK",
-		25:  "TX_NFT_MINT",
-		26:  "TX_NFT_BURN",
-		27:  "TX_NFT_CREATE_OFFER",
-		28:  "TX_NFT_CANCEL_OFFER",
-		29:  "TX_NFT_ACCEPT_OFFER",
-		30:  "TX_CLAWBACK",
-		31:  "TX_AMM_CLAWBACK",
-		35:  "TX_AMM_CREATE",
-		36:  "TX_AMM_DEPOSIT",
-		37:  "TX_AMM_WITHDRAW",
-		38:  "TX_AMM_VOTE",
-		39:  "TX_AMM_BID",
-		40:  "TX_AMM_DELETE",
-		41:  "TX_XCHAIN_CREATE_CLAIM_ID",
-		42:  "TX_XCHAIN_COMMIT",
-		43:  "TX_XCHAIN_CLAIM",
-		44:  "TX_XCHAIN_ACCOUNT_CREATE_COMMIT",
-		45:  "TX_XCHAIN_ADD_CLAIM_ATTESTATION",
-		46:  "TX_XCHAIN_ADD_ACCOUNT_CREATE_ATTESTATION",
-		47:  "TX_XCHAIN_MODIFY_BRIDGE",
-		48:  "TX_XCHAIN_CREATE_BRIDGE",
-		49:  "TX_DID_SET",
-		50:  "TX_DID_DELETE",
-		51:  "TX_ORACLE_SET",
-		52:  "TX_ORACLE_DELETE",
-		53:  "TX_LEDGER_STATE_FIX",
-		54:  "TX_MPTOKEN_ISSUANCE_CREATE",
-		55:  "TX_MPTOKEN_ISSUANCE_DESTROY",
-		56:  "TX_MPTOKEN_ISSUANCE_SET",
-		57:  "TX_MPTOKEN_AUTHORIZE",
-		58:  "TX_CREDENTIAL_CREATE",
-		59:  "TX_CREDENTIAL_ACCEPT",
-		60:  "TX_CREDENTIAL_DELETE",
-		61:  "TX_NFTOKEN_MODIFY",
-		62:  "TX_PERMISSIONED_DOMAIN_SET",
-		63:  "TX_PERMISSIONED_DOMAIN_DELETE",
-		64:  "TX_DELEGATE_SET",
-		65:  "TX_VAULT_CREATE",
-		66:  "TX_VAULT_SET",
-		67:  "TX_VAULT_DELETE",
-		68:  "TX_VAULT_DEPOSIT",
-		69:  "TX_VAULT_WITHDRAW",
-		70:  "TX_VAULT_CLAWBACK",
-		71:  "TX_BATCH",
-		72:  "TX_CONTRACT_CREATE",
-		73:  "TX_CONTRACT_MODIFY",
-		74:  "TX_CONTRACT_DELETE",
-		75:  "TX_CONTRACT_CLAWBACK",
-		76:  "TX_CONTRACT_USER_DELETE",
-		77:  "TX_CONTRACT_CALL",
-		100: "TX_ENABLE_AMENDMENT",
-		101: "TX_SET_FEE",
-		102: "TX_UNL_MODIFY",
-	}
-	TransactionType_value = map[string]int32{
-		"TX_UNKNOWN":                               0,
-		"TX_PAYMENT":                               1,
-		"TX_ESCROW_CREATE":                         2,
-		"TX_ESCROW_FINISH":                         3,
-		"TX_ACCOUNT_SET":                           4,
-		"TX_ESCROW_CANCEL":                         5,
-		"TX_SET_REGULAR_KEY":                       6,
-		"TX_NICKNAME_SET":                          7,
-		"TX_OFFER_CREATE":                          8,
-		"TX_OFFER_CANCEL":                          9,
-		"TX_CONTRACT":                              10,
-		"TX_TICKET_CREATE":                         11,
-		"TX_TICKET_CANCEL":                         12,
-		"TX_SIGNER_LIST_SET":                       13,
-		"TX_PAYMENT_CHANNEL_CREATE":                14,
-		"TX_PAYMENT_CHANNEL_FUND":                  15,
-		"TX_PAYMENT_CHANNEL_CLAIM":                 16,
-		"TX_CHECK_CREATE":                          17,
-		"TX_CHECK_CASH":                            18,
-		"TX_CHECK_CANCEL":                          19,
-		"TX_DEPOSIT_PREAUTH":                       20,
-		"TX_TRUST_SET":                             21,
-		"TX_ACCOUNT_DELETE":                        22,
-		"TX_SET_HOOK":                              23,
-		"TX_NFT_MINT":                              25,
-		"TX_NFT_BURN":                              26,
-		"TX_NFT_CREATE_OFFER":                      27,
-		"TX_NFT_CANCEL_OFFER":                      28,
-		"TX_NFT_ACCEPT_OFFER":                      29,
-		"TX_CLAWBACK":                              30,
-		"TX_AMM_CLAWBACK":                          31,
-		"TX_AMM_CREATE":                            35,
-		"TX_AMM_DEPOSIT":                           36,
-		"TX_AMM_WITHDRAW":                          37,
-		"TX_AMM_VOTE":                              38,
-		"TX_AMM_BID":                               39,
-		"TX_AMM_DELETE":                            40,
-		"TX_XCHAIN_CREATE_CLAIM_ID":                41,
-		"TX_XCHAIN_COMMIT":                         42,
-		"TX_XCHAIN_CLAIM":                          43,
-		"TX_XCHAIN_ACCOUNT_CREATE_COMMIT":          44,
-		"TX_XCHAIN_ADD_CLAIM_ATTESTATION":          45,
-		"TX_XCHAIN_ADD_ACCOUNT_CREATE_ATTESTATION": 46,
-		"TX_XCHAIN_MODIFY_BRIDGE":                  47,
-		"TX_XCHAIN_CREATE_BRIDGE":                  48,
-		"TX_DID_SET":                               49,
-		"TX_DID_DELETE":                            50,
-		"TX_ORACLE_SET":                            51,
-		"TX_ORACLE_DELETE":                         52,
-		"TX_LEDGER_STATE_FIX":                      53,
-		"TX_MPTOKEN_ISSUANCE_CREATE":               54,
-		"TX_MPTOKEN_ISSUANCE_DESTROY":              55,
-		"TX_MPTOKEN_ISSUANCE_SET":                  56,
-		"TX_MPTOKEN_AUTHORIZE":                     57,
-		"TX_CREDENTIAL_CREATE":                     58,
-		"TX_CREDENTIAL_ACCEPT":                     59,
-		"TX_CREDENTIAL_DELETE":                     60,
-		"TX_NFTOKEN_MODIFY":                        61,
-		"TX_PERMISSIONED_DOMAIN_SET":               62,
-		"TX_PERMISSIONED_DOMAIN_DELETE":            63,
-		"TX_DELEGATE_SET":                          64,
-		"TX_VAULT_CREATE":                          65,
-		"TX_VAULT_SET":                             66,
-		"TX_VAULT_DELETE":                          67,
-		"TX_VAULT_DEPOSIT":                         68,
-		"TX_VAULT_WITHDRAW":                        69,
-		"TX_VAULT_CLAWBACK":                        70,
-		"TX_BATCH":                                 71,
-		"TX_CONTRACT_CREATE":                       72,
-		"TX_CONTRACT_MODIFY":                       73,
-		"TX_CONTRACT_DELETE":                       74,
-		"TX_CONTRACT_CLAWBACK":                     75,
-		"TX_CONTRACT_USER_DELETE":                  76,
-		"TX_CONTRACT_CALL":                         77,
-		"TX_ENABLE_AMENDMENT":                      100,
-		"TX_SET_FEE":                               101,
-		"TX_UNL_MODIFY":                            102,
-	}
-)
-
-func (x TransactionType) Enum() *TransactionType {
-	p := new(TransactionType)
-	*p = x
-	return p
-}
-
-func (x TransactionType) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (TransactionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_sf_xrpl_type_v1_block_proto_enumTypes[1].Descriptor()
-}
-
-func (TransactionType) Type() protoreflect.EnumType {
-	return &file_sf_xrpl_type_v1_block_proto_enumTypes[1]
-}
-
-func (x TransactionType) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use TransactionType.Descriptor instead.
-func (TransactionType) EnumDescriptor() ([]byte, []int) {
-	return file_sf_xrpl_type_v1_block_proto_rawDescGZIP(), []int{1}
-}
-
 // Block represents an XRPL validated ledger
 type Block struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -590,8 +207,9 @@ type Transaction struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Transaction hash (32 bytes)
 	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	// Transaction result
-	Result TransactionResult `protobuf:"varint,2,opt,name=result,proto3,enum=sf.xrpl.type.v1.TransactionResult" json:"result,omitempty"`
+	// Transaction result code (e.g., "tesSUCCESS", "tecPATH_DRY", "temMALFORMED")
+	// Future-proof: supports any result code XRPL adds without schema updates
+	Result string `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
 	// Position in ledger (0-indexed)
 	Index uint32 `protobuf:"varint,3,opt,name=index,proto3" json:"index,omitempty"`
 	// Raw transaction blob (XRPL binary format)
@@ -600,8 +218,10 @@ type Transaction struct {
 	// Transaction metadata blob (XRPL binary format)
 	// Contains: AffectedNodes, delivered_amount, etc.
 	MetaBlob []byte `protobuf:"bytes,5,opt,name=meta_blob,json=metaBlob,proto3" json:"meta_blob,omitempty"`
-	// Transaction type for filtering
-	TxType TransactionType `protobuf:"varint,6,opt,name=tx_type,json=txType,proto3,enum=sf.xrpl.type.v1.TransactionType" json:"tx_type,omitempty"`
+	// Transaction type string (e.g., "Payment", "OfferCreate", "NFTokenMint")
+	// Future-proof: supports any transaction type XRPL adds without schema
+	// updates
+	TxType string `protobuf:"bytes,6,opt,name=tx_type,json=txType,proto3" json:"tx_type,omitempty"`
 	// Account that initiated this transaction
 	Account string `protobuf:"bytes,7,opt,name=account,proto3" json:"account,omitempty"`
 	// Fee paid in drops
@@ -695,18 +315,6 @@ type Transaction struct {
 	//	*Transaction_PermissionedDomainSet
 	//	*Transaction_PermissionedDomainDelete
 	//	*Transaction_DelegateSet
-	//	*Transaction_VaultCreate
-	//	*Transaction_VaultSet
-	//	*Transaction_VaultDelete
-	//	*Transaction_VaultDeposit
-	//	*Transaction_VaultWithdraw
-	//	*Transaction_VaultClawback
-	//	*Transaction_ContractCreate
-	//	*Transaction_ContractModify
-	//	*Transaction_ContractDelete
-	//	*Transaction_ContractClawback
-	//	*Transaction_ContractUserDelete
-	//	*Transaction_ContractCall
 	//	*Transaction_Batch
 	//	*Transaction_EnableAmendment
 	//	*Transaction_SetFee
@@ -754,11 +362,11 @@ func (x *Transaction) GetHash() []byte {
 	return nil
 }
 
-func (x *Transaction) GetResult() TransactionResult {
+func (x *Transaction) GetResult() string {
 	if x != nil {
 		return x.Result
 	}
-	return TransactionResult_RESULT_UNKNOWN
+	return ""
 }
 
 func (x *Transaction) GetIndex() uint32 {
@@ -782,11 +390,11 @@ func (x *Transaction) GetMetaBlob() []byte {
 	return nil
 }
 
-func (x *Transaction) GetTxType() TransactionType {
+func (x *Transaction) GetTxType() string {
 	if x != nil {
 		return x.TxType
 	}
-	return TransactionType_TX_UNKNOWN
+	return ""
 }
 
 func (x *Transaction) GetAccount() string {
@@ -1389,114 +997,6 @@ func (x *Transaction) GetDelegateSet() *DelegateSet {
 	return nil
 }
 
-func (x *Transaction) GetVaultCreate() *VaultCreate {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_VaultCreate); ok {
-			return x.VaultCreate
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetVaultSet() *VaultSet {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_VaultSet); ok {
-			return x.VaultSet
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetVaultDelete() *VaultDelete {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_VaultDelete); ok {
-			return x.VaultDelete
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetVaultDeposit() *VaultDeposit {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_VaultDeposit); ok {
-			return x.VaultDeposit
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetVaultWithdraw() *VaultWithdraw {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_VaultWithdraw); ok {
-			return x.VaultWithdraw
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetVaultClawback() *VaultClawback {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_VaultClawback); ok {
-			return x.VaultClawback
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetContractCreate() *ContractCreate {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_ContractCreate); ok {
-			return x.ContractCreate
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetContractModify() *ContractModify {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_ContractModify); ok {
-			return x.ContractModify
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetContractDelete() *ContractDelete {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_ContractDelete); ok {
-			return x.ContractDelete
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetContractClawback() *ContractClawback {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_ContractClawback); ok {
-			return x.ContractClawback
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetContractUserDelete() *ContractUserDelete {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_ContractUserDelete); ok {
-			return x.ContractUserDelete
-		}
-	}
-	return nil
-}
-
-func (x *Transaction) GetContractCall() *ContractCall {
-	if x != nil {
-		if x, ok := x.TxDetails.(*Transaction_ContractCall); ok {
-			return x.ContractCall
-		}
-	}
-	return nil
-}
-
 func (x *Transaction) GetBatch() *Batch {
 	if x != nil {
 		if x, ok := x.TxDetails.(*Transaction_Batch); ok {
@@ -1784,59 +1284,9 @@ type Transaction_DelegateSet struct {
 	DelegateSet *DelegateSet `protobuf:"bytes,132,opt,name=delegate_set,json=delegateSet,proto3,oneof"`
 }
 
-type Transaction_VaultCreate struct {
-	// Vault transactions
-	VaultCreate *VaultCreate `protobuf:"bytes,140,opt,name=vault_create,json=vaultCreate,proto3,oneof"`
-}
-
-type Transaction_VaultSet struct {
-	VaultSet *VaultSet `protobuf:"bytes,141,opt,name=vault_set,json=vaultSet,proto3,oneof"`
-}
-
-type Transaction_VaultDelete struct {
-	VaultDelete *VaultDelete `protobuf:"bytes,142,opt,name=vault_delete,json=vaultDelete,proto3,oneof"`
-}
-
-type Transaction_VaultDeposit struct {
-	VaultDeposit *VaultDeposit `protobuf:"bytes,143,opt,name=vault_deposit,json=vaultDeposit,proto3,oneof"`
-}
-
-type Transaction_VaultWithdraw struct {
-	VaultWithdraw *VaultWithdraw `protobuf:"bytes,144,opt,name=vault_withdraw,json=vaultWithdraw,proto3,oneof"`
-}
-
-type Transaction_VaultClawback struct {
-	VaultClawback *VaultClawback `protobuf:"bytes,145,opt,name=vault_clawback,json=vaultClawback,proto3,oneof"`
-}
-
-type Transaction_ContractCreate struct {
-	// Smart contract transactions
-	ContractCreate *ContractCreate `protobuf:"bytes,150,opt,name=contract_create,json=contractCreate,proto3,oneof"`
-}
-
-type Transaction_ContractModify struct {
-	ContractModify *ContractModify `protobuf:"bytes,151,opt,name=contract_modify,json=contractModify,proto3,oneof"`
-}
-
-type Transaction_ContractDelete struct {
-	ContractDelete *ContractDelete `protobuf:"bytes,152,opt,name=contract_delete,json=contractDelete,proto3,oneof"`
-}
-
-type Transaction_ContractClawback struct {
-	ContractClawback *ContractClawback `protobuf:"bytes,153,opt,name=contract_clawback,json=contractClawback,proto3,oneof"`
-}
-
-type Transaction_ContractUserDelete struct {
-	ContractUserDelete *ContractUserDelete `protobuf:"bytes,154,opt,name=contract_user_delete,json=contractUserDelete,proto3,oneof"`
-}
-
-type Transaction_ContractCall struct {
-	ContractCall *ContractCall `protobuf:"bytes,155,opt,name=contract_call,json=contractCall,proto3,oneof"`
-}
-
 type Transaction_Batch struct {
 	// Batch transaction
-	Batch *Batch `protobuf:"bytes,160,opt,name=batch,proto3,oneof"`
+	Batch *Batch `protobuf:"bytes,133,opt,name=batch,proto3,oneof"`
 }
 
 type Transaction_EnableAmendment struct {
@@ -1966,30 +1416,6 @@ func (*Transaction_PermissionedDomainDelete) isTransaction_TxDetails() {}
 
 func (*Transaction_DelegateSet) isTransaction_TxDetails() {}
 
-func (*Transaction_VaultCreate) isTransaction_TxDetails() {}
-
-func (*Transaction_VaultSet) isTransaction_TxDetails() {}
-
-func (*Transaction_VaultDelete) isTransaction_TxDetails() {}
-
-func (*Transaction_VaultDeposit) isTransaction_TxDetails() {}
-
-func (*Transaction_VaultWithdraw) isTransaction_TxDetails() {}
-
-func (*Transaction_VaultClawback) isTransaction_TxDetails() {}
-
-func (*Transaction_ContractCreate) isTransaction_TxDetails() {}
-
-func (*Transaction_ContractModify) isTransaction_TxDetails() {}
-
-func (*Transaction_ContractDelete) isTransaction_TxDetails() {}
-
-func (*Transaction_ContractClawback) isTransaction_TxDetails() {}
-
-func (*Transaction_ContractUserDelete) isTransaction_TxDetails() {}
-
-func (*Transaction_ContractCall) isTransaction_TxDetails() {}
-
 func (*Transaction_Batch) isTransaction_TxDetails() {}
 
 func (*Transaction_EnableAmendment) isTransaction_TxDetails() {}
@@ -2070,7 +1496,7 @@ var File_sf_xrpl_type_v1_block_proto protoreflect.FileDescriptor
 
 const file_sf_xrpl_type_v1_block_proto_rawDesc = "" +
 	"\n" +
-	"\x1bsf/xrpl/type/v1/block.proto\x12\x0fsf.xrpl.type.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1csf/xrpl/type/v1/signer.proto\x1a\x1dsf/xrpl/type/v1/payment.proto\x1a\x1bsf/xrpl/type/v1/offer.proto\x1a\x1fsf/xrpl/type/v1/trustline.proto\x1a\x1dsf/xrpl/type/v1/account.proto\x1a\x1csf/xrpl/type/v1/escrow.proto\x1a\x19sf/xrpl/type/v1/nft.proto\x1a%sf/xrpl/type/v1/payment_channel.proto\x1a\x1bsf/xrpl/type/v1/check.proto\x1a%sf/xrpl/type/v1/deposit_preauth.proto\x1a\x1csf/xrpl/type/v1/ticket.proto\x1a\x1esf/xrpl/type/v1/clawback.proto\x1a\x19sf/xrpl/type/v1/amm.proto\x1a\x1csf/xrpl/type/v1/xchain.proto\x1a\x19sf/xrpl/type/v1/did.proto\x1a\x1csf/xrpl/type/v1/oracle.proto\x1a\x1dsf/xrpl/type/v1/mptoken.proto\x1a sf/xrpl/type/v1/credential.proto\x1a)sf/xrpl/type/v1/permissioned_domain.proto\x1a\x1bsf/xrpl/type/v1/vault.proto\x1a\x1esf/xrpl/type/v1/delegate.proto\x1a\x1esf/xrpl/type/v1/contract.proto\x1a\x1csf/xrpl/type/v1/system.proto\x1a\x1bsf/xrpl/type/v1/batch.proto\"\xfb\x01\n" +
+	"\x1bsf/xrpl/type/v1/block.proto\x12\x0fsf.xrpl.type.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1csf/xrpl/type/v1/signer.proto\x1a\x1dsf/xrpl/type/v1/payment.proto\x1a\x1bsf/xrpl/type/v1/offer.proto\x1a\x1fsf/xrpl/type/v1/trustline.proto\x1a\x1dsf/xrpl/type/v1/account.proto\x1a\x1csf/xrpl/type/v1/escrow.proto\x1a\x19sf/xrpl/type/v1/nft.proto\x1a%sf/xrpl/type/v1/payment_channel.proto\x1a\x1bsf/xrpl/type/v1/check.proto\x1a%sf/xrpl/type/v1/deposit_preauth.proto\x1a\x1csf/xrpl/type/v1/ticket.proto\x1a\x1esf/xrpl/type/v1/clawback.proto\x1a\x19sf/xrpl/type/v1/amm.proto\x1a\x1csf/xrpl/type/v1/xchain.proto\x1a\x19sf/xrpl/type/v1/did.proto\x1a\x1csf/xrpl/type/v1/oracle.proto\x1a\x1dsf/xrpl/type/v1/mptoken.proto\x1a sf/xrpl/type/v1/credential.proto\x1a)sf/xrpl/type/v1/permissioned_domain.proto\x1a\x1esf/xrpl/type/v1/delegate.proto\x1a\x1csf/xrpl/type/v1/system.proto\x1a\x1bsf/xrpl/type/v1/batch.proto\"\xfb\x01\n" +
 	"\x05Block\x12\x16\n" +
 	"\x06number\x18\x01 \x01(\x04R\x06number\x12\x12\n" +
 	"\x04hash\x18\x02 \x01(\fR\x04hash\x12/\n" +
@@ -2088,14 +1514,14 @@ const file_sf_xrpl_type_v1_block_proto_rawDesc = "" +
 	"\x10transaction_hash\x18\x04 \x01(\fR\x0ftransactionHash\x122\n" +
 	"\x15close_time_resolution\x18\x05 \x01(\rR\x13closeTimeResolution\x12\x1f\n" +
 	"\vclose_flags\x18\x06 \x01(\rR\n" +
-	"closeFlags\"\x8d0\n" +
+	"closeFlags\"\xce(\n" +
 	"\vTransaction\x12\x12\n" +
-	"\x04hash\x18\x01 \x01(\fR\x04hash\x12:\n" +
-	"\x06result\x18\x02 \x01(\x0e2\".sf.xrpl.type.v1.TransactionResultR\x06result\x12\x14\n" +
+	"\x04hash\x18\x01 \x01(\fR\x04hash\x12\x16\n" +
+	"\x06result\x18\x02 \x01(\tR\x06result\x12\x14\n" +
 	"\x05index\x18\x03 \x01(\rR\x05index\x12\x17\n" +
 	"\atx_blob\x18\x04 \x01(\fR\x06txBlob\x12\x1b\n" +
-	"\tmeta_blob\x18\x05 \x01(\fR\bmetaBlob\x129\n" +
-	"\atx_type\x18\x06 \x01(\x0e2 .sf.xrpl.type.v1.TransactionTypeR\x06txType\x12\x18\n" +
+	"\tmeta_blob\x18\x05 \x01(\fR\bmetaBlob\x12\x17\n" +
+	"\atx_type\x18\x06 \x01(\tR\x06txType\x12\x18\n" +
 	"\aaccount\x18\a \x01(\tR\aaccount\x12\x10\n" +
 	"\x03fee\x18\b \x01(\x04R\x03fee\x12\x1a\n" +
 	"\bsequence\x18\t \x01(\rR\bsequence\x12$\n" +
@@ -2174,20 +1600,8 @@ const file_sf_xrpl_type_v1_block_proto_rawDesc = "" +
 	"\x11credential_delete\x18z \x01(\v2!.sf.xrpl.type.v1.CredentialDeleteH\x00R\x10credentialDelete\x12a\n" +
 	"\x17permissioned_domain_set\x18\x82\x01 \x01(\v2&.sf.xrpl.type.v1.PermissionedDomainSetH\x00R\x15permissionedDomainSet\x12j\n" +
 	"\x1apermissioned_domain_delete\x18\x83\x01 \x01(\v2).sf.xrpl.type.v1.PermissionedDomainDeleteH\x00R\x18permissionedDomainDelete\x12B\n" +
-	"\fdelegate_set\x18\x84\x01 \x01(\v2\x1c.sf.xrpl.type.v1.DelegateSetH\x00R\vdelegateSet\x12B\n" +
-	"\fvault_create\x18\x8c\x01 \x01(\v2\x1c.sf.xrpl.type.v1.VaultCreateH\x00R\vvaultCreate\x129\n" +
-	"\tvault_set\x18\x8d\x01 \x01(\v2\x19.sf.xrpl.type.v1.VaultSetH\x00R\bvaultSet\x12B\n" +
-	"\fvault_delete\x18\x8e\x01 \x01(\v2\x1c.sf.xrpl.type.v1.VaultDeleteH\x00R\vvaultDelete\x12E\n" +
-	"\rvault_deposit\x18\x8f\x01 \x01(\v2\x1d.sf.xrpl.type.v1.VaultDepositH\x00R\fvaultDeposit\x12H\n" +
-	"\x0evault_withdraw\x18\x90\x01 \x01(\v2\x1e.sf.xrpl.type.v1.VaultWithdrawH\x00R\rvaultWithdraw\x12H\n" +
-	"\x0evault_clawback\x18\x91\x01 \x01(\v2\x1e.sf.xrpl.type.v1.VaultClawbackH\x00R\rvaultClawback\x12K\n" +
-	"\x0fcontract_create\x18\x96\x01 \x01(\v2\x1f.sf.xrpl.type.v1.ContractCreateH\x00R\x0econtractCreate\x12K\n" +
-	"\x0fcontract_modify\x18\x97\x01 \x01(\v2\x1f.sf.xrpl.type.v1.ContractModifyH\x00R\x0econtractModify\x12K\n" +
-	"\x0fcontract_delete\x18\x98\x01 \x01(\v2\x1f.sf.xrpl.type.v1.ContractDeleteH\x00R\x0econtractDelete\x12Q\n" +
-	"\x11contract_clawback\x18\x99\x01 \x01(\v2!.sf.xrpl.type.v1.ContractClawbackH\x00R\x10contractClawback\x12X\n" +
-	"\x14contract_user_delete\x18\x9a\x01 \x01(\v2#.sf.xrpl.type.v1.ContractUserDeleteH\x00R\x12contractUserDelete\x12E\n" +
-	"\rcontract_call\x18\x9b\x01 \x01(\v2\x1d.sf.xrpl.type.v1.ContractCallH\x00R\fcontractCall\x12/\n" +
-	"\x05batch\x18\xa0\x01 \x01(\v2\x16.sf.xrpl.type.v1.BatchH\x00R\x05batch\x12N\n" +
+	"\fdelegate_set\x18\x84\x01 \x01(\v2\x1c.sf.xrpl.type.v1.DelegateSetH\x00R\vdelegateSet\x12/\n" +
+	"\x05batch\x18\x85\x01 \x01(\v2\x16.sf.xrpl.type.v1.BatchH\x00R\x05batch\x12N\n" +
 	"\x10enable_amendment\x18\x84\a \x01(\v2 .sf.xrpl.type.v1.EnableAmendmentH\x00R\x0fenableAmendment\x123\n" +
 	"\aset_fee\x18\x85\a \x01(\v2\x17.sf.xrpl.type.v1.SetFeeH\x00R\x06setFee\x12<\n" +
 	"\n" +
@@ -2199,117 +1613,7 @@ const file_sf_xrpl_type_v1_block_proto_rawDesc = "" +
 	"\tmemo_data\x18\x01 \x01(\tR\bmemoData\x12\x1f\n" +
 	"\vmemo_format\x18\x02 \x01(\tR\n" +
 	"memoFormat\x12\x1b\n" +
-	"\tmemo_type\x18\x03 \x01(\tR\bmemoType*\x8e\x04\n" +
-	"\x11TransactionResult\x12\x12\n" +
-	"\x0eRESULT_UNKNOWN\x10\x00\x12\x0f\n" +
-	"\vTES_SUCCESS\x10\x01\x12\x0f\n" +
-	"\vTEC_CLAIMED\x10\x02\x12\x14\n" +
-	"\x10TEC_PATH_PARTIAL\x10\x03\x12\x14\n" +
-	"\x10TEC_UNFUNDED_ADD\x10\x04\x12\x16\n" +
-	"\x12TEC_UNFUNDED_OFFER\x10\x05\x12\x18\n" +
-	"\x14TEC_UNFUNDED_PAYMENT\x10\x06\x12\x19\n" +
-	"\x15TEC_FAILED_PROCESSING\x10\a\x12\x10\n" +
-	"\fTEC_DIR_FULL\x10\b\x12\x1a\n" +
-	"\x16TEC_INSUF_RESERVE_LINE\x10\t\x12\x1b\n" +
-	"\x17TEC_INSUF_RESERVE_OFFER\x10\n" +
-	"\x12\x0e\n" +
-	"\n" +
-	"TEC_NO_DST\x10\v\x12\x18\n" +
-	"\x14TEC_NO_DST_INSUF_XRP\x10\f\x12\x1d\n" +
-	"\x19TEC_NO_LINE_INSUF_RESERVE\x10\r\x12\x19\n" +
-	"\x15TEC_NO_LINE_REDUNDANT\x10\x0e\x12\x10\n" +
-	"\fTEC_PATH_DRY\x10\x0f\x12\x10\n" +
-	"\fTEC_UNFUNDED\x10\x10\x12\x1a\n" +
-	"\x16TEC_NO_ALTERNATIVE_KEY\x10\x11\x12\x16\n" +
-	"\x12TEC_NO_REGULAR_KEY\x10\x12\x12\r\n" +
-	"\tTEC_OTHER\x10d\x12\x10\n" +
-	"\vTEF_FAILURE\x10\xc8\x01\x12\x12\n" +
-	"\rTEM_MALFORMED\x10\xac\x02\x12\x0e\n" +
-	"\tTER_RETRY\x10\x90\x03*\x94\x0e\n" +
-	"\x0fTransactionType\x12\x0e\n" +
-	"\n" +
-	"TX_UNKNOWN\x10\x00\x12\x0e\n" +
-	"\n" +
-	"TX_PAYMENT\x10\x01\x12\x14\n" +
-	"\x10TX_ESCROW_CREATE\x10\x02\x12\x14\n" +
-	"\x10TX_ESCROW_FINISH\x10\x03\x12\x12\n" +
-	"\x0eTX_ACCOUNT_SET\x10\x04\x12\x14\n" +
-	"\x10TX_ESCROW_CANCEL\x10\x05\x12\x16\n" +
-	"\x12TX_SET_REGULAR_KEY\x10\x06\x12\x13\n" +
-	"\x0fTX_NICKNAME_SET\x10\a\x12\x13\n" +
-	"\x0fTX_OFFER_CREATE\x10\b\x12\x13\n" +
-	"\x0fTX_OFFER_CANCEL\x10\t\x12\x0f\n" +
-	"\vTX_CONTRACT\x10\n" +
-	"\x12\x14\n" +
-	"\x10TX_TICKET_CREATE\x10\v\x12\x14\n" +
-	"\x10TX_TICKET_CANCEL\x10\f\x12\x16\n" +
-	"\x12TX_SIGNER_LIST_SET\x10\r\x12\x1d\n" +
-	"\x19TX_PAYMENT_CHANNEL_CREATE\x10\x0e\x12\x1b\n" +
-	"\x17TX_PAYMENT_CHANNEL_FUND\x10\x0f\x12\x1c\n" +
-	"\x18TX_PAYMENT_CHANNEL_CLAIM\x10\x10\x12\x13\n" +
-	"\x0fTX_CHECK_CREATE\x10\x11\x12\x11\n" +
-	"\rTX_CHECK_CASH\x10\x12\x12\x13\n" +
-	"\x0fTX_CHECK_CANCEL\x10\x13\x12\x16\n" +
-	"\x12TX_DEPOSIT_PREAUTH\x10\x14\x12\x10\n" +
-	"\fTX_TRUST_SET\x10\x15\x12\x15\n" +
-	"\x11TX_ACCOUNT_DELETE\x10\x16\x12\x0f\n" +
-	"\vTX_SET_HOOK\x10\x17\x12\x0f\n" +
-	"\vTX_NFT_MINT\x10\x19\x12\x0f\n" +
-	"\vTX_NFT_BURN\x10\x1a\x12\x17\n" +
-	"\x13TX_NFT_CREATE_OFFER\x10\x1b\x12\x17\n" +
-	"\x13TX_NFT_CANCEL_OFFER\x10\x1c\x12\x17\n" +
-	"\x13TX_NFT_ACCEPT_OFFER\x10\x1d\x12\x0f\n" +
-	"\vTX_CLAWBACK\x10\x1e\x12\x13\n" +
-	"\x0fTX_AMM_CLAWBACK\x10\x1f\x12\x11\n" +
-	"\rTX_AMM_CREATE\x10#\x12\x12\n" +
-	"\x0eTX_AMM_DEPOSIT\x10$\x12\x13\n" +
-	"\x0fTX_AMM_WITHDRAW\x10%\x12\x0f\n" +
-	"\vTX_AMM_VOTE\x10&\x12\x0e\n" +
-	"\n" +
-	"TX_AMM_BID\x10'\x12\x11\n" +
-	"\rTX_AMM_DELETE\x10(\x12\x1d\n" +
-	"\x19TX_XCHAIN_CREATE_CLAIM_ID\x10)\x12\x14\n" +
-	"\x10TX_XCHAIN_COMMIT\x10*\x12\x13\n" +
-	"\x0fTX_XCHAIN_CLAIM\x10+\x12#\n" +
-	"\x1fTX_XCHAIN_ACCOUNT_CREATE_COMMIT\x10,\x12#\n" +
-	"\x1fTX_XCHAIN_ADD_CLAIM_ATTESTATION\x10-\x12,\n" +
-	"(TX_XCHAIN_ADD_ACCOUNT_CREATE_ATTESTATION\x10.\x12\x1b\n" +
-	"\x17TX_XCHAIN_MODIFY_BRIDGE\x10/\x12\x1b\n" +
-	"\x17TX_XCHAIN_CREATE_BRIDGE\x100\x12\x0e\n" +
-	"\n" +
-	"TX_DID_SET\x101\x12\x11\n" +
-	"\rTX_DID_DELETE\x102\x12\x11\n" +
-	"\rTX_ORACLE_SET\x103\x12\x14\n" +
-	"\x10TX_ORACLE_DELETE\x104\x12\x17\n" +
-	"\x13TX_LEDGER_STATE_FIX\x105\x12\x1e\n" +
-	"\x1aTX_MPTOKEN_ISSUANCE_CREATE\x106\x12\x1f\n" +
-	"\x1bTX_MPTOKEN_ISSUANCE_DESTROY\x107\x12\x1b\n" +
-	"\x17TX_MPTOKEN_ISSUANCE_SET\x108\x12\x18\n" +
-	"\x14TX_MPTOKEN_AUTHORIZE\x109\x12\x18\n" +
-	"\x14TX_CREDENTIAL_CREATE\x10:\x12\x18\n" +
-	"\x14TX_CREDENTIAL_ACCEPT\x10;\x12\x18\n" +
-	"\x14TX_CREDENTIAL_DELETE\x10<\x12\x15\n" +
-	"\x11TX_NFTOKEN_MODIFY\x10=\x12\x1e\n" +
-	"\x1aTX_PERMISSIONED_DOMAIN_SET\x10>\x12!\n" +
-	"\x1dTX_PERMISSIONED_DOMAIN_DELETE\x10?\x12\x13\n" +
-	"\x0fTX_DELEGATE_SET\x10@\x12\x13\n" +
-	"\x0fTX_VAULT_CREATE\x10A\x12\x10\n" +
-	"\fTX_VAULT_SET\x10B\x12\x13\n" +
-	"\x0fTX_VAULT_DELETE\x10C\x12\x14\n" +
-	"\x10TX_VAULT_DEPOSIT\x10D\x12\x15\n" +
-	"\x11TX_VAULT_WITHDRAW\x10E\x12\x15\n" +
-	"\x11TX_VAULT_CLAWBACK\x10F\x12\f\n" +
-	"\bTX_BATCH\x10G\x12\x16\n" +
-	"\x12TX_CONTRACT_CREATE\x10H\x12\x16\n" +
-	"\x12TX_CONTRACT_MODIFY\x10I\x12\x16\n" +
-	"\x12TX_CONTRACT_DELETE\x10J\x12\x18\n" +
-	"\x14TX_CONTRACT_CLAWBACK\x10K\x12\x1b\n" +
-	"\x17TX_CONTRACT_USER_DELETE\x10L\x12\x14\n" +
-	"\x10TX_CONTRACT_CALL\x10M\x12\x17\n" +
-	"\x13TX_ENABLE_AMENDMENT\x10d\x12\x0e\n" +
-	"\n" +
-	"TX_SET_FEE\x10e\x12\x11\n" +
-	"\rTX_UNL_MODIFY\x10fBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
+	"\tmemo_type\x18\x03 \x01(\tR\bmemoTypeBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
 
 var (
 	file_sf_xrpl_type_v1_block_proto_rawDescOnce sync.Once
@@ -2323,175 +1627,146 @@ func file_sf_xrpl_type_v1_block_proto_rawDescGZIP() []byte {
 	return file_sf_xrpl_type_v1_block_proto_rawDescData
 }
 
-var file_sf_xrpl_type_v1_block_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_sf_xrpl_type_v1_block_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_sf_xrpl_type_v1_block_proto_goTypes = []any{
-	(TransactionResult)(0),                    // 0: sf.xrpl.type.v1.TransactionResult
-	(TransactionType)(0),                      // 1: sf.xrpl.type.v1.TransactionType
-	(*Block)(nil),                             // 2: sf.xrpl.type.v1.Block
-	(*Header)(nil),                            // 3: sf.xrpl.type.v1.Header
-	(*Transaction)(nil),                       // 4: sf.xrpl.type.v1.Transaction
-	(*Memo)(nil),                              // 5: sf.xrpl.type.v1.Memo
-	(*timestamppb.Timestamp)(nil),             // 6: google.protobuf.Timestamp
-	(*Signer)(nil),                            // 7: sf.xrpl.type.v1.Signer
-	(*Payment)(nil),                           // 8: sf.xrpl.type.v1.Payment
-	(*OfferCreate)(nil),                       // 9: sf.xrpl.type.v1.OfferCreate
-	(*OfferCancel)(nil),                       // 10: sf.xrpl.type.v1.OfferCancel
-	(*TrustSet)(nil),                          // 11: sf.xrpl.type.v1.TrustSet
-	(*AccountSet)(nil),                        // 12: sf.xrpl.type.v1.AccountSet
-	(*AccountDelete)(nil),                     // 13: sf.xrpl.type.v1.AccountDelete
-	(*SetRegularKey)(nil),                     // 14: sf.xrpl.type.v1.SetRegularKey
-	(*SignerListSet)(nil),                     // 15: sf.xrpl.type.v1.SignerListSet
-	(*EscrowCreate)(nil),                      // 16: sf.xrpl.type.v1.EscrowCreate
-	(*EscrowFinish)(nil),                      // 17: sf.xrpl.type.v1.EscrowFinish
-	(*EscrowCancel)(nil),                      // 18: sf.xrpl.type.v1.EscrowCancel
-	(*PaymentChannelCreate)(nil),              // 19: sf.xrpl.type.v1.PaymentChannelCreate
-	(*PaymentChannelFund)(nil),                // 20: sf.xrpl.type.v1.PaymentChannelFund
-	(*PaymentChannelClaim)(nil),               // 21: sf.xrpl.type.v1.PaymentChannelClaim
-	(*CheckCreate)(nil),                       // 22: sf.xrpl.type.v1.CheckCreate
-	(*CheckCash)(nil),                         // 23: sf.xrpl.type.v1.CheckCash
-	(*CheckCancel)(nil),                       // 24: sf.xrpl.type.v1.CheckCancel
-	(*DepositPreauth)(nil),                    // 25: sf.xrpl.type.v1.DepositPreauth
-	(*TicketCreate)(nil),                      // 26: sf.xrpl.type.v1.TicketCreate
-	(*NFTokenMint)(nil),                       // 27: sf.xrpl.type.v1.NFTokenMint
-	(*NFTokenBurn)(nil),                       // 28: sf.xrpl.type.v1.NFTokenBurn
-	(*NFTokenCreateOffer)(nil),                // 29: sf.xrpl.type.v1.NFTokenCreateOffer
-	(*NFTokenCancelOffer)(nil),                // 30: sf.xrpl.type.v1.NFTokenCancelOffer
-	(*NFTokenAcceptOffer)(nil),                // 31: sf.xrpl.type.v1.NFTokenAcceptOffer
-	(*NFTokenModify)(nil),                     // 32: sf.xrpl.type.v1.NFTokenModify
-	(*Clawback)(nil),                          // 33: sf.xrpl.type.v1.Clawback
-	(*AMMCreate)(nil),                         // 34: sf.xrpl.type.v1.AMMCreate
-	(*AMMDeposit)(nil),                        // 35: sf.xrpl.type.v1.AMMDeposit
-	(*AMMWithdraw)(nil),                       // 36: sf.xrpl.type.v1.AMMWithdraw
-	(*AMMVote)(nil),                           // 37: sf.xrpl.type.v1.AMMVote
-	(*AMMBid)(nil),                            // 38: sf.xrpl.type.v1.AMMBid
-	(*AMMDelete)(nil),                         // 39: sf.xrpl.type.v1.AMMDelete
-	(*AMMClawback)(nil),                       // 40: sf.xrpl.type.v1.AMMClawback
-	(*XChainCreateBridge)(nil),                // 41: sf.xrpl.type.v1.XChainCreateBridge
-	(*XChainModifyBridge)(nil),                // 42: sf.xrpl.type.v1.XChainModifyBridge
-	(*XChainCreateClaimID)(nil),               // 43: sf.xrpl.type.v1.XChainCreateClaimID
-	(*XChainCommit)(nil),                      // 44: sf.xrpl.type.v1.XChainCommit
-	(*XChainClaim)(nil),                       // 45: sf.xrpl.type.v1.XChainClaim
-	(*XChainAccountCreateCommit)(nil),         // 46: sf.xrpl.type.v1.XChainAccountCreateCommit
-	(*XChainAddClaimAttestation)(nil),         // 47: sf.xrpl.type.v1.XChainAddClaimAttestation
-	(*XChainAddAccountCreateAttestation)(nil), // 48: sf.xrpl.type.v1.XChainAddAccountCreateAttestation
-	(*DIDSet)(nil),                            // 49: sf.xrpl.type.v1.DIDSet
-	(*DIDDelete)(nil),                         // 50: sf.xrpl.type.v1.DIDDelete
-	(*OracleSet)(nil),                         // 51: sf.xrpl.type.v1.OracleSet
-	(*OracleDelete)(nil),                      // 52: sf.xrpl.type.v1.OracleDelete
-	(*MPTokenIssuanceCreate)(nil),             // 53: sf.xrpl.type.v1.MPTokenIssuanceCreate
-	(*MPTokenIssuanceDestroy)(nil),            // 54: sf.xrpl.type.v1.MPTokenIssuanceDestroy
-	(*MPTokenIssuanceSet)(nil),                // 55: sf.xrpl.type.v1.MPTokenIssuanceSet
-	(*MPTokenAuthorize)(nil),                  // 56: sf.xrpl.type.v1.MPTokenAuthorize
-	(*CredentialCreate)(nil),                  // 57: sf.xrpl.type.v1.CredentialCreate
-	(*CredentialAccept)(nil),                  // 58: sf.xrpl.type.v1.CredentialAccept
-	(*CredentialDelete)(nil),                  // 59: sf.xrpl.type.v1.CredentialDelete
-	(*PermissionedDomainSet)(nil),             // 60: sf.xrpl.type.v1.PermissionedDomainSet
-	(*PermissionedDomainDelete)(nil),          // 61: sf.xrpl.type.v1.PermissionedDomainDelete
-	(*DelegateSet)(nil),                       // 62: sf.xrpl.type.v1.DelegateSet
-	(*VaultCreate)(nil),                       // 63: sf.xrpl.type.v1.VaultCreate
-	(*VaultSet)(nil),                          // 64: sf.xrpl.type.v1.VaultSet
-	(*VaultDelete)(nil),                       // 65: sf.xrpl.type.v1.VaultDelete
-	(*VaultDeposit)(nil),                      // 66: sf.xrpl.type.v1.VaultDeposit
-	(*VaultWithdraw)(nil),                     // 67: sf.xrpl.type.v1.VaultWithdraw
-	(*VaultClawback)(nil),                     // 68: sf.xrpl.type.v1.VaultClawback
-	(*ContractCreate)(nil),                    // 69: sf.xrpl.type.v1.ContractCreate
-	(*ContractModify)(nil),                    // 70: sf.xrpl.type.v1.ContractModify
-	(*ContractDelete)(nil),                    // 71: sf.xrpl.type.v1.ContractDelete
-	(*ContractClawback)(nil),                  // 72: sf.xrpl.type.v1.ContractClawback
-	(*ContractUserDelete)(nil),                // 73: sf.xrpl.type.v1.ContractUserDelete
-	(*ContractCall)(nil),                      // 74: sf.xrpl.type.v1.ContractCall
-	(*Batch)(nil),                             // 75: sf.xrpl.type.v1.Batch
-	(*EnableAmendment)(nil),                   // 76: sf.xrpl.type.v1.EnableAmendment
-	(*SetFee)(nil),                            // 77: sf.xrpl.type.v1.SetFee
-	(*UNLModify)(nil),                         // 78: sf.xrpl.type.v1.UNLModify
-	(*LedgerStateFix)(nil),                    // 79: sf.xrpl.type.v1.LedgerStateFix
+	(*Block)(nil),                             // 0: sf.xrpl.type.v1.Block
+	(*Header)(nil),                            // 1: sf.xrpl.type.v1.Header
+	(*Transaction)(nil),                       // 2: sf.xrpl.type.v1.Transaction
+	(*Memo)(nil),                              // 3: sf.xrpl.type.v1.Memo
+	(*timestamppb.Timestamp)(nil),             // 4: google.protobuf.Timestamp
+	(*Signer)(nil),                            // 5: sf.xrpl.type.v1.Signer
+	(*Payment)(nil),                           // 6: sf.xrpl.type.v1.Payment
+	(*OfferCreate)(nil),                       // 7: sf.xrpl.type.v1.OfferCreate
+	(*OfferCancel)(nil),                       // 8: sf.xrpl.type.v1.OfferCancel
+	(*TrustSet)(nil),                          // 9: sf.xrpl.type.v1.TrustSet
+	(*AccountSet)(nil),                        // 10: sf.xrpl.type.v1.AccountSet
+	(*AccountDelete)(nil),                     // 11: sf.xrpl.type.v1.AccountDelete
+	(*SetRegularKey)(nil),                     // 12: sf.xrpl.type.v1.SetRegularKey
+	(*SignerListSet)(nil),                     // 13: sf.xrpl.type.v1.SignerListSet
+	(*EscrowCreate)(nil),                      // 14: sf.xrpl.type.v1.EscrowCreate
+	(*EscrowFinish)(nil),                      // 15: sf.xrpl.type.v1.EscrowFinish
+	(*EscrowCancel)(nil),                      // 16: sf.xrpl.type.v1.EscrowCancel
+	(*PaymentChannelCreate)(nil),              // 17: sf.xrpl.type.v1.PaymentChannelCreate
+	(*PaymentChannelFund)(nil),                // 18: sf.xrpl.type.v1.PaymentChannelFund
+	(*PaymentChannelClaim)(nil),               // 19: sf.xrpl.type.v1.PaymentChannelClaim
+	(*CheckCreate)(nil),                       // 20: sf.xrpl.type.v1.CheckCreate
+	(*CheckCash)(nil),                         // 21: sf.xrpl.type.v1.CheckCash
+	(*CheckCancel)(nil),                       // 22: sf.xrpl.type.v1.CheckCancel
+	(*DepositPreauth)(nil),                    // 23: sf.xrpl.type.v1.DepositPreauth
+	(*TicketCreate)(nil),                      // 24: sf.xrpl.type.v1.TicketCreate
+	(*NFTokenMint)(nil),                       // 25: sf.xrpl.type.v1.NFTokenMint
+	(*NFTokenBurn)(nil),                       // 26: sf.xrpl.type.v1.NFTokenBurn
+	(*NFTokenCreateOffer)(nil),                // 27: sf.xrpl.type.v1.NFTokenCreateOffer
+	(*NFTokenCancelOffer)(nil),                // 28: sf.xrpl.type.v1.NFTokenCancelOffer
+	(*NFTokenAcceptOffer)(nil),                // 29: sf.xrpl.type.v1.NFTokenAcceptOffer
+	(*NFTokenModify)(nil),                     // 30: sf.xrpl.type.v1.NFTokenModify
+	(*Clawback)(nil),                          // 31: sf.xrpl.type.v1.Clawback
+	(*AMMCreate)(nil),                         // 32: sf.xrpl.type.v1.AMMCreate
+	(*AMMDeposit)(nil),                        // 33: sf.xrpl.type.v1.AMMDeposit
+	(*AMMWithdraw)(nil),                       // 34: sf.xrpl.type.v1.AMMWithdraw
+	(*AMMVote)(nil),                           // 35: sf.xrpl.type.v1.AMMVote
+	(*AMMBid)(nil),                            // 36: sf.xrpl.type.v1.AMMBid
+	(*AMMDelete)(nil),                         // 37: sf.xrpl.type.v1.AMMDelete
+	(*AMMClawback)(nil),                       // 38: sf.xrpl.type.v1.AMMClawback
+	(*XChainCreateBridge)(nil),                // 39: sf.xrpl.type.v1.XChainCreateBridge
+	(*XChainModifyBridge)(nil),                // 40: sf.xrpl.type.v1.XChainModifyBridge
+	(*XChainCreateClaimID)(nil),               // 41: sf.xrpl.type.v1.XChainCreateClaimID
+	(*XChainCommit)(nil),                      // 42: sf.xrpl.type.v1.XChainCommit
+	(*XChainClaim)(nil),                       // 43: sf.xrpl.type.v1.XChainClaim
+	(*XChainAccountCreateCommit)(nil),         // 44: sf.xrpl.type.v1.XChainAccountCreateCommit
+	(*XChainAddClaimAttestation)(nil),         // 45: sf.xrpl.type.v1.XChainAddClaimAttestation
+	(*XChainAddAccountCreateAttestation)(nil), // 46: sf.xrpl.type.v1.XChainAddAccountCreateAttestation
+	(*DIDSet)(nil),                            // 47: sf.xrpl.type.v1.DIDSet
+	(*DIDDelete)(nil),                         // 48: sf.xrpl.type.v1.DIDDelete
+	(*OracleSet)(nil),                         // 49: sf.xrpl.type.v1.OracleSet
+	(*OracleDelete)(nil),                      // 50: sf.xrpl.type.v1.OracleDelete
+	(*MPTokenIssuanceCreate)(nil),             // 51: sf.xrpl.type.v1.MPTokenIssuanceCreate
+	(*MPTokenIssuanceDestroy)(nil),            // 52: sf.xrpl.type.v1.MPTokenIssuanceDestroy
+	(*MPTokenIssuanceSet)(nil),                // 53: sf.xrpl.type.v1.MPTokenIssuanceSet
+	(*MPTokenAuthorize)(nil),                  // 54: sf.xrpl.type.v1.MPTokenAuthorize
+	(*CredentialCreate)(nil),                  // 55: sf.xrpl.type.v1.CredentialCreate
+	(*CredentialAccept)(nil),                  // 56: sf.xrpl.type.v1.CredentialAccept
+	(*CredentialDelete)(nil),                  // 57: sf.xrpl.type.v1.CredentialDelete
+	(*PermissionedDomainSet)(nil),             // 58: sf.xrpl.type.v1.PermissionedDomainSet
+	(*PermissionedDomainDelete)(nil),          // 59: sf.xrpl.type.v1.PermissionedDomainDelete
+	(*DelegateSet)(nil),                       // 60: sf.xrpl.type.v1.DelegateSet
+	(*Batch)(nil),                             // 61: sf.xrpl.type.v1.Batch
+	(*EnableAmendment)(nil),                   // 62: sf.xrpl.type.v1.EnableAmendment
+	(*SetFee)(nil),                            // 63: sf.xrpl.type.v1.SetFee
+	(*UNLModify)(nil),                         // 64: sf.xrpl.type.v1.UNLModify
+	(*LedgerStateFix)(nil),                    // 65: sf.xrpl.type.v1.LedgerStateFix
 }
 var file_sf_xrpl_type_v1_block_proto_depIdxs = []int32{
-	3,  // 0: sf.xrpl.type.v1.Block.header:type_name -> sf.xrpl.type.v1.Header
-	4,  // 1: sf.xrpl.type.v1.Block.transactions:type_name -> sf.xrpl.type.v1.Transaction
-	6,  // 2: sf.xrpl.type.v1.Block.close_time:type_name -> google.protobuf.Timestamp
-	0,  // 3: sf.xrpl.type.v1.Transaction.result:type_name -> sf.xrpl.type.v1.TransactionResult
-	1,  // 4: sf.xrpl.type.v1.Transaction.tx_type:type_name -> sf.xrpl.type.v1.TransactionType
-	5,  // 5: sf.xrpl.type.v1.Transaction.memos:type_name -> sf.xrpl.type.v1.Memo
-	7,  // 6: sf.xrpl.type.v1.Transaction.signers:type_name -> sf.xrpl.type.v1.Signer
-	8,  // 7: sf.xrpl.type.v1.Transaction.payment:type_name -> sf.xrpl.type.v1.Payment
-	9,  // 8: sf.xrpl.type.v1.Transaction.offer_create:type_name -> sf.xrpl.type.v1.OfferCreate
-	10, // 9: sf.xrpl.type.v1.Transaction.offer_cancel:type_name -> sf.xrpl.type.v1.OfferCancel
-	11, // 10: sf.xrpl.type.v1.Transaction.trust_set:type_name -> sf.xrpl.type.v1.TrustSet
-	12, // 11: sf.xrpl.type.v1.Transaction.account_set:type_name -> sf.xrpl.type.v1.AccountSet
-	13, // 12: sf.xrpl.type.v1.Transaction.account_delete:type_name -> sf.xrpl.type.v1.AccountDelete
-	14, // 13: sf.xrpl.type.v1.Transaction.set_regular_key:type_name -> sf.xrpl.type.v1.SetRegularKey
-	15, // 14: sf.xrpl.type.v1.Transaction.signer_list_set:type_name -> sf.xrpl.type.v1.SignerListSet
-	16, // 15: sf.xrpl.type.v1.Transaction.escrow_create:type_name -> sf.xrpl.type.v1.EscrowCreate
-	17, // 16: sf.xrpl.type.v1.Transaction.escrow_finish:type_name -> sf.xrpl.type.v1.EscrowFinish
-	18, // 17: sf.xrpl.type.v1.Transaction.escrow_cancel:type_name -> sf.xrpl.type.v1.EscrowCancel
-	19, // 18: sf.xrpl.type.v1.Transaction.payment_channel_create:type_name -> sf.xrpl.type.v1.PaymentChannelCreate
-	20, // 19: sf.xrpl.type.v1.Transaction.payment_channel_fund:type_name -> sf.xrpl.type.v1.PaymentChannelFund
-	21, // 20: sf.xrpl.type.v1.Transaction.payment_channel_claim:type_name -> sf.xrpl.type.v1.PaymentChannelClaim
-	22, // 21: sf.xrpl.type.v1.Transaction.check_create:type_name -> sf.xrpl.type.v1.CheckCreate
-	23, // 22: sf.xrpl.type.v1.Transaction.check_cash:type_name -> sf.xrpl.type.v1.CheckCash
-	24, // 23: sf.xrpl.type.v1.Transaction.check_cancel:type_name -> sf.xrpl.type.v1.CheckCancel
-	25, // 24: sf.xrpl.type.v1.Transaction.deposit_preauth:type_name -> sf.xrpl.type.v1.DepositPreauth
-	26, // 25: sf.xrpl.type.v1.Transaction.ticket_create:type_name -> sf.xrpl.type.v1.TicketCreate
-	27, // 26: sf.xrpl.type.v1.Transaction.nftoken_mint:type_name -> sf.xrpl.type.v1.NFTokenMint
-	28, // 27: sf.xrpl.type.v1.Transaction.nftoken_burn:type_name -> sf.xrpl.type.v1.NFTokenBurn
-	29, // 28: sf.xrpl.type.v1.Transaction.nftoken_create_offer:type_name -> sf.xrpl.type.v1.NFTokenCreateOffer
-	30, // 29: sf.xrpl.type.v1.Transaction.nftoken_cancel_offer:type_name -> sf.xrpl.type.v1.NFTokenCancelOffer
-	31, // 30: sf.xrpl.type.v1.Transaction.nftoken_accept_offer:type_name -> sf.xrpl.type.v1.NFTokenAcceptOffer
-	32, // 31: sf.xrpl.type.v1.Transaction.nftoken_modify:type_name -> sf.xrpl.type.v1.NFTokenModify
-	33, // 32: sf.xrpl.type.v1.Transaction.clawback:type_name -> sf.xrpl.type.v1.Clawback
-	34, // 33: sf.xrpl.type.v1.Transaction.amm_create:type_name -> sf.xrpl.type.v1.AMMCreate
-	35, // 34: sf.xrpl.type.v1.Transaction.amm_deposit:type_name -> sf.xrpl.type.v1.AMMDeposit
-	36, // 35: sf.xrpl.type.v1.Transaction.amm_withdraw:type_name -> sf.xrpl.type.v1.AMMWithdraw
-	37, // 36: sf.xrpl.type.v1.Transaction.amm_vote:type_name -> sf.xrpl.type.v1.AMMVote
-	38, // 37: sf.xrpl.type.v1.Transaction.amm_bid:type_name -> sf.xrpl.type.v1.AMMBid
-	39, // 38: sf.xrpl.type.v1.Transaction.amm_delete:type_name -> sf.xrpl.type.v1.AMMDelete
-	40, // 39: sf.xrpl.type.v1.Transaction.amm_clawback:type_name -> sf.xrpl.type.v1.AMMClawback
-	41, // 40: sf.xrpl.type.v1.Transaction.xchain_create_bridge:type_name -> sf.xrpl.type.v1.XChainCreateBridge
-	42, // 41: sf.xrpl.type.v1.Transaction.xchain_modify_bridge:type_name -> sf.xrpl.type.v1.XChainModifyBridge
-	43, // 42: sf.xrpl.type.v1.Transaction.xchain_create_claim_id:type_name -> sf.xrpl.type.v1.XChainCreateClaimID
-	44, // 43: sf.xrpl.type.v1.Transaction.xchain_commit:type_name -> sf.xrpl.type.v1.XChainCommit
-	45, // 44: sf.xrpl.type.v1.Transaction.xchain_claim:type_name -> sf.xrpl.type.v1.XChainClaim
-	46, // 45: sf.xrpl.type.v1.Transaction.xchain_account_create_commit:type_name -> sf.xrpl.type.v1.XChainAccountCreateCommit
-	47, // 46: sf.xrpl.type.v1.Transaction.xchain_add_claim_attestation:type_name -> sf.xrpl.type.v1.XChainAddClaimAttestation
-	48, // 47: sf.xrpl.type.v1.Transaction.xchain_add_account_create_attestation:type_name -> sf.xrpl.type.v1.XChainAddAccountCreateAttestation
-	49, // 48: sf.xrpl.type.v1.Transaction.did_set:type_name -> sf.xrpl.type.v1.DIDSet
-	50, // 49: sf.xrpl.type.v1.Transaction.did_delete:type_name -> sf.xrpl.type.v1.DIDDelete
-	51, // 50: sf.xrpl.type.v1.Transaction.oracle_set:type_name -> sf.xrpl.type.v1.OracleSet
-	52, // 51: sf.xrpl.type.v1.Transaction.oracle_delete:type_name -> sf.xrpl.type.v1.OracleDelete
-	53, // 52: sf.xrpl.type.v1.Transaction.mptoken_issuance_create:type_name -> sf.xrpl.type.v1.MPTokenIssuanceCreate
-	54, // 53: sf.xrpl.type.v1.Transaction.mptoken_issuance_destroy:type_name -> sf.xrpl.type.v1.MPTokenIssuanceDestroy
-	55, // 54: sf.xrpl.type.v1.Transaction.mptoken_issuance_set:type_name -> sf.xrpl.type.v1.MPTokenIssuanceSet
-	56, // 55: sf.xrpl.type.v1.Transaction.mptoken_authorize:type_name -> sf.xrpl.type.v1.MPTokenAuthorize
-	57, // 56: sf.xrpl.type.v1.Transaction.credential_create:type_name -> sf.xrpl.type.v1.CredentialCreate
-	58, // 57: sf.xrpl.type.v1.Transaction.credential_accept:type_name -> sf.xrpl.type.v1.CredentialAccept
-	59, // 58: sf.xrpl.type.v1.Transaction.credential_delete:type_name -> sf.xrpl.type.v1.CredentialDelete
-	60, // 59: sf.xrpl.type.v1.Transaction.permissioned_domain_set:type_name -> sf.xrpl.type.v1.PermissionedDomainSet
-	61, // 60: sf.xrpl.type.v1.Transaction.permissioned_domain_delete:type_name -> sf.xrpl.type.v1.PermissionedDomainDelete
-	62, // 61: sf.xrpl.type.v1.Transaction.delegate_set:type_name -> sf.xrpl.type.v1.DelegateSet
-	63, // 62: sf.xrpl.type.v1.Transaction.vault_create:type_name -> sf.xrpl.type.v1.VaultCreate
-	64, // 63: sf.xrpl.type.v1.Transaction.vault_set:type_name -> sf.xrpl.type.v1.VaultSet
-	65, // 64: sf.xrpl.type.v1.Transaction.vault_delete:type_name -> sf.xrpl.type.v1.VaultDelete
-	66, // 65: sf.xrpl.type.v1.Transaction.vault_deposit:type_name -> sf.xrpl.type.v1.VaultDeposit
-	67, // 66: sf.xrpl.type.v1.Transaction.vault_withdraw:type_name -> sf.xrpl.type.v1.VaultWithdraw
-	68, // 67: sf.xrpl.type.v1.Transaction.vault_clawback:type_name -> sf.xrpl.type.v1.VaultClawback
-	69, // 68: sf.xrpl.type.v1.Transaction.contract_create:type_name -> sf.xrpl.type.v1.ContractCreate
-	70, // 69: sf.xrpl.type.v1.Transaction.contract_modify:type_name -> sf.xrpl.type.v1.ContractModify
-	71, // 70: sf.xrpl.type.v1.Transaction.contract_delete:type_name -> sf.xrpl.type.v1.ContractDelete
-	72, // 71: sf.xrpl.type.v1.Transaction.contract_clawback:type_name -> sf.xrpl.type.v1.ContractClawback
-	73, // 72: sf.xrpl.type.v1.Transaction.contract_user_delete:type_name -> sf.xrpl.type.v1.ContractUserDelete
-	74, // 73: sf.xrpl.type.v1.Transaction.contract_call:type_name -> sf.xrpl.type.v1.ContractCall
-	75, // 74: sf.xrpl.type.v1.Transaction.batch:type_name -> sf.xrpl.type.v1.Batch
-	76, // 75: sf.xrpl.type.v1.Transaction.enable_amendment:type_name -> sf.xrpl.type.v1.EnableAmendment
-	77, // 76: sf.xrpl.type.v1.Transaction.set_fee:type_name -> sf.xrpl.type.v1.SetFee
-	78, // 77: sf.xrpl.type.v1.Transaction.unl_modify:type_name -> sf.xrpl.type.v1.UNLModify
-	79, // 78: sf.xrpl.type.v1.Transaction.ledger_state_fix:type_name -> sf.xrpl.type.v1.LedgerStateFix
-	79, // [79:79] is the sub-list for method output_type
-	79, // [79:79] is the sub-list for method input_type
-	79, // [79:79] is the sub-list for extension type_name
-	79, // [79:79] is the sub-list for extension extendee
-	0,  // [0:79] is the sub-list for field type_name
+	1,  // 0: sf.xrpl.type.v1.Block.header:type_name -> sf.xrpl.type.v1.Header
+	2,  // 1: sf.xrpl.type.v1.Block.transactions:type_name -> sf.xrpl.type.v1.Transaction
+	4,  // 2: sf.xrpl.type.v1.Block.close_time:type_name -> google.protobuf.Timestamp
+	3,  // 3: sf.xrpl.type.v1.Transaction.memos:type_name -> sf.xrpl.type.v1.Memo
+	5,  // 4: sf.xrpl.type.v1.Transaction.signers:type_name -> sf.xrpl.type.v1.Signer
+	6,  // 5: sf.xrpl.type.v1.Transaction.payment:type_name -> sf.xrpl.type.v1.Payment
+	7,  // 6: sf.xrpl.type.v1.Transaction.offer_create:type_name -> sf.xrpl.type.v1.OfferCreate
+	8,  // 7: sf.xrpl.type.v1.Transaction.offer_cancel:type_name -> sf.xrpl.type.v1.OfferCancel
+	9,  // 8: sf.xrpl.type.v1.Transaction.trust_set:type_name -> sf.xrpl.type.v1.TrustSet
+	10, // 9: sf.xrpl.type.v1.Transaction.account_set:type_name -> sf.xrpl.type.v1.AccountSet
+	11, // 10: sf.xrpl.type.v1.Transaction.account_delete:type_name -> sf.xrpl.type.v1.AccountDelete
+	12, // 11: sf.xrpl.type.v1.Transaction.set_regular_key:type_name -> sf.xrpl.type.v1.SetRegularKey
+	13, // 12: sf.xrpl.type.v1.Transaction.signer_list_set:type_name -> sf.xrpl.type.v1.SignerListSet
+	14, // 13: sf.xrpl.type.v1.Transaction.escrow_create:type_name -> sf.xrpl.type.v1.EscrowCreate
+	15, // 14: sf.xrpl.type.v1.Transaction.escrow_finish:type_name -> sf.xrpl.type.v1.EscrowFinish
+	16, // 15: sf.xrpl.type.v1.Transaction.escrow_cancel:type_name -> sf.xrpl.type.v1.EscrowCancel
+	17, // 16: sf.xrpl.type.v1.Transaction.payment_channel_create:type_name -> sf.xrpl.type.v1.PaymentChannelCreate
+	18, // 17: sf.xrpl.type.v1.Transaction.payment_channel_fund:type_name -> sf.xrpl.type.v1.PaymentChannelFund
+	19, // 18: sf.xrpl.type.v1.Transaction.payment_channel_claim:type_name -> sf.xrpl.type.v1.PaymentChannelClaim
+	20, // 19: sf.xrpl.type.v1.Transaction.check_create:type_name -> sf.xrpl.type.v1.CheckCreate
+	21, // 20: sf.xrpl.type.v1.Transaction.check_cash:type_name -> sf.xrpl.type.v1.CheckCash
+	22, // 21: sf.xrpl.type.v1.Transaction.check_cancel:type_name -> sf.xrpl.type.v1.CheckCancel
+	23, // 22: sf.xrpl.type.v1.Transaction.deposit_preauth:type_name -> sf.xrpl.type.v1.DepositPreauth
+	24, // 23: sf.xrpl.type.v1.Transaction.ticket_create:type_name -> sf.xrpl.type.v1.TicketCreate
+	25, // 24: sf.xrpl.type.v1.Transaction.nftoken_mint:type_name -> sf.xrpl.type.v1.NFTokenMint
+	26, // 25: sf.xrpl.type.v1.Transaction.nftoken_burn:type_name -> sf.xrpl.type.v1.NFTokenBurn
+	27, // 26: sf.xrpl.type.v1.Transaction.nftoken_create_offer:type_name -> sf.xrpl.type.v1.NFTokenCreateOffer
+	28, // 27: sf.xrpl.type.v1.Transaction.nftoken_cancel_offer:type_name -> sf.xrpl.type.v1.NFTokenCancelOffer
+	29, // 28: sf.xrpl.type.v1.Transaction.nftoken_accept_offer:type_name -> sf.xrpl.type.v1.NFTokenAcceptOffer
+	30, // 29: sf.xrpl.type.v1.Transaction.nftoken_modify:type_name -> sf.xrpl.type.v1.NFTokenModify
+	31, // 30: sf.xrpl.type.v1.Transaction.clawback:type_name -> sf.xrpl.type.v1.Clawback
+	32, // 31: sf.xrpl.type.v1.Transaction.amm_create:type_name -> sf.xrpl.type.v1.AMMCreate
+	33, // 32: sf.xrpl.type.v1.Transaction.amm_deposit:type_name -> sf.xrpl.type.v1.AMMDeposit
+	34, // 33: sf.xrpl.type.v1.Transaction.amm_withdraw:type_name -> sf.xrpl.type.v1.AMMWithdraw
+	35, // 34: sf.xrpl.type.v1.Transaction.amm_vote:type_name -> sf.xrpl.type.v1.AMMVote
+	36, // 35: sf.xrpl.type.v1.Transaction.amm_bid:type_name -> sf.xrpl.type.v1.AMMBid
+	37, // 36: sf.xrpl.type.v1.Transaction.amm_delete:type_name -> sf.xrpl.type.v1.AMMDelete
+	38, // 37: sf.xrpl.type.v1.Transaction.amm_clawback:type_name -> sf.xrpl.type.v1.AMMClawback
+	39, // 38: sf.xrpl.type.v1.Transaction.xchain_create_bridge:type_name -> sf.xrpl.type.v1.XChainCreateBridge
+	40, // 39: sf.xrpl.type.v1.Transaction.xchain_modify_bridge:type_name -> sf.xrpl.type.v1.XChainModifyBridge
+	41, // 40: sf.xrpl.type.v1.Transaction.xchain_create_claim_id:type_name -> sf.xrpl.type.v1.XChainCreateClaimID
+	42, // 41: sf.xrpl.type.v1.Transaction.xchain_commit:type_name -> sf.xrpl.type.v1.XChainCommit
+	43, // 42: sf.xrpl.type.v1.Transaction.xchain_claim:type_name -> sf.xrpl.type.v1.XChainClaim
+	44, // 43: sf.xrpl.type.v1.Transaction.xchain_account_create_commit:type_name -> sf.xrpl.type.v1.XChainAccountCreateCommit
+	45, // 44: sf.xrpl.type.v1.Transaction.xchain_add_claim_attestation:type_name -> sf.xrpl.type.v1.XChainAddClaimAttestation
+	46, // 45: sf.xrpl.type.v1.Transaction.xchain_add_account_create_attestation:type_name -> sf.xrpl.type.v1.XChainAddAccountCreateAttestation
+	47, // 46: sf.xrpl.type.v1.Transaction.did_set:type_name -> sf.xrpl.type.v1.DIDSet
+	48, // 47: sf.xrpl.type.v1.Transaction.did_delete:type_name -> sf.xrpl.type.v1.DIDDelete
+	49, // 48: sf.xrpl.type.v1.Transaction.oracle_set:type_name -> sf.xrpl.type.v1.OracleSet
+	50, // 49: sf.xrpl.type.v1.Transaction.oracle_delete:type_name -> sf.xrpl.type.v1.OracleDelete
+	51, // 50: sf.xrpl.type.v1.Transaction.mptoken_issuance_create:type_name -> sf.xrpl.type.v1.MPTokenIssuanceCreate
+	52, // 51: sf.xrpl.type.v1.Transaction.mptoken_issuance_destroy:type_name -> sf.xrpl.type.v1.MPTokenIssuanceDestroy
+	53, // 52: sf.xrpl.type.v1.Transaction.mptoken_issuance_set:type_name -> sf.xrpl.type.v1.MPTokenIssuanceSet
+	54, // 53: sf.xrpl.type.v1.Transaction.mptoken_authorize:type_name -> sf.xrpl.type.v1.MPTokenAuthorize
+	55, // 54: sf.xrpl.type.v1.Transaction.credential_create:type_name -> sf.xrpl.type.v1.CredentialCreate
+	56, // 55: sf.xrpl.type.v1.Transaction.credential_accept:type_name -> sf.xrpl.type.v1.CredentialAccept
+	57, // 56: sf.xrpl.type.v1.Transaction.credential_delete:type_name -> sf.xrpl.type.v1.CredentialDelete
+	58, // 57: sf.xrpl.type.v1.Transaction.permissioned_domain_set:type_name -> sf.xrpl.type.v1.PermissionedDomainSet
+	59, // 58: sf.xrpl.type.v1.Transaction.permissioned_domain_delete:type_name -> sf.xrpl.type.v1.PermissionedDomainDelete
+	60, // 59: sf.xrpl.type.v1.Transaction.delegate_set:type_name -> sf.xrpl.type.v1.DelegateSet
+	61, // 60: sf.xrpl.type.v1.Transaction.batch:type_name -> sf.xrpl.type.v1.Batch
+	62, // 61: sf.xrpl.type.v1.Transaction.enable_amendment:type_name -> sf.xrpl.type.v1.EnableAmendment
+	63, // 62: sf.xrpl.type.v1.Transaction.set_fee:type_name -> sf.xrpl.type.v1.SetFee
+	64, // 63: sf.xrpl.type.v1.Transaction.unl_modify:type_name -> sf.xrpl.type.v1.UNLModify
+	65, // 64: sf.xrpl.type.v1.Transaction.ledger_state_fix:type_name -> sf.xrpl.type.v1.LedgerStateFix
+	65, // [65:65] is the sub-list for method output_type
+	65, // [65:65] is the sub-list for method input_type
+	65, // [65:65] is the sub-list for extension type_name
+	65, // [65:65] is the sub-list for extension extendee
+	0,  // [0:65] is the sub-list for field type_name
 }
 
 func init() { file_sf_xrpl_type_v1_block_proto_init() }
@@ -2518,9 +1793,7 @@ func file_sf_xrpl_type_v1_block_proto_init() {
 	file_sf_xrpl_type_v1_mptoken_proto_init()
 	file_sf_xrpl_type_v1_credential_proto_init()
 	file_sf_xrpl_type_v1_permissioned_domain_proto_init()
-	file_sf_xrpl_type_v1_vault_proto_init()
 	file_sf_xrpl_type_v1_delegate_proto_init()
-	file_sf_xrpl_type_v1_contract_proto_init()
 	file_sf_xrpl_type_v1_system_proto_init()
 	file_sf_xrpl_type_v1_batch_proto_init()
 	file_sf_xrpl_type_v1_block_proto_msgTypes[2].OneofWrappers = []any{
@@ -2579,18 +1852,6 @@ func file_sf_xrpl_type_v1_block_proto_init() {
 		(*Transaction_PermissionedDomainSet)(nil),
 		(*Transaction_PermissionedDomainDelete)(nil),
 		(*Transaction_DelegateSet)(nil),
-		(*Transaction_VaultCreate)(nil),
-		(*Transaction_VaultSet)(nil),
-		(*Transaction_VaultDelete)(nil),
-		(*Transaction_VaultDeposit)(nil),
-		(*Transaction_VaultWithdraw)(nil),
-		(*Transaction_VaultClawback)(nil),
-		(*Transaction_ContractCreate)(nil),
-		(*Transaction_ContractModify)(nil),
-		(*Transaction_ContractDelete)(nil),
-		(*Transaction_ContractClawback)(nil),
-		(*Transaction_ContractUserDelete)(nil),
-		(*Transaction_ContractCall)(nil),
 		(*Transaction_Batch)(nil),
 		(*Transaction_EnableAmendment)(nil),
 		(*Transaction_SetFee)(nil),
@@ -2602,14 +1863,13 @@ func file_sf_xrpl_type_v1_block_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sf_xrpl_type_v1_block_proto_rawDesc), len(file_sf_xrpl_type_v1_block_proto_rawDesc)),
-			NumEnums:      2,
+			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_sf_xrpl_type_v1_block_proto_goTypes,
 		DependencyIndexes: file_sf_xrpl_type_v1_block_proto_depIdxs,
-		EnumInfos:         file_sf_xrpl_type_v1_block_proto_enumTypes,
 		MessageInfos:      file_sf_xrpl_type_v1_block_proto_msgTypes,
 	}.Build()
 	File_sf_xrpl_type_v1_block_proto = out.File
