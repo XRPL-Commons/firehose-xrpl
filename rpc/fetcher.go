@@ -73,7 +73,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 		sleepDuration = f.latestBlockRetryInterval
 	}
 
-	// 2. Fetch the ledger with all transactions (single call - simpler than Stellar!)
+	// 2. Fetch the ledger with all transactions
 	ledgerResult, err := client.GetLedger(ctx, requestBlockNum)
 	if err != nil {
 		return nil, false, fmt.Errorf("fetching ledger %d: %w", requestBlockNum, err)

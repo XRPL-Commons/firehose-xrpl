@@ -100,121 +100,186 @@ message Transaction {
   // Transaction sequence number
   uint32 sequence = 9;
 
+  // Hash value identifying another transaction. If provided, this transaction
+  // is only valid if the sending account's previously-sent transaction matches
+  // the provided hash.
+  string account_txn_id = 10;
+
+  // Delegate account that is sending the transaction on behalf of the Account
+  string delegate = 11;
+
+  // Set of bit-flags for this transaction
+  uint32 flags = 12;
+
+  // Highest ledger index this transaction can appear in
+  uint32 last_ledger_sequence = 13;
+
+  // Additional arbitrary information attached to this transaction
+  repeated Memo memos = 14;
+
+  // Network ID of the chain this transaction is intended for
+  // Required for networks with ID >= 1025, disallowed for ID <= 1024
+  uint32 network_id = 15;
+
+  // Multi-signature data (for multi-signed transactions)
+  repeated Signer signers = 16;
+
+  // Arbitrary integer used to identify the reason for this payment
+  uint32 source_tag = 17;
+
+  // Public key that corresponds to the private key used to sign this
+  // transaction Empty string indicates a multi-signature is present in the
+  // signers field
+  string signing_pub_key = 18;
+
+  // Sequence number of the ticket to use in place of a Sequence number
+  // If provided, Sequence must be 0
+  uint32 ticket_sequence = 19;
+
+  // Signature that verifies this transaction as originating from the account
+  string txn_signature = 20;
+
   // Decoded transaction details based on tx_type
   oneof tx_details {
     // Payment transactions
-    Payment payment = 20;
+    Payment payment = 30;
 
     // DEX transactions
-    OfferCreate offer_create = 21;
-    OfferCancel offer_cancel = 22;
+    OfferCreate offer_create = 31;
+    OfferCancel offer_cancel = 32;
 
     // Trustline
-    TrustSet trust_set = 23;
+    TrustSet trust_set = 33;
 
     // Account management
-    AccountSet account_set = 24;
-    AccountDelete account_delete = 25;
-    SetRegularKey set_regular_key = 26;
-    SignerListSet signer_list_set = 27;
+    AccountSet account_set = 34;
+    AccountDelete account_delete = 35;
+    SetRegularKey set_regular_key = 36;
+    SignerListSet signer_list_set = 37;
 
     // Escrow
-    EscrowCreate escrow_create = 30;
-    EscrowFinish escrow_finish = 31;
-    EscrowCancel escrow_cancel = 32;
+    EscrowCreate escrow_create = 40;
+    EscrowFinish escrow_finish = 41;
+    EscrowCancel escrow_cancel = 42;
 
     // Payment channels
-    PaymentChannelCreate payment_channel_create = 33;
-    PaymentChannelFund payment_channel_fund = 34;
-    PaymentChannelClaim payment_channel_claim = 35;
+    PaymentChannelCreate payment_channel_create = 43;
+    PaymentChannelFund payment_channel_fund = 44;
+    PaymentChannelClaim payment_channel_claim = 45;
 
     // Checks
-    CheckCreate check_create = 36;
-    CheckCash check_cash = 37;
-    CheckCancel check_cancel = 38;
+    CheckCreate check_create = 46;
+    CheckCash check_cash = 47;
+    CheckCancel check_cancel = 48;
 
     // Other account features
-    DepositPreauth deposit_preauth = 39;
-    TicketCreate ticket_create = 40;
+    DepositPreauth deposit_preauth = 49;
+    TicketCreate ticket_create = 50;
 
     // NFT transactions
-    NFTokenMint nftoken_mint = 50;
-    NFTokenBurn nftoken_burn = 51;
-    NFTokenCreateOffer nftoken_create_offer = 52;
-    NFTokenCancelOffer nftoken_cancel_offer = 53;
-    NFTokenAcceptOffer nftoken_accept_offer = 54;
+    NFTokenMint nftoken_mint = 60;
+    NFTokenBurn nftoken_burn = 61;
+    NFTokenCreateOffer nftoken_create_offer = 62;
+    NFTokenCancelOffer nftoken_cancel_offer = 63;
+    NFTokenAcceptOffer nftoken_accept_offer = 64;
 
     // Clawback
-    Clawback clawback = 60;
+    Clawback clawback = 70;
 
     // AMM transactions
-    AMMCreate amm_create = 70;
-    AMMDeposit amm_deposit = 71;
-    AMMWithdraw amm_withdraw = 72;
-    AMMVote amm_vote = 73;
-    AMMBid amm_bid = 74;
-    AMMDelete amm_delete = 75;
-    AMMClawback amm_clawback = 76;
+    AMMCreate amm_create = 80;
+    AMMDeposit amm_deposit = 81;
+    AMMWithdraw amm_withdraw = 82;
+    AMMVote amm_vote = 83;
+    AMMBid amm_bid = 84;
+    AMMDelete amm_delete = 85;
+    AMMClawback amm_clawback = 86;
 
     // Cross-chain bridge transactions
-    XChainCreateBridge xchain_create_bridge = 80;
-    XChainModifyBridge xchain_modify_bridge = 81;
-    XChainCreateClaimID xchain_create_claim_id = 82;
-    XChainCommit xchain_commit = 83;
-    XChainClaim xchain_claim = 84;
-    XChainAccountCreateCommit xchain_account_create_commit = 85;
-    XChainAddClaimAttestation xchain_add_claim_attestation = 86;
+    XChainCreateBridge xchain_create_bridge = 90;
+    XChainModifyBridge xchain_modify_bridge = 91;
+    XChainCreateClaimID xchain_create_claim_id = 92;
+    XChainCommit xchain_commit = 93;
+    XChainClaim xchain_claim = 94;
+    XChainAccountCreateCommit xchain_account_create_commit = 95;
+    XChainAddClaimAttestation xchain_add_claim_attestation = 96;
     XChainAddAccountCreateAttestation xchain_add_account_create_attestation =
-        87;
+        97;
 
     // DID transactions
-    DIDSet did_set = 90;
-    DIDDelete did_delete = 91;
+    DIDSet did_set = 100;
+    DIDDelete did_delete = 101;
 
     // Oracle transactions
-    OracleSet oracle_set = 92;
-    OracleDelete oracle_delete = 93;
+    OracleSet oracle_set = 102;
+    OracleDelete oracle_delete = 103;
 
     // MPToken transactions
-    MPTokenIssuanceCreate mptoken_issuance_create = 100;
-    MPTokenIssuanceDestroy mptoken_issuance_destroy = 101;
-    MPTokenIssuanceSet mptoken_issuance_set = 102;
-    MPTokenAuthorize mptoken_authorize = 103;
+    MPTokenIssuanceCreate mptoken_issuance_create = 110;
+    MPTokenIssuanceDestroy mptoken_issuance_destroy = 111;
+    MPTokenIssuanceSet mptoken_issuance_set = 112;
+    MPTokenAuthorize mptoken_authorize = 113;
 
     // Credential transactions
-    CredentialCreate credential_create = 110;
-    CredentialAccept credential_accept = 111;
-    CredentialDelete credential_delete = 112;
+    CredentialCreate credential_create = 120;
+    CredentialAccept credential_accept = 121;
+    CredentialDelete credential_delete = 122;
 
     // Permissioned domain transactions
-    PermissionedDomainSet permissioned_domain_set = 120;
-    PermissionedDomainDelete permissioned_domain_delete = 121;
+    PermissionedDomainSet permissioned_domain_set = 130;
+    PermissionedDomainDelete permissioned_domain_delete = 131;
 
     // Delegate transactions
-    DelegateSet delegate_set = 122;
+    DelegateSet delegate_set = 132;
 
     // Vault transactions
-    VaultCreate vault_create = 130;
-    VaultSet vault_set = 131;
-    VaultDelete vault_delete = 132;
-    VaultDeposit vault_deposit = 133;
-    VaultWithdraw vault_withdraw = 134;
-    VaultClawback vault_clawback = 135;
+    VaultCreate vault_create = 140;
+    VaultSet vault_set = 141;
+    VaultDelete vault_delete = 142;
+    VaultDeposit vault_deposit = 143;
+    VaultWithdraw vault_withdraw = 144;
+    VaultClawback vault_clawback = 145;
 
     // Smart contract transactions
-    ContractCreate contract_create = 140;
-    ContractModify contract_modify = 141;
-    ContractDelete contract_delete = 142;
-    ContractClawback contract_clawback = 143;
-    ContractUserDelete contract_user_delete = 144;
-    ContractCall contract_call = 145;
+    ContractCreate contract_create = 150;
+    ContractModify contract_modify = 151;
+    ContractDelete contract_delete = 152;
+    ContractClawback contract_clawback = 153;
+    ContractUserDelete contract_user_delete = 154;
+    ContractCall contract_call = 155;
 
     // System transactions (pseudo-transactions)
-    EnableAmendment enable_amendment = 200;
-    SetFee set_fee = 201;
-    UNLModify unl_modify = 202;
-    LedgerStateFix ledger_state_fix = 203;
+    EnableAmendment enable_amendment = 900;
+    SetFee set_fee = 901;
+    UNLModify unl_modify = 902;
+    LedgerStateFix ledger_state_fix = 903;
   }
+}
+
+// Memo attached to a transaction
+message Memo {
+  // Arbitrary hex value, conventionally containing the content of the memo
+  string memo_data = 1;
+
+  // Hex value representing characters allowed in URLs
+  // Conventionally containing information on how the memo is encoded
+  string memo_format = 2;
+
+  // Hex value representing characters allowed in URLs
+  // Conventionally, a unique relation that defines the format of this memo
+  string memo_type = 3;
+}
+
+// Signer in a multi-signature
+message Signer {
+  // Address associated with this signature, as it appears in the signer list
+  string account = 1;
+
+  // Signature for this transaction, verifiable using the signing_pub_key
+  string txn_signature = 2;
+
+  // Public key used to create this signature
+  string signing_pub_key = 3;
 }
 
 // Transaction result code
