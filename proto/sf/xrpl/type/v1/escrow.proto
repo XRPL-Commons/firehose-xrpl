@@ -41,6 +41,9 @@ message EscrowFinish {
 
   // (Optional) Fulfillment for condition (hex)
   string fulfillment = 4;
+
+  // (Optional) Set of Credentials to authorize deposit (array of ledger entry IDs)
+  repeated string credential_ids = 5;
 }
 
 // EscrowCancel - Cancels a held payment

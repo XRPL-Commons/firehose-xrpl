@@ -41,6 +41,15 @@ message AMMDeposit {
 
   // (Optional) Trading fee for the AMM
   uint32 trading_fee = 7;
+
+  // (Optional) Transaction flags for deposit mode
+  // tfLPToken = 65536 (0x00010000) - Double-asset deposit for specified LP tokens
+  // tfSingleAsset = 524288 (0x00080000) - Single-asset deposit
+  // tfTwoAsset = 1048576 (0x00100000) - Double-asset deposit with specified amounts
+  // tfOneAssetLPToken = 2097152 (0x00200000) - Single-asset deposit for specified LP tokens
+  // tfLimitLPToken = 4194304 (0x00400000) - Single-asset deposit with price limit
+  // tfTwoAssetIfEmpty = 8388608 (0x00800000) - Special deposit to empty AMM
+  uint32 flags = 8;
 }
 
 // AMMWithdraw - Withdraws assets from an AMM
@@ -63,6 +72,16 @@ message AMMWithdraw {
 
   // (Optional) LP tokens to burn
   Amount lp_token_in = 6;
+
+  // (Optional) Transaction flags for withdrawal mode
+  // tfLPToken = 65536 (0x00010000) - Double-asset withdrawal for specified LP tokens
+  // tfWithdrawAll = 131072 (0x00020000) - Withdraw all LP tokens (double-asset)
+  // tfOneAssetWithdrawAll = 262144 (0x00040000) - Withdraw all LP tokens (single-asset)
+  // tfSingleAsset = 524288 (0x00080000) - Single-asset withdrawal
+  // tfTwoAsset = 1048576 (0x00100000) - Double-asset withdrawal with specified amounts
+  // tfOneAssetLPToken = 2097152 (0x00200000) - Single-asset withdrawal for specified LP tokens
+  // tfLimitLPToken = 4194304 (0x00400000) - Single-asset withdrawal with price limit
+  uint32 flags = 7;
 }
 
 // AMMVote - Votes on the trading fee for an AMM
@@ -125,4 +144,8 @@ message AMMClawback {
 
   // (Optional) Amount to claw back
   Amount amount = 4;
+
+  // (Optional) Transaction flags
+  // tfClawTwoAssets = 1 (0x00000001) - Claw back both assets proportionally
+  uint32 flags = 5;
 }

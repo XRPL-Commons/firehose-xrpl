@@ -22,7 +22,8 @@ const (
 )
 
 // PaymentChannelCreate - Creates a new unidirectional XRP payment channel
-// Reference: https://xrpl.org/paymentchannelcreate.html
+// Reference:
+// https://xrpl.org/docs/references/protocol/transactions/types/paymentchannelcreate
 type PaymentChannelCreate struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Recipient of funds from channel
@@ -114,7 +115,8 @@ func (x *PaymentChannelCreate) GetDestinationTag() uint32 {
 }
 
 // PaymentChannelFund - Adds XRP to an existing payment channel
-// Reference: https://xrpl.org/paymentchannelfund.html
+// Reference:
+// https://xrpl.org/docs/references/protocol/transactions/types/paymentchannelfund
 type PaymentChannelFund struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Channel ID (64 hex chars)
@@ -179,19 +181,30 @@ func (x *PaymentChannelFund) GetExpiration() uint32 {
 }
 
 // PaymentChannelClaim - Claims XRP from a payment channel
-// Reference: https://xrpl.org/paymentchannelclaim.html
+// Reference:
+// https://xrpl.org/docs/references/protocol/transactions/types/paymentchannelclaim
 type PaymentChannelClaim struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Channel ID (64 hex chars)
 	Channel string `protobuf:"bytes,1,opt,name=channel,proto3" json:"channel,omitempty"`
-	// (Optional) Amount of XRP to claim
+	// (Optional) Amount of XRP authorized by signature (cumulative)
+	// Required except when closing the channel
 	Amount *Amount `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
-	// (Optional) Total amount delivered by this channel
+	// (Optional) Total amount delivered by this channel after processing claim
+	// Required to deliver XRP
 	Balance *Amount `protobuf:"bytes,3,opt,name=balance,proto3" json:"balance,omitempty"`
 	// (Optional) Signature authorizing claim (hex)
+	// Required unless sender is source address of channel
 	Signature string `protobuf:"bytes,4,opt,name=signature,proto3" json:"signature,omitempty"`
 	// (Optional) Public key of signature (hex)
-	PublicKey     string `protobuf:"bytes,5,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	// Required unless sender is source address and Signature is omitted
+	PublicKey string `protobuf:"bytes,5,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	// (Optional) Set of Credentials to authorize deposit (array of ledger entry IDs)
+	CredentialIds []string `protobuf:"bytes,6,rep,name=credential_ids,json=credentialIds,proto3" json:"credential_ids,omitempty"`
+	// (Optional) Transaction flags
+	// tfRenew = 65536 (0x00010000) - Clear the channel's Expiration time
+	// tfClose = 131072 (0x00020000) - Request to close the channel
+	Flags         uint32 `protobuf:"varint,7,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -261,6 +274,20 @@ func (x *PaymentChannelClaim) GetPublicKey() string {
 	return ""
 }
 
+func (x *PaymentChannelClaim) GetCredentialIds() []string {
+	if x != nil {
+		return x.CredentialIds
+	}
+	return nil
+}
+
+func (x *PaymentChannelClaim) GetFlags() uint32 {
+	if x != nil {
+		return x.Flags
+	}
+	return 0
+}
+
 var File_sf_xrpl_type_v1_payment_channel_proto protoreflect.FileDescriptor
 
 const file_sf_xrpl_type_v1_payment_channel_proto_rawDesc = "" +
@@ -279,14 +306,16 @@ const file_sf_xrpl_type_v1_payment_channel_proto_rawDesc = "" +
 	"\x06amount\x18\x02 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x06amount\x12\x1e\n" +
 	"\n" +
 	"expiration\x18\x03 \x01(\rR\n" +
-	"expiration\"\xd0\x01\n" +
+	"expiration\"\x8d\x02\n" +
 	"\x13PaymentChannelClaim\x12\x18\n" +
 	"\achannel\x18\x01 \x01(\tR\achannel\x12/\n" +
 	"\x06amount\x18\x02 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x06amount\x121\n" +
 	"\abalance\x18\x03 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\abalance\x12\x1c\n" +
 	"\tsignature\x18\x04 \x01(\tR\tsignature\x12\x1d\n" +
 	"\n" +
-	"public_key\x18\x05 \x01(\tR\tpublicKeyBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
+	"public_key\x18\x05 \x01(\tR\tpublicKey\x12%\n" +
+	"\x0ecredential_ids\x18\x06 \x03(\tR\rcredentialIds\x12\x14\n" +
+	"\x05flags\x18\a \x01(\rR\x05flagsBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
 
 var (
 	file_sf_xrpl_type_v1_payment_channel_proto_rawDescOnce sync.Once

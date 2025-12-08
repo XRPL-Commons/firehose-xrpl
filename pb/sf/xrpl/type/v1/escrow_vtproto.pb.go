@@ -51,6 +51,11 @@ func (m *EscrowFinish) CloneVT() *EscrowFinish {
 	r.OfferSequence = m.OfferSequence
 	r.Condition = m.Condition
 	r.Fulfillment = m.Fulfillment
+	if rhs := m.CredentialIds; rhs != nil {
+		tmpContainer := make([]string, len(rhs))
+		copy(tmpContainer, rhs)
+		r.CredentialIds = tmpContainer
+	}
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -131,6 +136,15 @@ func (this *EscrowFinish) EqualVT(that *EscrowFinish) bool {
 	}
 	if this.Fulfillment != that.Fulfillment {
 		return false
+	}
+	if len(this.CredentialIds) != len(that.CredentialIds) {
+		return false
+	}
+	for i, vx := range this.CredentialIds {
+		vy := that.CredentialIds[i]
+		if vx != vy {
+			return false
+		}
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
@@ -265,6 +279,15 @@ func (m *EscrowFinish) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if len(m.CredentialIds) > 0 {
+		for iNdEx := len(m.CredentialIds) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.CredentialIds[iNdEx])
+			copy(dAtA[i:], m.CredentialIds[iNdEx])
+			i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.CredentialIds[iNdEx])))
+			i--
+			dAtA[i] = 0x2a
+		}
 	}
 	if len(m.Fulfillment) > 0 {
 		i -= len(m.Fulfillment)
@@ -442,6 +465,15 @@ func (m *EscrowFinish) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if len(m.CredentialIds) > 0 {
+		for iNdEx := len(m.CredentialIds) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.CredentialIds[iNdEx])
+			copy(dAtA[i:], m.CredentialIds[iNdEx])
+			i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.CredentialIds[iNdEx])))
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
 	if len(m.Fulfillment) > 0 {
 		i -= len(m.Fulfillment)
 		copy(dAtA[i:], m.Fulfillment)
@@ -567,6 +599,12 @@ func (m *EscrowFinish) SizeVT() (n int) {
 	l = len(m.Fulfillment)
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	if len(m.CredentialIds) > 0 {
+		for _, s := range m.CredentialIds {
+			l = len(s)
+			n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+		}
 	}
 	n += len(m.unknownFields)
 	return n
@@ -940,6 +978,38 @@ func (m *EscrowFinish) UnmarshalVT(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Fulfillment = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CredentialIds", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CredentialIds = append(m.CredentialIds, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1436,6 +1506,42 @@ func (m *EscrowFinish) UnmarshalVTUnsafe(dAtA []byte) error {
 				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
 			}
 			m.Fulfillment = stringValue
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CredentialIds", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.CredentialIds = append(m.CredentialIds, stringValue)
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

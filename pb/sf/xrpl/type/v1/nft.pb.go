@@ -31,10 +31,21 @@ type NFTokenMint struct {
 	Issuer string `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// (Optional) Transfer fee (0-50000, representing 0-50%)
 	TransferFee uint32 `protobuf:"varint,3,opt,name=transfer_fee,json=transferFee,proto3" json:"transfer_fee,omitempty"`
-	// (Optional) URI pointing to token metadata (decoded from hex)
+	// (Optional) URI pointing to token metadata (hex encoded, up to 256 bytes)
 	Uri string `protobuf:"bytes,4,opt,name=uri,proto3" json:"uri,omitempty"`
-	// Transaction flags
-	Flags         uint32 `protobuf:"varint,5,opt,name=flags,proto3" json:"flags,omitempty"`
+	// (Optional) Amount expected or offered for the NFToken
+	Amount *Amount `protobuf:"bytes,5,opt,name=amount,proto3" json:"amount,omitempty"`
+	// (Optional) Time after which the offer is no longer active
+	Expiration uint32 `protobuf:"varint,6,opt,name=expiration,proto3" json:"expiration,omitempty"`
+	// (Optional) Account that may accept this offer
+	Destination string `protobuf:"bytes,7,opt,name=destination,proto3" json:"destination,omitempty"`
+	// (Optional) Transaction flags
+	// tfBurnable = 1 (0x00000001) - Allow issuer to destroy the NFToken
+	// tfOnlyXRP = 2 (0x00000002) - NFToken can only be bought/sold for XRP
+	// tfTrustLine = 4 (0x00000004) - DEPRECATED: Auto-create trust lines for fees
+	// tfTransferable = 8 (0x00000008) - NFToken can be transferred to others
+	// tfMutable = 16 (0x00000010) - URI can be updated via NFTokenModify
+	Flags         uint32 `protobuf:"varint,8,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -93,6 +104,27 @@ func (x *NFTokenMint) GetTransferFee() uint32 {
 func (x *NFTokenMint) GetUri() string {
 	if x != nil {
 		return x.Uri
+	}
+	return ""
+}
+
+func (x *NFTokenMint) GetAmount() *Amount {
+	if x != nil {
+		return x.Amount
+	}
+	return nil
+}
+
+func (x *NFTokenMint) GetExpiration() uint32 {
+	if x != nil {
+		return x.Expiration
+	}
+	return 0
+}
+
+func (x *NFTokenMint) GetDestination() string {
+	if x != nil {
+		return x.Destination
 	}
 	return ""
 }
@@ -174,7 +206,8 @@ type NFTokenCreateOffer struct {
 	Destination string `protobuf:"bytes,4,opt,name=destination,proto3" json:"destination,omitempty"`
 	// (Optional) Expiration time
 	Expiration uint32 `protobuf:"varint,5,opt,name=expiration,proto3" json:"expiration,omitempty"`
-	// Flags (1 = sell offer)
+	// (Optional) Transaction flags
+	// tfSellNFToken = 1 (0x00000001) - If set indicate this is a sell offer.
 	Flags         uint32 `protobuf:"varint,6,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -364,17 +397,88 @@ func (x *NFTokenAcceptOffer) GetNftokenBrokerFee() *Amount {
 	return nil
 }
 
+// NFTokenModify - Modifies the URI of a dynamic NFT
+// Reference: https://xrpl.org/nftokenmodify.html
+type NFTokenModify struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The unique identifier of the NFT to modify
+	NftokenId string `protobuf:"bytes,1,opt,name=nftoken_id,json=nftokenId,proto3" json:"nftoken_id,omitempty"`
+	// (Optional) Owner of the NFT (omit if Account is the owner)
+	Owner string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	// (Optional) New URI for the NFT (hex encoded, up to 256 bytes)
+	// If omitted, the existing URI is deleted
+	Uri           string `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NFTokenModify) Reset() {
+	*x = NFTokenModify{}
+	mi := &file_sf_xrpl_type_v1_nft_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NFTokenModify) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NFTokenModify) ProtoMessage() {}
+
+func (x *NFTokenModify) ProtoReflect() protoreflect.Message {
+	mi := &file_sf_xrpl_type_v1_nft_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NFTokenModify.ProtoReflect.Descriptor instead.
+func (*NFTokenModify) Descriptor() ([]byte, []int) {
+	return file_sf_xrpl_type_v1_nft_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *NFTokenModify) GetNftokenId() string {
+	if x != nil {
+		return x.NftokenId
+	}
+	return ""
+}
+
+func (x *NFTokenModify) GetOwner() string {
+	if x != nil {
+		return x.Owner
+	}
+	return ""
+}
+
+func (x *NFTokenModify) GetUri() string {
+	if x != nil {
+		return x.Uri
+	}
+	return ""
+}
+
 var File_sf_xrpl_type_v1_nft_proto protoreflect.FileDescriptor
 
 const file_sf_xrpl_type_v1_nft_proto_rawDesc = "" +
 	"\n" +
-	"\x19sf/xrpl/type/v1/nft.proto\x12\x0fsf.xrpl.type.v1\x1a\x1csf/xrpl/type/v1/amount.proto\"\x95\x01\n" +
+	"\x19sf/xrpl/type/v1/nft.proto\x12\x0fsf.xrpl.type.v1\x1a\x1csf/xrpl/type/v1/amount.proto\"\x88\x02\n" +
 	"\vNFTokenMint\x12#\n" +
 	"\rnftoken_taxon\x18\x01 \x01(\rR\fnftokenTaxon\x12\x16\n" +
 	"\x06issuer\x18\x02 \x01(\tR\x06issuer\x12!\n" +
 	"\ftransfer_fee\x18\x03 \x01(\rR\vtransferFee\x12\x10\n" +
-	"\x03uri\x18\x04 \x01(\tR\x03uri\x12\x14\n" +
-	"\x05flags\x18\x05 \x01(\rR\x05flags\"B\n" +
+	"\x03uri\x18\x04 \x01(\tR\x03uri\x12/\n" +
+	"\x06amount\x18\x05 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x06amount\x12\x1e\n" +
+	"\n" +
+	"expiration\x18\x06 \x01(\rR\n" +
+	"expiration\x12 \n" +
+	"\vdestination\x18\a \x01(\tR\vdestination\x12\x14\n" +
+	"\x05flags\x18\b \x01(\rR\x05flags\"B\n" +
 	"\vNFTokenBurn\x12\x1d\n" +
 	"\n" +
 	"nftoken_id\x18\x01 \x01(\tR\tnftokenId\x12\x14\n" +
@@ -394,7 +498,12 @@ const file_sf_xrpl_type_v1_nft_proto_rawDesc = "" +
 	"\x12NFTokenAcceptOffer\x12,\n" +
 	"\x12nftoken_sell_offer\x18\x01 \x01(\tR\x10nftokenSellOffer\x12*\n" +
 	"\x11nftoken_buy_offer\x18\x02 \x01(\tR\x0fnftokenBuyOffer\x12E\n" +
-	"\x12nftoken_broker_fee\x18\x03 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x10nftokenBrokerFeeBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
+	"\x12nftoken_broker_fee\x18\x03 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x10nftokenBrokerFee\"V\n" +
+	"\rNFTokenModify\x12\x1d\n" +
+	"\n" +
+	"nftoken_id\x18\x01 \x01(\tR\tnftokenId\x12\x14\n" +
+	"\x05owner\x18\x02 \x01(\tR\x05owner\x12\x10\n" +
+	"\x03uri\x18\x03 \x01(\tR\x03uriBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
 
 var (
 	file_sf_xrpl_type_v1_nft_proto_rawDescOnce sync.Once
@@ -408,23 +517,25 @@ func file_sf_xrpl_type_v1_nft_proto_rawDescGZIP() []byte {
 	return file_sf_xrpl_type_v1_nft_proto_rawDescData
 }
 
-var file_sf_xrpl_type_v1_nft_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_sf_xrpl_type_v1_nft_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_sf_xrpl_type_v1_nft_proto_goTypes = []any{
 	(*NFTokenMint)(nil),        // 0: sf.xrpl.type.v1.NFTokenMint
 	(*NFTokenBurn)(nil),        // 1: sf.xrpl.type.v1.NFTokenBurn
 	(*NFTokenCreateOffer)(nil), // 2: sf.xrpl.type.v1.NFTokenCreateOffer
 	(*NFTokenCancelOffer)(nil), // 3: sf.xrpl.type.v1.NFTokenCancelOffer
 	(*NFTokenAcceptOffer)(nil), // 4: sf.xrpl.type.v1.NFTokenAcceptOffer
-	(*Amount)(nil),             // 5: sf.xrpl.type.v1.Amount
+	(*NFTokenModify)(nil),      // 5: sf.xrpl.type.v1.NFTokenModify
+	(*Amount)(nil),             // 6: sf.xrpl.type.v1.Amount
 }
 var file_sf_xrpl_type_v1_nft_proto_depIdxs = []int32{
-	5, // 0: sf.xrpl.type.v1.NFTokenCreateOffer.amount:type_name -> sf.xrpl.type.v1.Amount
-	5, // 1: sf.xrpl.type.v1.NFTokenAcceptOffer.nftoken_broker_fee:type_name -> sf.xrpl.type.v1.Amount
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	6, // 0: sf.xrpl.type.v1.NFTokenMint.amount:type_name -> sf.xrpl.type.v1.Amount
+	6, // 1: sf.xrpl.type.v1.NFTokenCreateOffer.amount:type_name -> sf.xrpl.type.v1.Amount
+	6, // 2: sf.xrpl.type.v1.NFTokenAcceptOffer.nftoken_broker_fee:type_name -> sf.xrpl.type.v1.Amount
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_sf_xrpl_type_v1_nft_proto_init() }
@@ -439,7 +550,7 @@ func file_sf_xrpl_type_v1_nft_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sf_xrpl_type_v1_nft_proto_rawDesc), len(file_sf_xrpl_type_v1_nft_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

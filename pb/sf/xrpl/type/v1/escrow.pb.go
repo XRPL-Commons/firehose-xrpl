@@ -124,7 +124,9 @@ type EscrowFinish struct {
 	// (Optional) Crypto-condition (hex)
 	Condition string `protobuf:"bytes,3,opt,name=condition,proto3" json:"condition,omitempty"`
 	// (Optional) Fulfillment for condition (hex)
-	Fulfillment   string `protobuf:"bytes,4,opt,name=fulfillment,proto3" json:"fulfillment,omitempty"`
+	Fulfillment string `protobuf:"bytes,4,opt,name=fulfillment,proto3" json:"fulfillment,omitempty"`
+	// (Optional) Set of Credentials to authorize deposit (array of ledger entry IDs)
+	CredentialIds []string `protobuf:"bytes,5,rep,name=credential_ids,json=credentialIds,proto3" json:"credential_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -185,6 +187,13 @@ func (x *EscrowFinish) GetFulfillment() string {
 		return x.Fulfillment
 	}
 	return ""
+}
+
+func (x *EscrowFinish) GetCredentialIds() []string {
+	if x != nil {
+		return x.CredentialIds
+	}
+	return nil
 }
 
 // EscrowCancel - Cancels a held payment
@@ -254,12 +263,13 @@ const file_sf_xrpl_type_v1_escrow_proto_rawDesc = "" +
 	"\fcancel_after\x18\x03 \x01(\rR\vcancelAfter\x12!\n" +
 	"\ffinish_after\x18\x04 \x01(\rR\vfinishAfter\x12\x1c\n" +
 	"\tcondition\x18\x05 \x01(\tR\tcondition\x12'\n" +
-	"\x0fdestination_tag\x18\x06 \x01(\rR\x0edestinationTag\"\x8b\x01\n" +
+	"\x0fdestination_tag\x18\x06 \x01(\rR\x0edestinationTag\"\xb2\x01\n" +
 	"\fEscrowFinish\x12\x14\n" +
 	"\x05owner\x18\x01 \x01(\tR\x05owner\x12%\n" +
 	"\x0eoffer_sequence\x18\x02 \x01(\rR\rofferSequence\x12\x1c\n" +
 	"\tcondition\x18\x03 \x01(\tR\tcondition\x12 \n" +
-	"\vfulfillment\x18\x04 \x01(\tR\vfulfillment\"K\n" +
+	"\vfulfillment\x18\x04 \x01(\tR\vfulfillment\x12%\n" +
+	"\x0ecredential_ids\x18\x05 \x03(\tR\rcredentialIds\"K\n" +
 	"\fEscrowCancel\x12\x14\n" +
 	"\x05owner\x18\x01 \x01(\tR\x05owner\x12%\n" +
 	"\x0eoffer_sequence\x18\x02 \x01(\rR\rofferSequenceBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"

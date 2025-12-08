@@ -51,6 +51,7 @@ func (m *AMMDeposit) CloneVT() *AMMDeposit {
 	r.EPrice = m.EPrice.CloneVT()
 	r.LpTokenOut = m.LpTokenOut.CloneVT()
 	r.TradingFee = m.TradingFee
+	r.Flags = m.Flags
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -73,6 +74,7 @@ func (m *AMMWithdraw) CloneVT() *AMMWithdraw {
 	r.Amount2 = m.Amount2.CloneVT()
 	r.EPrice = m.EPrice.CloneVT()
 	r.LpTokenIn = m.LpTokenIn.CloneVT()
+	r.Flags = m.Flags
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -174,6 +176,7 @@ func (m *AMMClawback) CloneVT() *AMMClawback {
 	r.Asset = m.Asset.CloneVT()
 	r.Asset2 = m.Asset2.CloneVT()
 	r.Amount = m.Amount.CloneVT()
+	r.Flags = m.Flags
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -237,6 +240,9 @@ func (this *AMMDeposit) EqualVT(that *AMMDeposit) bool {
 	if this.TradingFee != that.TradingFee {
 		return false
 	}
+	if this.Flags != that.Flags {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
@@ -269,6 +275,9 @@ func (this *AMMWithdraw) EqualVT(that *AMMWithdraw) bool {
 		return false
 	}
 	if !this.LpTokenIn.EqualVT(that.LpTokenIn) {
+		return false
+	}
+	if this.Flags != that.Flags {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
@@ -410,6 +419,9 @@ func (this *AMMClawback) EqualVT(that *AMMClawback) bool {
 	if !this.Amount.EqualVT(that.Amount) {
 		return false
 	}
+	if this.Flags != that.Flags {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
@@ -508,6 +520,11 @@ func (m *AMMDeposit) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x40
+	}
 	if m.TradingFee != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.TradingFee))
 		i--
@@ -605,6 +622,11 @@ func (m *AMMWithdraw) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x38
 	}
 	if m.LpTokenIn != nil {
 		size, err := m.LpTokenIn.MarshalToSizedBufferVT(dAtA[:i])
@@ -935,6 +957,11 @@ func (m *AMMClawback) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x28
+	}
 	if m.Amount != nil {
 		size, err := m.Amount.MarshalToSizedBufferVT(dAtA[:i])
 		if err != nil {
@@ -1063,6 +1090,11 @@ func (m *AMMDeposit) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x40
+	}
 	if m.TradingFee != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.TradingFee))
 		i--
@@ -1160,6 +1192,11 @@ func (m *AMMWithdraw) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x38
 	}
 	if m.LpTokenIn != nil {
 		size, err := m.LpTokenIn.MarshalToSizedBufferVTStrict(dAtA[:i])
@@ -1490,6 +1527,11 @@ func (m *AMMClawback) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x28
+	}
 	if m.Amount != nil {
 		size, err := m.Amount.MarshalToSizedBufferVTStrict(dAtA[:i])
 		if err != nil {
@@ -1584,6 +1626,9 @@ func (m *AMMDeposit) SizeVT() (n int) {
 	if m.TradingFee != 0 {
 		n += 1 + protohelpers.SizeOfVarint(uint64(m.TradingFee))
 	}
+	if m.Flags != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.Flags))
+	}
 	n += len(m.unknownFields)
 	return n
 }
@@ -1617,6 +1662,9 @@ func (m *AMMWithdraw) SizeVT() (n int) {
 	if m.LpTokenIn != nil {
 		l = m.LpTokenIn.SizeVT()
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	if m.Flags != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.Flags))
 	}
 	n += len(m.unknownFields)
 	return n
@@ -1728,6 +1776,9 @@ func (m *AMMClawback) SizeVT() (n int) {
 	if m.Amount != nil {
 		l = m.Amount.SizeVT()
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	if m.Flags != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.Flags))
 	}
 	n += len(m.unknownFields)
 	return n
@@ -2139,6 +2190,25 @@ func (m *AMMDeposit) UnmarshalVT(dAtA []byte) error {
 					break
 				}
 			}
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -2406,6 +2476,25 @@ func (m *AMMWithdraw) UnmarshalVT(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -3174,6 +3263,25 @@ func (m *AMMClawback) UnmarshalVT(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -3602,6 +3710,25 @@ func (m *AMMDeposit) UnmarshalVTUnsafe(dAtA []byte) error {
 					break
 				}
 			}
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -3869,6 +3996,25 @@ func (m *AMMWithdraw) UnmarshalVTUnsafe(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -4645,6 +4791,25 @@ func (m *AMMClawback) UnmarshalVTUnsafe(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])

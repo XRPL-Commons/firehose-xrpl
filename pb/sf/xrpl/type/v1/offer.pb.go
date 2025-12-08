@@ -33,6 +33,16 @@ type OfferCreate struct {
 	Expiration uint32 `protobuf:"varint,3,opt,name=expiration,proto3" json:"expiration,omitempty"`
 	// (Optional) Offer sequence to replace
 	OfferSequence uint32 `protobuf:"varint,4,opt,name=offer_sequence,json=offerSequence,proto3" json:"offer_sequence,omitempty"`
+	// (Optional) Ledger entry ID of a permissioned domain
+	// Restricts this offer to the permissioned DEX of that domain
+	DomainId string `protobuf:"bytes,5,opt,name=domain_id,json=domainId,proto3" json:"domain_id,omitempty"`
+	// (Optional) Transaction flags
+	// tfPassive = 65536 (0x00010000) - Do not consume offers that exactly match
+	// tfImmediateOrCancel = 131072 (0x00020000) - Immediate or Cancel order
+	// tfFillOrKill = 262144 (0x00040000) - Fill or Kill order
+	// tfSell = 524288 (0x00080000) - Exchange entire TakerGets amount
+	// tfHybrid = 1048576 (0x00100000) - Use both permissioned and open DEX
+	Flags         uint32 `protobuf:"varint,6,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -95,6 +105,20 @@ func (x *OfferCreate) GetOfferSequence() uint32 {
 	return 0
 }
 
+func (x *OfferCreate) GetDomainId() string {
+	if x != nil {
+		return x.DomainId
+	}
+	return ""
+}
+
+func (x *OfferCreate) GetFlags() uint32 {
+	if x != nil {
+		return x.Flags
+	}
+	return 0
+}
+
 // OfferCancel - Cancels an existing offer
 // Reference: https://xrpl.org/offercancel.html
 type OfferCancel struct {
@@ -146,7 +170,7 @@ var File_sf_xrpl_type_v1_offer_proto protoreflect.FileDescriptor
 
 const file_sf_xrpl_type_v1_offer_proto_rawDesc = "" +
 	"\n" +
-	"\x1bsf/xrpl/type/v1/offer.proto\x12\x0fsf.xrpl.type.v1\x1a\x1csf/xrpl/type/v1/amount.proto\"\xc4\x01\n" +
+	"\x1bsf/xrpl/type/v1/offer.proto\x12\x0fsf.xrpl.type.v1\x1a\x1csf/xrpl/type/v1/amount.proto\"\xf7\x01\n" +
 	"\vOfferCreate\x126\n" +
 	"\n" +
 	"taker_gets\x18\x01 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\ttakerGets\x126\n" +
@@ -155,7 +179,9 @@ const file_sf_xrpl_type_v1_offer_proto_rawDesc = "" +
 	"\n" +
 	"expiration\x18\x03 \x01(\rR\n" +
 	"expiration\x12%\n" +
-	"\x0eoffer_sequence\x18\x04 \x01(\rR\rofferSequence\"4\n" +
+	"\x0eoffer_sequence\x18\x04 \x01(\rR\rofferSequence\x12\x1b\n" +
+	"\tdomain_id\x18\x05 \x01(\tR\bdomainId\x12\x14\n" +
+	"\x05flags\x18\x06 \x01(\rR\x05flags\"4\n" +
 	"\vOfferCancel\x12%\n" +
 	"\x0eoffer_sequence\x18\x01 \x01(\rR\rofferSequenceBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
 

@@ -41,6 +41,10 @@ type AccountSet struct {
 	TickSize uint32 `protobuf:"varint,7,opt,name=tick_size,json=tickSize,proto3" json:"tick_size,omitempty"`
 	// (Optional) NFT minter account
 	NftokenMinter string `protobuf:"bytes,8,opt,name=nftoken_minter,json=nftokenMinter,proto3" json:"nftoken_minter,omitempty"`
+	// (Optional) Arbitrary 256-bit value stored with the account
+	WalletLocator string `protobuf:"bytes,9,opt,name=wallet_locator,json=walletLocator,proto3" json:"wallet_locator,omitempty"`
+	// (Optional) Not used - valid but has no effect
+	WalletSize    uint32 `protobuf:"varint,10,opt,name=wallet_size,json=walletSize,proto3" json:"wallet_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -131,6 +135,20 @@ func (x *AccountSet) GetNftokenMinter() string {
 	return ""
 }
 
+func (x *AccountSet) GetWalletLocator() string {
+	if x != nil {
+		return x.WalletLocator
+	}
+	return ""
+}
+
+func (x *AccountSet) GetWalletSize() uint32 {
+	if x != nil {
+		return x.WalletSize
+	}
+	return 0
+}
+
 // AccountDelete - Deletes an account
 // Reference: https://xrpl.org/accountdelete.html
 type AccountDelete struct {
@@ -139,8 +157,10 @@ type AccountDelete struct {
 	Destination string `protobuf:"bytes,1,opt,name=destination,proto3" json:"destination,omitempty"`
 	// (Optional) Destination tag
 	DestinationTag uint32 `protobuf:"varint,2,opt,name=destination_tag,json=destinationTag,proto3" json:"destination_tag,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// (Optional) Set of Credentials to authorize deposit (array of ledger entry IDs)
+	CredentialIds []string `protobuf:"bytes,3,rep,name=credential_ids,json=credentialIds,proto3" json:"credential_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AccountDelete) Reset() {
@@ -185,6 +205,13 @@ func (x *AccountDelete) GetDestinationTag() uint32 {
 		return x.DestinationTag
 	}
 	return 0
+}
+
+func (x *AccountDelete) GetCredentialIds() []string {
+	if x != nil {
+		return x.CredentialIds
+	}
+	return nil
 }
 
 // SetRegularKey - Sets or clears an account's regular key
@@ -291,9 +318,13 @@ func (x *SignerListSet) GetSignerEntries() []*SignerEntry {
 }
 
 type SignerEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Account       string                 `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	SignerWeight  uint32                 `protobuf:"varint,2,opt,name=signer_weight,json=signerWeight,proto3" json:"signer_weight,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// XRP Ledger address whose signature contributes to multi-signature
+	Account string `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	// Weight of a signature from this signer (UInt16)
+	SignerWeight uint32 `protobuf:"varint,2,opt,name=signer_weight,json=signerWeight,proto3" json:"signer_weight,omitempty"`
+	// (Optional) Arbitrary hexadecimal data to identify the signer
+	WalletLocator string `protobuf:"bytes,3,opt,name=wallet_locator,json=walletLocator,proto3" json:"wallet_locator,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -342,11 +373,18 @@ func (x *SignerEntry) GetSignerWeight() uint32 {
 	return 0
 }
 
+func (x *SignerEntry) GetWalletLocator() string {
+	if x != nil {
+		return x.WalletLocator
+	}
+	return ""
+}
+
 var File_sf_xrpl_type_v1_account_proto protoreflect.FileDescriptor
 
 const file_sf_xrpl_type_v1_account_proto_rawDesc = "" +
 	"\n" +
-	"\x1dsf/xrpl/type/v1/account.proto\x12\x0fsf.xrpl.type.v1\"\x87\x02\n" +
+	"\x1dsf/xrpl/type/v1/account.proto\x12\x0fsf.xrpl.type.v1\"\xcf\x02\n" +
 	"\n" +
 	"AccountSet\x12\x19\n" +
 	"\bset_flag\x18\x01 \x01(\rR\asetFlag\x12\x1d\n" +
@@ -359,19 +397,25 @@ const file_sf_xrpl_type_v1_account_proto_rawDesc = "" +
 	"messageKey\x12#\n" +
 	"\rtransfer_rate\x18\x06 \x01(\rR\ftransferRate\x12\x1b\n" +
 	"\ttick_size\x18\a \x01(\rR\btickSize\x12%\n" +
-	"\x0enftoken_minter\x18\b \x01(\tR\rnftokenMinter\"Z\n" +
+	"\x0enftoken_minter\x18\b \x01(\tR\rnftokenMinter\x12%\n" +
+	"\x0ewallet_locator\x18\t \x01(\tR\rwalletLocator\x12\x1f\n" +
+	"\vwallet_size\x18\n" +
+	" \x01(\rR\n" +
+	"walletSize\"\x81\x01\n" +
 	"\rAccountDelete\x12 \n" +
 	"\vdestination\x18\x01 \x01(\tR\vdestination\x12'\n" +
-	"\x0fdestination_tag\x18\x02 \x01(\rR\x0edestinationTag\"0\n" +
+	"\x0fdestination_tag\x18\x02 \x01(\rR\x0edestinationTag\x12%\n" +
+	"\x0ecredential_ids\x18\x03 \x03(\tR\rcredentialIds\"0\n" +
 	"\rSetRegularKey\x12\x1f\n" +
 	"\vregular_key\x18\x01 \x01(\tR\n" +
 	"regularKey\"y\n" +
 	"\rSignerListSet\x12#\n" +
 	"\rsigner_quorum\x18\x01 \x01(\rR\fsignerQuorum\x12C\n" +
-	"\x0esigner_entries\x18\x02 \x03(\v2\x1c.sf.xrpl.type.v1.SignerEntryR\rsignerEntries\"L\n" +
+	"\x0esigner_entries\x18\x02 \x03(\v2\x1c.sf.xrpl.type.v1.SignerEntryR\rsignerEntries\"s\n" +
 	"\vSignerEntry\x12\x18\n" +
 	"\aaccount\x18\x01 \x01(\tR\aaccount\x12#\n" +
-	"\rsigner_weight\x18\x02 \x01(\rR\fsignerWeightBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
+	"\rsigner_weight\x18\x02 \x01(\rR\fsignerWeight\x12%\n" +
+	"\x0ewallet_locator\x18\x03 \x01(\tR\rwalletLocatorBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
 
 var (
 	file_sf_xrpl_type_v1_account_proto_rawDescOnce sync.Once

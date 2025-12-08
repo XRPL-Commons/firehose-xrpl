@@ -5,6 +5,9 @@ option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pb
 
 import "google/protobuf/timestamp.proto";
 
+// Common type imports
+import "sf/xrpl/type/v1/signer.proto";
+
 // Transaction type imports
 import "sf/xrpl/type/v1/payment.proto";
 import "sf/xrpl/type/v1/offer.proto";
@@ -28,6 +31,7 @@ import "sf/xrpl/type/v1/vault.proto";
 import "sf/xrpl/type/v1/delegate.proto";
 import "sf/xrpl/type/v1/contract.proto";
 import "sf/xrpl/type/v1/system.proto";
+import "sf/xrpl/type/v1/batch.proto";
 
 // Block represents an XRPL validated ledger
 message Block {
@@ -182,6 +186,7 @@ message Transaction {
     NFTokenCreateOffer nftoken_create_offer = 62;
     NFTokenCancelOffer nftoken_cancel_offer = 63;
     NFTokenAcceptOffer nftoken_accept_offer = 64;
+    NFTokenModify nftoken_modify = 65;
 
     // Clawback
     Clawback clawback = 70;
@@ -248,6 +253,9 @@ message Transaction {
     ContractUserDelete contract_user_delete = 154;
     ContractCall contract_call = 155;
 
+    // Batch transaction
+    Batch batch = 160;
+
     // System transactions (pseudo-transactions)
     EnableAmendment enable_amendment = 900;
     SetFee set_fee = 901;
@@ -268,18 +276,6 @@ message Memo {
   // Hex value representing characters allowed in URLs
   // Conventionally, a unique relation that defines the format of this memo
   string memo_type = 3;
-}
-
-// Signer in a multi-signature
-message Signer {
-  // Address associated with this signature, as it appears in the signer list
-  string account = 1;
-
-  // Signature for this transaction, verifiable using the signing_pub_key
-  string txn_signature = 2;
-
-  // Public key used to create this signature
-  string signing_pub_key = 3;
 }
 
 // Transaction result code

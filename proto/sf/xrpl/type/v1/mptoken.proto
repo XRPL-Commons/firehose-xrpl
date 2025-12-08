@@ -18,11 +18,14 @@ message MPTokenIssuanceCreate {
   // (Optional) Metadata for the token (hex)
   string mptoken_metadata = 4;
 
-  // (Optional) Domain ID
-  string domain_id = 5;
-
-  // (Optional) Mutable flags
-  uint32 mutable_flags = 6;
+  // (Optional) Transaction flags
+  // tfMPTCanLock = 2 (0x00000002) - MPT can be locked individually and globally
+  // tfMPTRequireAuth = 4 (0x00000004) - Individual holders must be authorized
+  // tfMPTCanEscrow = 8 (0x00000008) - Holders can place balances into escrow
+  // tfMPTCanTrade = 16 (0x00000010) - Holders can trade balances using DEX
+  // tfMPTCanTransfer = 32 (0x00000020) - Tokens can be transferred to non-issuers
+  // tfMPTCanClawback = 64 (0x00000040) - Issuer can claw back value from holders
+  uint32 flags = 5;
 }
 
 // MPTokenIssuanceDestroy - Destroys an MPToken issuance
@@ -41,17 +44,10 @@ message MPTokenIssuanceSet {
   // (Optional) Holder to modify
   string holder = 2;
 
-  // (Optional) Domain ID
-  string domain_id = 3;
-
-  // (Optional) New metadata (hex)
-  string mptoken_metadata = 4;
-
-  // (Optional) New transfer fee
-  uint32 transfer_fee = 5;
-
-  // (Optional) New mutable flags
-  uint32 mutable_flags = 6;
+  // (Optional) Transaction flags
+  // tfMPTLock = 1 (0x00000001) - Lock balances of this MPT issuance
+  // tfMPTUnlock = 2 (0x00000002) - Unlock balances of this MPT issuance
+  uint32 flags = 3;
 }
 
 // MPTokenAuthorize - Authorizes an account to hold MPTokens
@@ -62,4 +58,8 @@ message MPTokenAuthorize {
 
   // (Optional) Holder to authorize (issuer-side)
   string holder = 2;
+
+  // (Optional) Transaction flags
+  // tfMPTUnauthorize = 1 (0x00000001) - Revoke authorization/willingness to hold MPT
+  uint32 flags = 3;
 }
