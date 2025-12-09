@@ -33,6 +33,8 @@ func (m *AccountSet) CloneVT() *AccountSet {
 	r.TransferRate = m.TransferRate
 	r.TickSize = m.TickSize
 	r.NftokenMinter = m.NftokenMinter
+	r.WalletLocator = m.WalletLocator
+	r.WalletSize = m.WalletSize
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -51,6 +53,11 @@ func (m *AccountDelete) CloneVT() *AccountDelete {
 	r := new(AccountDelete)
 	r.Destination = m.Destination
 	r.DestinationTag = m.DestinationTag
+	if rhs := m.CredentialIds; rhs != nil {
+		tmpContainer := make([]string, len(rhs))
+		copy(tmpContainer, rhs)
+		r.CredentialIds = tmpContainer
+	}
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -110,6 +117,7 @@ func (m *SignerEntry) CloneVT() *SignerEntry {
 	r := new(SignerEntry)
 	r.Account = m.Account
 	r.SignerWeight = m.SignerWeight
+	r.WalletLocator = m.WalletLocator
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -151,6 +159,12 @@ func (this *AccountSet) EqualVT(that *AccountSet) bool {
 	if this.NftokenMinter != that.NftokenMinter {
 		return false
 	}
+	if this.WalletLocator != that.WalletLocator {
+		return false
+	}
+	if this.WalletSize != that.WalletSize {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
@@ -172,6 +186,15 @@ func (this *AccountDelete) EqualVT(that *AccountDelete) bool {
 	}
 	if this.DestinationTag != that.DestinationTag {
 		return false
+	}
+	if len(this.CredentialIds) != len(that.CredentialIds) {
+		return false
+	}
+	for i, vx := range this.CredentialIds {
+		vy := that.CredentialIds[i]
+		if vx != vy {
+			return false
+		}
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
@@ -250,6 +273,9 @@ func (this *SignerEntry) EqualVT(that *SignerEntry) bool {
 	if this.SignerWeight != that.SignerWeight {
 		return false
 	}
+	if this.WalletLocator != that.WalletLocator {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
@@ -289,6 +315,18 @@ func (m *AccountSet) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if m.WalletSize != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.WalletSize))
+		i--
+		dAtA[i] = 0x50
+	}
+	if len(m.WalletLocator) > 0 {
+		i -= len(m.WalletLocator)
+		copy(dAtA[i:], m.WalletLocator)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.WalletLocator)))
+		i--
+		dAtA[i] = 0x4a
 	}
 	if len(m.NftokenMinter) > 0 {
 		i -= len(m.NftokenMinter)
@@ -370,6 +408,15 @@ func (m *AccountDelete) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if len(m.CredentialIds) > 0 {
+		for iNdEx := len(m.CredentialIds) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.CredentialIds[iNdEx])
+			copy(dAtA[i:], m.CredentialIds[iNdEx])
+			i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.CredentialIds[iNdEx])))
+			i--
+			dAtA[i] = 0x1a
+		}
 	}
 	if m.DestinationTag != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.DestinationTag))
@@ -506,6 +553,13 @@ func (m *SignerEntry) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if len(m.WalletLocator) > 0 {
+		i -= len(m.WalletLocator)
+		copy(dAtA[i:], m.WalletLocator)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.WalletLocator)))
+		i--
+		dAtA[i] = 0x1a
+	}
 	if m.SignerWeight != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.SignerWeight))
 		i--
@@ -550,6 +604,18 @@ func (m *AccountSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if m.WalletSize != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.WalletSize))
+		i--
+		dAtA[i] = 0x50
+	}
+	if len(m.WalletLocator) > 0 {
+		i -= len(m.WalletLocator)
+		copy(dAtA[i:], m.WalletLocator)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.WalletLocator)))
+		i--
+		dAtA[i] = 0x4a
 	}
 	if len(m.NftokenMinter) > 0 {
 		i -= len(m.NftokenMinter)
@@ -631,6 +697,15 @@ func (m *AccountDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if len(m.CredentialIds) > 0 {
+		for iNdEx := len(m.CredentialIds) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.CredentialIds[iNdEx])
+			copy(dAtA[i:], m.CredentialIds[iNdEx])
+			i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.CredentialIds[iNdEx])))
+			i--
+			dAtA[i] = 0x1a
+		}
 	}
 	if m.DestinationTag != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.DestinationTag))
@@ -767,6 +842,13 @@ func (m *SignerEntry) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if len(m.WalletLocator) > 0 {
+		i -= len(m.WalletLocator)
+		copy(dAtA[i:], m.WalletLocator)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.WalletLocator)))
+		i--
+		dAtA[i] = 0x1a
+	}
 	if m.SignerWeight != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.SignerWeight))
 		i--
@@ -816,6 +898,13 @@ func (m *AccountSet) SizeVT() (n int) {
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
+	l = len(m.WalletLocator)
+	if l > 0 {
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	if m.WalletSize != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.WalletSize))
+	}
 	n += len(m.unknownFields)
 	return n
 }
@@ -832,6 +921,12 @@ func (m *AccountDelete) SizeVT() (n int) {
 	}
 	if m.DestinationTag != 0 {
 		n += 1 + protohelpers.SizeOfVarint(uint64(m.DestinationTag))
+	}
+	if len(m.CredentialIds) > 0 {
+		for _, s := range m.CredentialIds {
+			l = len(s)
+			n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+		}
 	}
 	n += len(m.unknownFields)
 	return n
@@ -882,6 +977,10 @@ func (m *SignerEntry) SizeVT() (n int) {
 	}
 	if m.SignerWeight != 0 {
 		n += 1 + protohelpers.SizeOfVarint(uint64(m.SignerWeight))
+	}
+	l = len(m.WalletLocator)
+	if l > 0 {
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	n += len(m.unknownFields)
 	return n
@@ -1120,6 +1219,57 @@ func (m *AccountSet) UnmarshalVT(dAtA []byte) error {
 			}
 			m.NftokenMinter = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WalletLocator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.WalletLocator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WalletSize", wireType)
+			}
+			m.WalletSize = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.WalletSize |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -1222,6 +1372,38 @@ func (m *AccountDelete) UnmarshalVT(dAtA []byte) error {
 					break
 				}
 			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CredentialIds", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CredentialIds = append(m.CredentialIds, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -1511,6 +1693,38 @@ func (m *SignerEntry) UnmarshalVT(dAtA []byte) error {
 					break
 				}
 			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WalletLocator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.WalletLocator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -1782,6 +1996,61 @@ func (m *AccountSet) UnmarshalVTUnsafe(dAtA []byte) error {
 			}
 			m.NftokenMinter = stringValue
 			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WalletLocator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.WalletLocator = stringValue
+			iNdEx = postIndex
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WalletSize", wireType)
+			}
+			m.WalletSize = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.WalletSize |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -1888,6 +2157,42 @@ func (m *AccountDelete) UnmarshalVTUnsafe(dAtA []byte) error {
 					break
 				}
 			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CredentialIds", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.CredentialIds = append(m.CredentialIds, stringValue)
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -2185,6 +2490,42 @@ func (m *SignerEntry) UnmarshalVTUnsafe(dAtA []byte) error {
 					break
 				}
 			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WalletLocator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.WalletLocator = stringValue
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])

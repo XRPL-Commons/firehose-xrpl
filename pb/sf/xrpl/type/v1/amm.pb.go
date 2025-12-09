@@ -103,7 +103,15 @@ type AMMDeposit struct {
 	// (Optional) LP tokens to receive
 	LpTokenOut *Amount `protobuf:"bytes,6,opt,name=lp_token_out,json=lpTokenOut,proto3" json:"lp_token_out,omitempty"`
 	// (Optional) Trading fee for the AMM
-	TradingFee    uint32 `protobuf:"varint,7,opt,name=trading_fee,json=tradingFee,proto3" json:"trading_fee,omitempty"`
+	TradingFee uint32 `protobuf:"varint,7,opt,name=trading_fee,json=tradingFee,proto3" json:"trading_fee,omitempty"`
+	// (Optional) Transaction flags for deposit mode
+	// tfLPToken = 65536 (0x00010000) - Double-asset deposit for specified LP tokens
+	// tfSingleAsset = 524288 (0x00080000) - Single-asset deposit
+	// tfTwoAsset = 1048576 (0x00100000) - Double-asset deposit with specified amounts
+	// tfOneAssetLPToken = 2097152 (0x00200000) - Single-asset deposit for specified LP tokens
+	// tfLimitLPToken = 4194304 (0x00400000) - Single-asset deposit with price limit
+	// tfTwoAssetIfEmpty = 8388608 (0x00800000) - Special deposit to empty AMM
+	Flags         uint32 `protobuf:"varint,8,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -187,6 +195,13 @@ func (x *AMMDeposit) GetTradingFee() uint32 {
 	return 0
 }
 
+func (x *AMMDeposit) GetFlags() uint32 {
+	if x != nil {
+		return x.Flags
+	}
+	return 0
+}
+
 // AMMWithdraw - Withdraws assets from an AMM
 // Reference: https://xrpl.org/ammwithdraw.html
 type AMMWithdraw struct {
@@ -202,7 +217,16 @@ type AMMWithdraw struct {
 	// (Optional) Effective price for single-asset withdrawal
 	EPrice *Amount `protobuf:"bytes,5,opt,name=e_price,json=ePrice,proto3" json:"e_price,omitempty"`
 	// (Optional) LP tokens to burn
-	LpTokenIn     *Amount `protobuf:"bytes,6,opt,name=lp_token_in,json=lpTokenIn,proto3" json:"lp_token_in,omitempty"`
+	LpTokenIn *Amount `protobuf:"bytes,6,opt,name=lp_token_in,json=lpTokenIn,proto3" json:"lp_token_in,omitempty"`
+	// (Optional) Transaction flags for withdrawal mode
+	// tfLPToken = 65536 (0x00010000) - Double-asset withdrawal for specified LP tokens
+	// tfWithdrawAll = 131072 (0x00020000) - Withdraw all LP tokens (double-asset)
+	// tfOneAssetWithdrawAll = 262144 (0x00040000) - Withdraw all LP tokens (single-asset)
+	// tfSingleAsset = 524288 (0x00080000) - Single-asset withdrawal
+	// tfTwoAsset = 1048576 (0x00100000) - Double-asset withdrawal with specified amounts
+	// tfOneAssetLPToken = 2097152 (0x00200000) - Single-asset withdrawal for specified LP tokens
+	// tfLimitLPToken = 4194304 (0x00400000) - Single-asset withdrawal with price limit
+	Flags         uint32 `protobuf:"varint,7,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -277,6 +301,13 @@ func (x *AMMWithdraw) GetLpTokenIn() *Amount {
 		return x.LpTokenIn
 	}
 	return nil
+}
+
+func (x *AMMWithdraw) GetFlags() uint32 {
+	if x != nil {
+		return x.Flags
+	}
+	return 0
 }
 
 // AMMVote - Votes on the trading fee for an AMM
@@ -538,7 +569,10 @@ type AMMClawback struct {
 	// Second asset identifier
 	Asset2 *Asset `protobuf:"bytes,3,opt,name=asset2,proto3" json:"asset2,omitempty"`
 	// (Optional) Amount to claw back
-	Amount        *Amount `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	Amount *Amount `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	// (Optional) Transaction flags
+	// tfClawTwoAssets = 1 (0x00000001) - Claw back both assets proportionally
+	Flags         uint32 `protobuf:"varint,5,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -601,6 +635,13 @@ func (x *AMMClawback) GetAmount() *Amount {
 	return nil
 }
 
+func (x *AMMClawback) GetFlags() uint32 {
+	if x != nil {
+		return x.Flags
+	}
+	return 0
+}
+
 var File_sf_xrpl_type_v1_amm_proto protoreflect.FileDescriptor
 
 const file_sf_xrpl_type_v1_amm_proto_rawDesc = "" +
@@ -610,7 +651,7 @@ const file_sf_xrpl_type_v1_amm_proto_rawDesc = "" +
 	"\x06amount\x18\x01 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x06amount\x121\n" +
 	"\aamount2\x18\x02 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\aamount2\x12\x1f\n" +
 	"\vtrading_fee\x18\x03 \x01(\rR\n" +
-	"tradingFee\"\xdc\x02\n" +
+	"tradingFee\"\xf2\x02\n" +
 	"\n" +
 	"AMMDeposit\x12,\n" +
 	"\x05asset\x18\x01 \x01(\v2\x16.sf.xrpl.type.v1.AssetR\x05asset\x12.\n" +
@@ -621,14 +662,16 @@ const file_sf_xrpl_type_v1_amm_proto_rawDesc = "" +
 	"\flp_token_out\x18\x06 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\n" +
 	"lpTokenOut\x12\x1f\n" +
 	"\vtrading_fee\x18\a \x01(\rR\n" +
-	"tradingFee\"\xba\x02\n" +
+	"tradingFee\x12\x14\n" +
+	"\x05flags\x18\b \x01(\rR\x05flags\"\xd0\x02\n" +
 	"\vAMMWithdraw\x12,\n" +
 	"\x05asset\x18\x01 \x01(\v2\x16.sf.xrpl.type.v1.AssetR\x05asset\x12.\n" +
 	"\x06asset2\x18\x02 \x01(\v2\x16.sf.xrpl.type.v1.AssetR\x06asset2\x12/\n" +
 	"\x06amount\x18\x03 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x06amount\x121\n" +
 	"\aamount2\x18\x04 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\aamount2\x120\n" +
 	"\ae_price\x18\x05 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x06ePrice\x127\n" +
-	"\vlp_token_in\x18\x06 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\tlpTokenIn\"\x88\x01\n" +
+	"\vlp_token_in\x18\x06 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\tlpTokenIn\x12\x14\n" +
+	"\x05flags\x18\a \x01(\rR\x05flags\"\x88\x01\n" +
 	"\aAMMVote\x12,\n" +
 	"\x05asset\x18\x01 \x01(\v2\x16.sf.xrpl.type.v1.AssetR\x05asset\x12.\n" +
 	"\x06asset2\x18\x02 \x01(\v2\x16.sf.xrpl.type.v1.AssetR\x06asset2\x12\x1f\n" +
@@ -644,12 +687,13 @@ const file_sf_xrpl_type_v1_amm_proto_rawDesc = "" +
 	"\aaccount\x18\x01 \x01(\tR\aaccount\"i\n" +
 	"\tAMMDelete\x12,\n" +
 	"\x05asset\x18\x01 \x01(\v2\x16.sf.xrpl.type.v1.AssetR\x05asset\x12.\n" +
-	"\x06asset2\x18\x02 \x01(\v2\x16.sf.xrpl.type.v1.AssetR\x06asset2\"\xb4\x01\n" +
+	"\x06asset2\x18\x02 \x01(\v2\x16.sf.xrpl.type.v1.AssetR\x06asset2\"\xca\x01\n" +
 	"\vAMMClawback\x12\x16\n" +
 	"\x06holder\x18\x01 \x01(\tR\x06holder\x12,\n" +
 	"\x05asset\x18\x02 \x01(\v2\x16.sf.xrpl.type.v1.AssetR\x05asset\x12.\n" +
 	"\x06asset2\x18\x03 \x01(\v2\x16.sf.xrpl.type.v1.AssetR\x06asset2\x12/\n" +
-	"\x06amount\x18\x04 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x06amountBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
+	"\x06amount\x18\x04 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x06amount\x12\x14\n" +
+	"\x05flags\x18\x05 \x01(\rR\x05flagsBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
 
 var (
 	file_sf_xrpl_type_v1_amm_proto_rawDescOnce sync.Once

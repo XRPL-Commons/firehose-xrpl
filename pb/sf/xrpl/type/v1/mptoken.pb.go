@@ -33,10 +33,14 @@ type MPTokenIssuanceCreate struct {
 	MaximumAmount uint64 `protobuf:"varint,3,opt,name=maximum_amount,json=maximumAmount,proto3" json:"maximum_amount,omitempty"`
 	// (Optional) Metadata for the token (hex)
 	MptokenMetadata string `protobuf:"bytes,4,opt,name=mptoken_metadata,json=mptokenMetadata,proto3" json:"mptoken_metadata,omitempty"`
-	// (Optional) Domain ID
-	DomainId string `protobuf:"bytes,5,opt,name=domain_id,json=domainId,proto3" json:"domain_id,omitempty"`
-	// (Optional) Mutable flags
-	MutableFlags  uint32 `protobuf:"varint,6,opt,name=mutable_flags,json=mutableFlags,proto3" json:"mutable_flags,omitempty"`
+	// (Optional) Transaction flags
+	// tfMPTCanLock = 2 (0x00000002) - MPT can be locked individually and globally
+	// tfMPTRequireAuth = 4 (0x00000004) - Individual holders must be authorized
+	// tfMPTCanEscrow = 8 (0x00000008) - Holders can place balances into escrow
+	// tfMPTCanTrade = 16 (0x00000010) - Holders can trade balances using DEX
+	// tfMPTCanTransfer = 32 (0x00000020) - Tokens can be transferred to non-issuers
+	// tfMPTCanClawback = 64 (0x00000040) - Issuer can claw back value from holders
+	Flags         uint32 `protobuf:"varint,5,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -99,16 +103,9 @@ func (x *MPTokenIssuanceCreate) GetMptokenMetadata() string {
 	return ""
 }
 
-func (x *MPTokenIssuanceCreate) GetDomainId() string {
+func (x *MPTokenIssuanceCreate) GetFlags() uint32 {
 	if x != nil {
-		return x.DomainId
-	}
-	return ""
-}
-
-func (x *MPTokenIssuanceCreate) GetMutableFlags() uint32 {
-	if x != nil {
-		return x.MutableFlags
+		return x.Flags
 	}
 	return 0
 }
@@ -168,14 +165,10 @@ type MPTokenIssuanceSet struct {
 	MptokenIssuanceId string `protobuf:"bytes,1,opt,name=mptoken_issuance_id,json=mptokenIssuanceId,proto3" json:"mptoken_issuance_id,omitempty"`
 	// (Optional) Holder to modify
 	Holder string `protobuf:"bytes,2,opt,name=holder,proto3" json:"holder,omitempty"`
-	// (Optional) Domain ID
-	DomainId string `protobuf:"bytes,3,opt,name=domain_id,json=domainId,proto3" json:"domain_id,omitempty"`
-	// (Optional) New metadata (hex)
-	MptokenMetadata string `protobuf:"bytes,4,opt,name=mptoken_metadata,json=mptokenMetadata,proto3" json:"mptoken_metadata,omitempty"`
-	// (Optional) New transfer fee
-	TransferFee uint32 `protobuf:"varint,5,opt,name=transfer_fee,json=transferFee,proto3" json:"transfer_fee,omitempty"`
-	// (Optional) New mutable flags
-	MutableFlags  uint32 `protobuf:"varint,6,opt,name=mutable_flags,json=mutableFlags,proto3" json:"mutable_flags,omitempty"`
+	// (Optional) Transaction flags
+	// tfMPTLock = 1 (0x00000001) - Lock balances of this MPT issuance
+	// tfMPTUnlock = 2 (0x00000002) - Unlock balances of this MPT issuance
+	Flags         uint32 `protobuf:"varint,3,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -224,30 +217,9 @@ func (x *MPTokenIssuanceSet) GetHolder() string {
 	return ""
 }
 
-func (x *MPTokenIssuanceSet) GetDomainId() string {
+func (x *MPTokenIssuanceSet) GetFlags() uint32 {
 	if x != nil {
-		return x.DomainId
-	}
-	return ""
-}
-
-func (x *MPTokenIssuanceSet) GetMptokenMetadata() string {
-	if x != nil {
-		return x.MptokenMetadata
-	}
-	return ""
-}
-
-func (x *MPTokenIssuanceSet) GetTransferFee() uint32 {
-	if x != nil {
-		return x.TransferFee
-	}
-	return 0
-}
-
-func (x *MPTokenIssuanceSet) GetMutableFlags() uint32 {
-	if x != nil {
-		return x.MutableFlags
+		return x.Flags
 	}
 	return 0
 }
@@ -259,7 +231,10 @@ type MPTokenAuthorize struct {
 	// ID of the issuance to authorize
 	MptokenIssuanceId string `protobuf:"bytes,1,opt,name=mptoken_issuance_id,json=mptokenIssuanceId,proto3" json:"mptoken_issuance_id,omitempty"`
 	// (Optional) Holder to authorize (issuer-side)
-	Holder        string `protobuf:"bytes,2,opt,name=holder,proto3" json:"holder,omitempty"`
+	Holder string `protobuf:"bytes,2,opt,name=holder,proto3" json:"holder,omitempty"`
+	// (Optional) Transaction flags
+	// tfMPTUnauthorize = 1 (0x00000001) - Revoke authorization/willingness to hold MPT
+	Flags         uint32 `protobuf:"varint,3,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -308,31 +283,35 @@ func (x *MPTokenAuthorize) GetHolder() string {
 	return ""
 }
 
+func (x *MPTokenAuthorize) GetFlags() uint32 {
+	if x != nil {
+		return x.Flags
+	}
+	return 0
+}
+
 var File_sf_xrpl_type_v1_mptoken_proto protoreflect.FileDescriptor
 
 const file_sf_xrpl_type_v1_mptoken_proto_rawDesc = "" +
 	"\n" +
-	"\x1dsf/xrpl/type/v1/mptoken.proto\x12\x0fsf.xrpl.type.v1\"\xef\x01\n" +
+	"\x1dsf/xrpl/type/v1/mptoken.proto\x12\x0fsf.xrpl.type.v1\"\xc3\x01\n" +
 	"\x15MPTokenIssuanceCreate\x12\x1f\n" +
 	"\vasset_scale\x18\x01 \x01(\rR\n" +
 	"assetScale\x12!\n" +
 	"\ftransfer_fee\x18\x02 \x01(\rR\vtransferFee\x12%\n" +
 	"\x0emaximum_amount\x18\x03 \x01(\x04R\rmaximumAmount\x12)\n" +
-	"\x10mptoken_metadata\x18\x04 \x01(\tR\x0fmptokenMetadata\x12\x1b\n" +
-	"\tdomain_id\x18\x05 \x01(\tR\bdomainId\x12#\n" +
-	"\rmutable_flags\x18\x06 \x01(\rR\fmutableFlags\"H\n" +
+	"\x10mptoken_metadata\x18\x04 \x01(\tR\x0fmptokenMetadata\x12\x14\n" +
+	"\x05flags\x18\x05 \x01(\rR\x05flags\"H\n" +
 	"\x16MPTokenIssuanceDestroy\x12.\n" +
-	"\x13mptoken_issuance_id\x18\x01 \x01(\tR\x11mptokenIssuanceId\"\xec\x01\n" +
+	"\x13mptoken_issuance_id\x18\x01 \x01(\tR\x11mptokenIssuanceId\"r\n" +
 	"\x12MPTokenIssuanceSet\x12.\n" +
 	"\x13mptoken_issuance_id\x18\x01 \x01(\tR\x11mptokenIssuanceId\x12\x16\n" +
-	"\x06holder\x18\x02 \x01(\tR\x06holder\x12\x1b\n" +
-	"\tdomain_id\x18\x03 \x01(\tR\bdomainId\x12)\n" +
-	"\x10mptoken_metadata\x18\x04 \x01(\tR\x0fmptokenMetadata\x12!\n" +
-	"\ftransfer_fee\x18\x05 \x01(\rR\vtransferFee\x12#\n" +
-	"\rmutable_flags\x18\x06 \x01(\rR\fmutableFlags\"Z\n" +
+	"\x06holder\x18\x02 \x01(\tR\x06holder\x12\x14\n" +
+	"\x05flags\x18\x03 \x01(\rR\x05flags\"p\n" +
 	"\x10MPTokenAuthorize\x12.\n" +
 	"\x13mptoken_issuance_id\x18\x01 \x01(\tR\x11mptokenIssuanceId\x12\x16\n" +
-	"\x06holder\x18\x02 \x01(\tR\x06holderBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
+	"\x06holder\x18\x02 \x01(\tR\x06holder\x12\x14\n" +
+	"\x05flags\x18\x03 \x01(\rR\x05flagsBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
 
 var (
 	file_sf_xrpl_type_v1_mptoken_proto_rawDescOnce sync.Once

@@ -5,6 +5,9 @@ option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pb
 
 import "google/protobuf/timestamp.proto";
 
+// Common type imports
+import "sf/xrpl/type/v1/signer.proto";
+
 // Transaction type imports
 import "sf/xrpl/type/v1/payment.proto";
 import "sf/xrpl/type/v1/offer.proto";
@@ -18,16 +21,14 @@ import "sf/xrpl/type/v1/deposit_preauth.proto";
 import "sf/xrpl/type/v1/ticket.proto";
 import "sf/xrpl/type/v1/clawback.proto";
 import "sf/xrpl/type/v1/amm.proto";
-import "sf/xrpl/type/v1/xchain.proto";
 import "sf/xrpl/type/v1/did.proto";
 import "sf/xrpl/type/v1/oracle.proto";
 import "sf/xrpl/type/v1/mptoken.proto";
 import "sf/xrpl/type/v1/credential.proto";
 import "sf/xrpl/type/v1/permissioned_domain.proto";
-import "sf/xrpl/type/v1/vault.proto";
 import "sf/xrpl/type/v1/delegate.proto";
-import "sf/xrpl/type/v1/contract.proto";
 import "sf/xrpl/type/v1/system.proto";
+import "sf/xrpl/type/v1/batch.proto";
 
 // Block represents an XRPL validated ledger
 message Block {
@@ -48,9 +49,6 @@ message Block {
 
   // Ledger close time
   google.protobuf.Timestamp close_time = 6;
-
-  // State changes (optional, for full archival)
-  repeated LedgerObject state_changes = 7;
 }
 
 message Header {
@@ -71,23 +69,15 @@ message Header {
 
   // Close flags
   uint32 close_flags = 6;
-
-  // Base fee in drops
-  uint64 base_fee = 7;
-
-  // Reserve base in drops
-  uint64 reserve_base = 8;
-
-  // Reserve increment in drops
-  uint64 reserve_increment = 9;
 }
 
 message Transaction {
   // Transaction hash (32 bytes)
   bytes hash = 1;
 
-  // Transaction result
-  TransactionResult result = 2;
+  // Transaction result code (e.g., "tesSUCCESS", "tecPATH_DRY", "temMALFORMED")
+  // Future-proof: supports any result code XRPL adds without schema updates
+  string result = 2;
 
   // Position in ledger (0-indexed)
   uint32 index = 3;
@@ -100,8 +90,10 @@ message Transaction {
   // Contains: AffectedNodes, delivered_amount, etc.
   bytes meta_blob = 5;
 
-  // Transaction type for filtering
-  TransactionType tx_type = 6;
+  // Transaction type string (e.g., "Payment", "OfferCreate", "NFTokenMint")
+  // Future-proof: supports any transaction type XRPL adds without schema
+  // updates
+  string tx_type = 6;
 
   // Account that initiated this transaction
   string account = 7;
@@ -112,281 +104,149 @@ message Transaction {
   // Transaction sequence number
   uint32 sequence = 9;
 
+  // Hash value identifying another transaction. If provided, this transaction
+  // is only valid if the sending account's previously-sent transaction matches
+  // the provided hash.
+  string account_txn_id = 10;
+
+  // Delegate account that is sending the transaction on behalf of the Account
+  string delegate = 11;
+
+  // Set of bit-flags for this transaction
+  uint32 flags = 12;
+
+  // Highest ledger index this transaction can appear in
+  uint32 last_ledger_sequence = 13;
+
+  // Additional arbitrary information attached to this transaction
+  repeated Memo memos = 14;
+
+  // Network ID of the chain this transaction is intended for
+  // Required for networks with ID >= 1025, disallowed for ID <= 1024
+  uint32 network_id = 15;
+
+  // Multi-signature data (for multi-signed transactions)
+  repeated Signer signers = 16;
+
+  // Arbitrary integer used to identify the reason for this payment
+  uint32 source_tag = 17;
+
+  // Public key that corresponds to the private key used to sign this
+  // transaction Empty string indicates a multi-signature is present in the
+  // signers field
+  string signing_pub_key = 18;
+
+  // Sequence number of the ticket to use in place of a Sequence number
+  // If provided, Sequence must be 0
+  uint32 ticket_sequence = 19;
+
+  // Signature that verifies this transaction as originating from the account
+  string txn_signature = 20;
+
   // Decoded transaction details based on tx_type
   oneof tx_details {
     // Payment transactions
-    Payment payment = 20;
+    Payment payment = 30;
 
     // DEX transactions
-    OfferCreate offer_create = 21;
-    OfferCancel offer_cancel = 22;
+    OfferCreate offer_create = 40;
+    OfferCancel offer_cancel = 41;
 
     // Trustline
-    TrustSet trust_set = 23;
+    TrustSet trust_set = 50;
 
     // Account management
-    AccountSet account_set = 24;
-    AccountDelete account_delete = 25;
-    SetRegularKey set_regular_key = 26;
-    SignerListSet signer_list_set = 27;
+    AccountSet account_set = 60;
+    AccountDelete account_delete = 61;
+    SetRegularKey set_regular_key = 62;
+    SignerListSet signer_list_set = 63;
 
     // Escrow
-    EscrowCreate escrow_create = 30;
-    EscrowFinish escrow_finish = 31;
-    EscrowCancel escrow_cancel = 32;
+    EscrowCreate escrow_create = 70;
+    EscrowFinish escrow_finish = 71;
+    EscrowCancel escrow_cancel = 72;
 
     // Payment channels
-    PaymentChannelCreate payment_channel_create = 33;
-    PaymentChannelFund payment_channel_fund = 34;
-    PaymentChannelClaim payment_channel_claim = 35;
+    PaymentChannelCreate payment_channel_create = 80;
+    PaymentChannelFund payment_channel_fund = 81;
+    PaymentChannelClaim payment_channel_claim = 82;
 
     // Checks
-    CheckCreate check_create = 36;
-    CheckCash check_cash = 37;
-    CheckCancel check_cancel = 38;
+    CheckCreate check_create = 90;
+    CheckCash check_cash = 91;
+    CheckCancel check_cancel = 92;
 
     // Other account features
-    DepositPreauth deposit_preauth = 39;
-    TicketCreate ticket_create = 40;
+    DepositPreauth deposit_preauth = 100;
+    TicketCreate ticket_create = 101;
 
     // NFT transactions
-    NFTokenMint nftoken_mint = 50;
-    NFTokenBurn nftoken_burn = 51;
-    NFTokenCreateOffer nftoken_create_offer = 52;
-    NFTokenCancelOffer nftoken_cancel_offer = 53;
-    NFTokenAcceptOffer nftoken_accept_offer = 54;
+    NFTokenMint nftoken_mint = 110;
+    NFTokenBurn nftoken_burn = 111;
+    NFTokenCreateOffer nftoken_create_offer = 112;
+    NFTokenCancelOffer nftoken_cancel_offer = 113;
+    NFTokenAcceptOffer nftoken_accept_offer = 114;
+    NFTokenModify nftoken_modify = 115;
 
     // Clawback
-    Clawback clawback = 60;
+    Clawback clawback = 120;
 
     // AMM transactions
-    AMMCreate amm_create = 70;
-    AMMDeposit amm_deposit = 71;
-    AMMWithdraw amm_withdraw = 72;
-    AMMVote amm_vote = 73;
-    AMMBid amm_bid = 74;
-    AMMDelete amm_delete = 75;
-    AMMClawback amm_clawback = 76;
-
-    // Cross-chain bridge transactions
-    XChainCreateBridge xchain_create_bridge = 80;
-    XChainModifyBridge xchain_modify_bridge = 81;
-    XChainCreateClaimID xchain_create_claim_id = 82;
-    XChainCommit xchain_commit = 83;
-    XChainClaim xchain_claim = 84;
-    XChainAccountCreateCommit xchain_account_create_commit = 85;
-    XChainAddClaimAttestation xchain_add_claim_attestation = 86;
-    XChainAddAccountCreateAttestation xchain_add_account_create_attestation = 87;
+    AMMCreate amm_create = 130;
+    AMMDeposit amm_deposit = 131;
+    AMMWithdraw amm_withdraw = 132;
+    AMMVote amm_vote = 133;
+    AMMBid amm_bid = 134;
+    AMMDelete amm_delete = 135;
+    AMMClawback amm_clawback = 136;
 
     // DID transactions
-    DIDSet did_set = 90;
-    DIDDelete did_delete = 91;
+    DIDSet did_set = 140;
+    DIDDelete did_delete = 141;
 
     // Oracle transactions
-    OracleSet oracle_set = 92;
-    OracleDelete oracle_delete = 93;
+    OracleSet oracle_set = 150;
+    OracleDelete oracle_delete = 151;
 
     // MPToken transactions
-    MPTokenIssuanceCreate mptoken_issuance_create = 100;
-    MPTokenIssuanceDestroy mptoken_issuance_destroy = 101;
-    MPTokenIssuanceSet mptoken_issuance_set = 102;
-    MPTokenAuthorize mptoken_authorize = 103;
+    MPTokenIssuanceCreate mptoken_issuance_create = 160;
+    MPTokenIssuanceDestroy mptoken_issuance_destroy = 161;
+    MPTokenIssuanceSet mptoken_issuance_set = 162;
+    MPTokenAuthorize mptoken_authorize = 163;
 
     // Credential transactions
-    CredentialCreate credential_create = 110;
-    CredentialAccept credential_accept = 111;
-    CredentialDelete credential_delete = 112;
+    CredentialCreate credential_create = 170;
+    CredentialAccept credential_accept = 171;
+    CredentialDelete credential_delete = 172;
 
     // Permissioned domain transactions
-    PermissionedDomainSet permissioned_domain_set = 120;
-    PermissionedDomainDelete permissioned_domain_delete = 121;
+    PermissionedDomainSet permissioned_domain_set = 180;
+    PermissionedDomainDelete permissioned_domain_delete = 181;
 
     // Delegate transactions
-    DelegateSet delegate_set = 122;
+    DelegateSet delegate_set = 190;
 
-    // Vault transactions
-    VaultCreate vault_create = 130;
-    VaultSet vault_set = 131;
-    VaultDelete vault_delete = 132;
-    VaultDeposit vault_deposit = 133;
-    VaultWithdraw vault_withdraw = 134;
-    VaultClawback vault_clawback = 135;
-
-    // Smart contract transactions
-    ContractCreate contract_create = 140;
-    ContractModify contract_modify = 141;
-    ContractDelete contract_delete = 142;
-    ContractClawback contract_clawback = 143;
-    ContractUserDelete contract_user_delete = 144;
-    ContractCall contract_call = 145;
+    // Batch transaction
+    Batch batch = 200;
 
     // System transactions (pseudo-transactions)
-    EnableAmendment enable_amendment = 200;
-    SetFee set_fee = 201;
-    UNLModify unl_modify = 202;
-    LedgerStateFix ledger_state_fix = 203;
+    EnableAmendment enable_amendment = 900;
+    SetFee set_fee = 901;
+    UNLModify unl_modify = 902;
+    LedgerStateFix ledger_state_fix = 903;
   }
 }
 
-// Transaction result code
-enum TransactionResult {
-  RESULT_UNKNOWN = 0;
-  TES_SUCCESS = 1;        // tesSUCCESS - fully applied
-  TEC_CLAIMED = 2;        // tecCLAIMED - fee claimed, tx failed
-  TEC_PATH_PARTIAL = 3;   // tecPATH_PARTIAL
-  TEC_UNFUNDED_ADD = 4;   // tecUNFUNDED_ADD
-  TEC_UNFUNDED_OFFER = 5; // tecUNFUNDED_OFFER
-  TEC_UNFUNDED_PAYMENT = 6; // tecUNFUNDED_PAYMENT
-  TEC_FAILED_PROCESSING = 7; // tecFAILED_PROCESSING
-  TEC_DIR_FULL = 8;       // tecDIR_FULL
-  TEC_INSUF_RESERVE_LINE = 9; // tecINSUF_RESERVE_LINE
-  TEC_INSUF_RESERVE_OFFER = 10; // tecINSUF_RESERVE_OFFER
-  TEC_NO_DST = 11;        // tecNO_DST
-  TEC_NO_DST_INSUF_XRP = 12; // tecNO_DST_INSUF_XRP
-  TEC_NO_LINE_INSUF_RESERVE = 13; // tecNO_LINE_INSUF_RESERVE
-  TEC_NO_LINE_REDUNDANT = 14; // tecNO_LINE_REDUNDANT
-  TEC_PATH_DRY = 15;      // tecPATH_DRY
-  TEC_UNFUNDED = 16;      // tecUNFUNDED
-  TEC_NO_ALTERNATIVE_KEY = 17; // tecNO_ALTERNATIVE_KEY
-  TEC_NO_REGULAR_KEY = 18; // tecNO_REGULAR_KEY
-  TEC_OTHER = 100;        // Other tec* codes
-  TEF_FAILURE = 200;      // tef* - local failure
-  TEM_MALFORMED = 300;    // tem* - malformed
-  TER_RETRY = 400;        // ter* - retry
-}
+// Memo attached to a transaction
+message Memo {
+  // Arbitrary hex value, conventionally containing the content of the memo
+  string memo_data = 1;
 
-// Common XRPL transaction types for filtering
-enum TransactionType {
-  TX_UNKNOWN = 0;
-  TX_PAYMENT = 1;
-  TX_ESCROW_CREATE = 2;
-  TX_ESCROW_FINISH = 3;
-  TX_ACCOUNT_SET = 4;
-  TX_ESCROW_CANCEL = 5;
-  TX_SET_REGULAR_KEY = 6;
-  TX_NICKNAME_SET = 7;       // Deprecated
-  TX_OFFER_CREATE = 8;
-  TX_OFFER_CANCEL = 9;
-  TX_CONTRACT = 10;          // Deprecated
-  TX_TICKET_CREATE = 11;
-  TX_TICKET_CANCEL = 12;     // Deprecated
-  TX_SIGNER_LIST_SET = 13;
-  TX_PAYMENT_CHANNEL_CREATE = 14;
-  TX_PAYMENT_CHANNEL_FUND = 15;
-  TX_PAYMENT_CHANNEL_CLAIM = 16;
-  TX_CHECK_CREATE = 17;
-  TX_CHECK_CASH = 18;
-  TX_CHECK_CANCEL = 19;
-  TX_DEPOSIT_PREAUTH = 20;
-  TX_TRUST_SET = 21;
-  TX_ACCOUNT_DELETE = 22;
-  TX_SET_HOOK = 23;
-  TX_NFT_MINT = 25;
-  TX_NFT_BURN = 26;
-  TX_NFT_CREATE_OFFER = 27;
-  TX_NFT_CANCEL_OFFER = 28;
-  TX_NFT_ACCEPT_OFFER = 29;
-  TX_CLAWBACK = 30;
-  TX_AMM_CLAWBACK = 31;
-  TX_AMM_CREATE = 35;
-  TX_AMM_DEPOSIT = 36;
-  TX_AMM_WITHDRAW = 37;
-  TX_AMM_VOTE = 38;
-  TX_AMM_BID = 39;
-  TX_AMM_DELETE = 40;
-  TX_XCHAIN_CREATE_CLAIM_ID = 41;
-  TX_XCHAIN_COMMIT = 42;
-  TX_XCHAIN_CLAIM = 43;
-  TX_XCHAIN_ACCOUNT_CREATE_COMMIT = 44;
-  TX_XCHAIN_ADD_CLAIM_ATTESTATION = 45;
-  TX_XCHAIN_ADD_ACCOUNT_CREATE_ATTESTATION = 46;
-  TX_XCHAIN_MODIFY_BRIDGE = 47;
-  TX_XCHAIN_CREATE_BRIDGE = 48;
-  TX_DID_SET = 49;
-  TX_DID_DELETE = 50;
-  TX_ORACLE_SET = 51;
-  TX_ORACLE_DELETE = 52;
-  TX_LEDGER_STATE_FIX = 53;
-  TX_MPTOKEN_ISSUANCE_CREATE = 54;
-  TX_MPTOKEN_ISSUANCE_DESTROY = 55;
-  TX_MPTOKEN_ISSUANCE_SET = 56;
-  TX_MPTOKEN_AUTHORIZE = 57;
-  TX_CREDENTIAL_CREATE = 58;
-  TX_CREDENTIAL_ACCEPT = 59;
-  TX_CREDENTIAL_DELETE = 60;
-  TX_NFTOKEN_MODIFY = 61;
-  TX_PERMISSIONED_DOMAIN_SET = 62;
-  TX_PERMISSIONED_DOMAIN_DELETE = 63;
-  TX_DELEGATE_SET = 64;
-  TX_VAULT_CREATE = 65;
-  TX_VAULT_SET = 66;
-  TX_VAULT_DELETE = 67;
-  TX_VAULT_DEPOSIT = 68;
-  TX_VAULT_WITHDRAW = 69;
-  TX_VAULT_CLAWBACK = 70;
-  TX_BATCH = 71;
-  TX_CONTRACT_CREATE = 72;
-  TX_CONTRACT_MODIFY = 73;
-  TX_CONTRACT_DELETE = 74;
-  TX_CONTRACT_CLAWBACK = 75;
-  TX_CONTRACT_USER_DELETE = 76;
-  TX_CONTRACT_CALL = 77;
-  // System/pseudo-transactions
-  TX_ENABLE_AMENDMENT = 100;
-  TX_SET_FEE = 101;
-  TX_UNL_MODIFY = 102;
-}
+  // Hex value representing characters allowed in URLs
+  // Conventionally containing information on how the memo is encoded
+  string memo_format = 2;
 
-// Ledger state object change (for archival/state tracking)
-message LedgerObject {
-  // Object key (256-bit identifier)
-  bytes key = 1;
-
-  // Object data (XRPL binary format)
-  // Empty if deleted
-  bytes data = 2;
-
-  // Modification type
-  ModificationType mod_type = 3;
-
-  // Ledger entry type
-  LedgerEntryType entry_type = 4;
-
-  enum ModificationType {
-    MOD_UNSPECIFIED = 0;
-    MOD_CREATED = 1;
-    MOD_MODIFIED = 2;
-    MOD_DELETED = 3;
-  }
-}
-
-// XRPL Ledger entry types
-enum LedgerEntryType {
-  ENTRY_UNKNOWN = 0;
-  ENTRY_ACCOUNT_ROOT = 1;
-  ENTRY_DIRECTORY_NODE = 2;
-  ENTRY_RIPPLE_STATE = 3;
-  ENTRY_OFFER = 4;
-  ENTRY_LEDGER_HASHES = 5;
-  ENTRY_AMENDMENTS = 6;
-  ENTRY_FEE_SETTINGS = 7;
-  ENTRY_ESCROW = 8;
-  ENTRY_PAY_CHANNEL = 9;
-  ENTRY_CHECK = 10;
-  ENTRY_DEPOSIT_PREAUTH = 11;
-  ENTRY_NEGATIVE_UNL = 12;
-  ENTRY_NFTOKEN_OFFER = 13;
-  ENTRY_NFTOKEN_PAGE = 14;
-  ENTRY_AMM = 15;
-  ENTRY_BRIDGE = 16;
-  ENTRY_XCHAIN_OWNED_CLAIM_ID = 17;
-  ENTRY_XCHAIN_OWNED_CREATE_ACCOUNT_CLAIM_ID = 18;
-  ENTRY_DID = 19;
-  ENTRY_ORACLE = 20;
-  ENTRY_MPTOKEN_ISSUANCE = 21;
-  ENTRY_MPTOKEN = 22;
-  ENTRY_CREDENTIAL = 23;
-  ENTRY_PERMISSIONED_DOMAIN = 24;
-  ENTRY_VAULT = 25;
-  ENTRY_CONTRACT = 26;
+  // Hex value representing characters allowed in URLs
+  // Conventionally, a unique relation that defines the format of this memo
+  string memo_type = 3;
 }

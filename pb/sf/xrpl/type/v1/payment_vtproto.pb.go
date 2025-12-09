@@ -27,10 +27,13 @@ func (m *Payment) CloneVT() *Payment {
 	r := new(Payment)
 	r.Destination = m.Destination
 	r.Amount = m.Amount.CloneVT()
+	r.DeliverMax = m.DeliverMax.CloneVT()
 	r.SendMax = m.SendMax.CloneVT()
 	r.DeliverMin = m.DeliverMin.CloneVT()
 	r.InvoiceId = m.InvoiceId
 	r.DestinationTag = m.DestinationTag
+	r.DomainId = m.DomainId
+	r.Flags = m.Flags
 	r.DeliveredAmount = m.DeliveredAmount.CloneVT()
 	if rhs := m.Paths; rhs != nil {
 		tmpContainer := make([]*Path, len(rhs))
@@ -38,6 +41,11 @@ func (m *Payment) CloneVT() *Payment {
 			tmpContainer[k] = v.CloneVT()
 		}
 		r.Paths = tmpContainer
+	}
+	if rhs := m.CredentialIds; rhs != nil {
+		tmpContainer := make([]string, len(rhs))
+		copy(tmpContainer, rhs)
+		r.CredentialIds = tmpContainer
 	}
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
@@ -60,6 +68,9 @@ func (this *Payment) EqualVT(that *Payment) bool {
 		return false
 	}
 	if !this.Amount.EqualVT(that.Amount) {
+		return false
+	}
+	if !this.DeliverMax.EqualVT(that.DeliverMax) {
 		return false
 	}
 	if !this.SendMax.EqualVT(that.SendMax) {
@@ -89,6 +100,21 @@ func (this *Payment) EqualVT(that *Payment) bool {
 		return false
 	}
 	if this.DestinationTag != that.DestinationTag {
+		return false
+	}
+	if len(this.CredentialIds) != len(that.CredentialIds) {
+		return false
+	}
+	for i, vx := range this.CredentialIds {
+		vy := that.CredentialIds[i]
+		if vx != vy {
+			return false
+		}
+	}
+	if this.DomainId != that.DomainId {
+		return false
+	}
+	if this.Flags != that.Flags {
 		return false
 	}
 	if !this.DeliveredAmount.EqualVT(that.DeliveredAmount) {
@@ -142,19 +168,42 @@ func (m *Payment) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xa2
+	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x58
+	}
+	if len(m.DomainId) > 0 {
+		i -= len(m.DomainId)
+		copy(dAtA[i:], m.DomainId)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.DomainId)))
+		i--
 		dAtA[i] = 0x52
+	}
+	if len(m.CredentialIds) > 0 {
+		for iNdEx := len(m.CredentialIds) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.CredentialIds[iNdEx])
+			copy(dAtA[i:], m.CredentialIds[iNdEx])
+			i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.CredentialIds[iNdEx])))
+			i--
+			dAtA[i] = 0x4a
+		}
 	}
 	if m.DestinationTag != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.DestinationTag))
 		i--
-		dAtA[i] = 0x38
+		dAtA[i] = 0x40
 	}
 	if len(m.InvoiceId) > 0 {
 		i -= len(m.InvoiceId)
 		copy(dAtA[i:], m.InvoiceId)
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.InvoiceId)))
 		i--
-		dAtA[i] = 0x32
+		dAtA[i] = 0x3a
 	}
 	if len(m.Paths) > 0 {
 		for iNdEx := len(m.Paths) - 1; iNdEx >= 0; iNdEx-- {
@@ -165,7 +214,7 @@ func (m *Payment) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 			i -= size
 			i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 			i--
-			dAtA[i] = 0x2a
+			dAtA[i] = 0x32
 		}
 	}
 	if m.DeliverMin != nil {
@@ -176,10 +225,20 @@ func (m *Payment) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x2a
 	}
 	if m.SendMax != nil {
 		size, err := m.SendMax.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.DeliverMax != nil {
+		size, err := m.DeliverMax.MarshalToSizedBufferVT(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -246,19 +305,42 @@ func (m *Payment) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xa2
+	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x58
+	}
+	if len(m.DomainId) > 0 {
+		i -= len(m.DomainId)
+		copy(dAtA[i:], m.DomainId)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.DomainId)))
+		i--
 		dAtA[i] = 0x52
+	}
+	if len(m.CredentialIds) > 0 {
+		for iNdEx := len(m.CredentialIds) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.CredentialIds[iNdEx])
+			copy(dAtA[i:], m.CredentialIds[iNdEx])
+			i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.CredentialIds[iNdEx])))
+			i--
+			dAtA[i] = 0x4a
+		}
 	}
 	if m.DestinationTag != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.DestinationTag))
 		i--
-		dAtA[i] = 0x38
+		dAtA[i] = 0x40
 	}
 	if len(m.InvoiceId) > 0 {
 		i -= len(m.InvoiceId)
 		copy(dAtA[i:], m.InvoiceId)
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.InvoiceId)))
 		i--
-		dAtA[i] = 0x32
+		dAtA[i] = 0x3a
 	}
 	if len(m.Paths) > 0 {
 		for iNdEx := len(m.Paths) - 1; iNdEx >= 0; iNdEx-- {
@@ -269,7 +351,7 @@ func (m *Payment) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 			i -= size
 			i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 			i--
-			dAtA[i] = 0x2a
+			dAtA[i] = 0x32
 		}
 	}
 	if m.DeliverMin != nil {
@@ -280,10 +362,20 @@ func (m *Payment) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x2a
 	}
 	if m.SendMax != nil {
 		size, err := m.SendMax.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.DeliverMax != nil {
+		size, err := m.DeliverMax.MarshalToSizedBufferVTStrict(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -326,6 +418,10 @@ func (m *Payment) SizeVT() (n int) {
 		l = m.Amount.SizeVT()
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
+	if m.DeliverMax != nil {
+		l = m.DeliverMax.SizeVT()
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
 	if m.SendMax != nil {
 		l = m.SendMax.SizeVT()
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
@@ -347,9 +443,22 @@ func (m *Payment) SizeVT() (n int) {
 	if m.DestinationTag != 0 {
 		n += 1 + protohelpers.SizeOfVarint(uint64(m.DestinationTag))
 	}
+	if len(m.CredentialIds) > 0 {
+		for _, s := range m.CredentialIds {
+			l = len(s)
+			n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+		}
+	}
+	l = len(m.DomainId)
+	if l > 0 {
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	if m.Flags != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.Flags))
+	}
 	if m.DeliveredAmount != nil {
 		l = m.DeliveredAmount.SizeVT()
-		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	n += len(m.unknownFields)
 	return n
@@ -454,6 +563,42 @@ func (m *Payment) UnmarshalVT(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeliverMax", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.DeliverMax == nil {
+				m.DeliverMax = &Amount{}
+			}
+			if err := m.DeliverMax.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SendMax", wireType)
 			}
 			var msglen int
@@ -488,7 +633,7 @@ func (m *Payment) UnmarshalVT(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 4:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DeliverMin", wireType)
 			}
@@ -524,7 +669,7 @@ func (m *Payment) UnmarshalVT(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 5:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Paths", wireType)
 			}
@@ -558,7 +703,7 @@ func (m *Payment) UnmarshalVT(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 6:
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field InvoiceId", wireType)
 			}
@@ -590,7 +735,7 @@ func (m *Payment) UnmarshalVT(dAtA []byte) error {
 			}
 			m.InvoiceId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 7:
+		case 8:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DestinationTag", wireType)
 			}
@@ -609,7 +754,90 @@ func (m *Payment) UnmarshalVT(dAtA []byte) error {
 					break
 				}
 			}
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CredentialIds", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CredentialIds = append(m.CredentialIds, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
 		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DomainId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DomainId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 11:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 20:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DeliveredAmount", wireType)
 			}
@@ -770,6 +998,42 @@ func (m *Payment) UnmarshalVTUnsafe(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeliverMax", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.DeliverMax == nil {
+				m.DeliverMax = &Amount{}
+			}
+			if err := m.DeliverMax.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SendMax", wireType)
 			}
 			var msglen int
@@ -804,7 +1068,7 @@ func (m *Payment) UnmarshalVTUnsafe(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 4:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DeliverMin", wireType)
 			}
@@ -840,7 +1104,7 @@ func (m *Payment) UnmarshalVTUnsafe(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 5:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Paths", wireType)
 			}
@@ -874,7 +1138,7 @@ func (m *Payment) UnmarshalVTUnsafe(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 6:
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field InvoiceId", wireType)
 			}
@@ -910,7 +1174,7 @@ func (m *Payment) UnmarshalVTUnsafe(dAtA []byte) error {
 			}
 			m.InvoiceId = stringValue
 			iNdEx = postIndex
-		case 7:
+		case 8:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DestinationTag", wireType)
 			}
@@ -929,7 +1193,98 @@ func (m *Payment) UnmarshalVTUnsafe(dAtA []byte) error {
 					break
 				}
 			}
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CredentialIds", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.CredentialIds = append(m.CredentialIds, stringValue)
+			iNdEx = postIndex
 		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DomainId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.DomainId = stringValue
+			iNdEx = postIndex
+		case 11:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 20:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DeliveredAmount", wireType)
 			}

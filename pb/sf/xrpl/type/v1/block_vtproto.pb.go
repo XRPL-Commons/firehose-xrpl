@@ -43,13 +43,6 @@ func (m *Block) CloneVT() *Block {
 		}
 		r.Transactions = tmpContainer
 	}
-	if rhs := m.StateChanges; rhs != nil {
-		tmpContainer := make([]*LedgerObject, len(rhs))
-		for k, v := range rhs {
-			tmpContainer[k] = v.CloneVT()
-		}
-		r.StateChanges = tmpContainer
-	}
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -69,9 +62,6 @@ func (m *Header) CloneVT() *Header {
 	r.TotalDrops = m.TotalDrops
 	r.CloseTimeResolution = m.CloseTimeResolution
 	r.CloseFlags = m.CloseFlags
-	r.BaseFee = m.BaseFee
-	r.ReserveBase = m.ReserveBase
-	r.ReserveIncrement = m.ReserveIncrement
 	if rhs := m.ParentHash; rhs != nil {
 		tmpBytes := make([]byte, len(rhs))
 		copy(tmpBytes, rhs)
@@ -109,6 +99,15 @@ func (m *Transaction) CloneVT() *Transaction {
 	r.Account = m.Account
 	r.Fee = m.Fee
 	r.Sequence = m.Sequence
+	r.AccountTxnId = m.AccountTxnId
+	r.Delegate = m.Delegate
+	r.Flags = m.Flags
+	r.LastLedgerSequence = m.LastLedgerSequence
+	r.NetworkId = m.NetworkId
+	r.SourceTag = m.SourceTag
+	r.SigningPubKey = m.SigningPubKey
+	r.TicketSequence = m.TicketSequence
+	r.TxnSignature = m.TxnSignature
 	if rhs := m.Hash; rhs != nil {
 		tmpBytes := make([]byte, len(rhs))
 		copy(tmpBytes, rhs)
@@ -123,6 +122,20 @@ func (m *Transaction) CloneVT() *Transaction {
 		tmpBytes := make([]byte, len(rhs))
 		copy(tmpBytes, rhs)
 		r.MetaBlob = tmpBytes
+	}
+	if rhs := m.Memos; rhs != nil {
+		tmpContainer := make([]*Memo, len(rhs))
+		for k, v := range rhs {
+			tmpContainer[k] = v.CloneVT()
+		}
+		r.Memos = tmpContainer
+	}
+	if rhs := m.Signers; rhs != nil {
+		tmpContainer := make([]*Signer, len(rhs))
+		for k, v := range rhs {
+			tmpContainer[k] = v.CloneVT()
+		}
+		r.Signers = tmpContainer
 	}
 	if m.TxDetails != nil {
 		r.TxDetails = m.TxDetails.(interface {
@@ -356,6 +369,15 @@ func (m *Transaction_NftokenAcceptOffer) CloneVT() isTransaction_TxDetails {
 	return r
 }
 
+func (m *Transaction_NftokenModify) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_NftokenModify)(nil)
+	}
+	r := new(Transaction_NftokenModify)
+	r.NftokenModify = m.NftokenModify.CloneVT()
+	return r
+}
+
 func (m *Transaction_Clawback) CloneVT() isTransaction_TxDetails {
 	if m == nil {
 		return (*Transaction_Clawback)(nil)
@@ -425,78 +447,6 @@ func (m *Transaction_AmmClawback) CloneVT() isTransaction_TxDetails {
 	}
 	r := new(Transaction_AmmClawback)
 	r.AmmClawback = m.AmmClawback.CloneVT()
-	return r
-}
-
-func (m *Transaction_XchainCreateBridge) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_XchainCreateBridge)(nil)
-	}
-	r := new(Transaction_XchainCreateBridge)
-	r.XchainCreateBridge = m.XchainCreateBridge.CloneVT()
-	return r
-}
-
-func (m *Transaction_XchainModifyBridge) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_XchainModifyBridge)(nil)
-	}
-	r := new(Transaction_XchainModifyBridge)
-	r.XchainModifyBridge = m.XchainModifyBridge.CloneVT()
-	return r
-}
-
-func (m *Transaction_XchainCreateClaimId) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_XchainCreateClaimId)(nil)
-	}
-	r := new(Transaction_XchainCreateClaimId)
-	r.XchainCreateClaimId = m.XchainCreateClaimId.CloneVT()
-	return r
-}
-
-func (m *Transaction_XchainCommit) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_XchainCommit)(nil)
-	}
-	r := new(Transaction_XchainCommit)
-	r.XchainCommit = m.XchainCommit.CloneVT()
-	return r
-}
-
-func (m *Transaction_XchainClaim) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_XchainClaim)(nil)
-	}
-	r := new(Transaction_XchainClaim)
-	r.XchainClaim = m.XchainClaim.CloneVT()
-	return r
-}
-
-func (m *Transaction_XchainAccountCreateCommit) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_XchainAccountCreateCommit)(nil)
-	}
-	r := new(Transaction_XchainAccountCreateCommit)
-	r.XchainAccountCreateCommit = m.XchainAccountCreateCommit.CloneVT()
-	return r
-}
-
-func (m *Transaction_XchainAddClaimAttestation) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_XchainAddClaimAttestation)(nil)
-	}
-	r := new(Transaction_XchainAddClaimAttestation)
-	r.XchainAddClaimAttestation = m.XchainAddClaimAttestation.CloneVT()
-	return r
-}
-
-func (m *Transaction_XchainAddAccountCreateAttestation) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_XchainAddAccountCreateAttestation)(nil)
-	}
-	r := new(Transaction_XchainAddAccountCreateAttestation)
-	r.XchainAddAccountCreateAttestation = m.XchainAddAccountCreateAttestation.CloneVT()
 	return r
 }
 
@@ -626,111 +576,12 @@ func (m *Transaction_DelegateSet) CloneVT() isTransaction_TxDetails {
 	return r
 }
 
-func (m *Transaction_VaultCreate) CloneVT() isTransaction_TxDetails {
+func (m *Transaction_Batch) CloneVT() isTransaction_TxDetails {
 	if m == nil {
-		return (*Transaction_VaultCreate)(nil)
+		return (*Transaction_Batch)(nil)
 	}
-	r := new(Transaction_VaultCreate)
-	r.VaultCreate = m.VaultCreate.CloneVT()
-	return r
-}
-
-func (m *Transaction_VaultSet) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_VaultSet)(nil)
-	}
-	r := new(Transaction_VaultSet)
-	r.VaultSet = m.VaultSet.CloneVT()
-	return r
-}
-
-func (m *Transaction_VaultDelete) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_VaultDelete)(nil)
-	}
-	r := new(Transaction_VaultDelete)
-	r.VaultDelete = m.VaultDelete.CloneVT()
-	return r
-}
-
-func (m *Transaction_VaultDeposit) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_VaultDeposit)(nil)
-	}
-	r := new(Transaction_VaultDeposit)
-	r.VaultDeposit = m.VaultDeposit.CloneVT()
-	return r
-}
-
-func (m *Transaction_VaultWithdraw) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_VaultWithdraw)(nil)
-	}
-	r := new(Transaction_VaultWithdraw)
-	r.VaultWithdraw = m.VaultWithdraw.CloneVT()
-	return r
-}
-
-func (m *Transaction_VaultClawback) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_VaultClawback)(nil)
-	}
-	r := new(Transaction_VaultClawback)
-	r.VaultClawback = m.VaultClawback.CloneVT()
-	return r
-}
-
-func (m *Transaction_ContractCreate) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_ContractCreate)(nil)
-	}
-	r := new(Transaction_ContractCreate)
-	r.ContractCreate = m.ContractCreate.CloneVT()
-	return r
-}
-
-func (m *Transaction_ContractModify) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_ContractModify)(nil)
-	}
-	r := new(Transaction_ContractModify)
-	r.ContractModify = m.ContractModify.CloneVT()
-	return r
-}
-
-func (m *Transaction_ContractDelete) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_ContractDelete)(nil)
-	}
-	r := new(Transaction_ContractDelete)
-	r.ContractDelete = m.ContractDelete.CloneVT()
-	return r
-}
-
-func (m *Transaction_ContractClawback) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_ContractClawback)(nil)
-	}
-	r := new(Transaction_ContractClawback)
-	r.ContractClawback = m.ContractClawback.CloneVT()
-	return r
-}
-
-func (m *Transaction_ContractUserDelete) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_ContractUserDelete)(nil)
-	}
-	r := new(Transaction_ContractUserDelete)
-	r.ContractUserDelete = m.ContractUserDelete.CloneVT()
-	return r
-}
-
-func (m *Transaction_ContractCall) CloneVT() isTransaction_TxDetails {
-	if m == nil {
-		return (*Transaction_ContractCall)(nil)
-	}
-	r := new(Transaction_ContractCall)
-	r.ContractCall = m.ContractCall.CloneVT()
+	r := new(Transaction_Batch)
+	r.Batch = m.Batch.CloneVT()
 	return r
 }
 
@@ -770,23 +621,14 @@ func (m *Transaction_LedgerStateFix) CloneVT() isTransaction_TxDetails {
 	return r
 }
 
-func (m *LedgerObject) CloneVT() *LedgerObject {
+func (m *Memo) CloneVT() *Memo {
 	if m == nil {
-		return (*LedgerObject)(nil)
+		return (*Memo)(nil)
 	}
-	r := new(LedgerObject)
-	r.ModType = m.ModType
-	r.EntryType = m.EntryType
-	if rhs := m.Key; rhs != nil {
-		tmpBytes := make([]byte, len(rhs))
-		copy(tmpBytes, rhs)
-		r.Key = tmpBytes
-	}
-	if rhs := m.Data; rhs != nil {
-		tmpBytes := make([]byte, len(rhs))
-		copy(tmpBytes, rhs)
-		r.Data = tmpBytes
-	}
+	r := new(Memo)
+	r.MemoData = m.MemoData
+	r.MemoFormat = m.MemoFormat
+	r.MemoType = m.MemoType
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -794,7 +636,7 @@ func (m *LedgerObject) CloneVT() *LedgerObject {
 	return r
 }
 
-func (m *LedgerObject) CloneMessageVT() proto.Message {
+func (m *Memo) CloneMessageVT() proto.Message {
 	return m.CloneVT()
 }
 
@@ -836,23 +678,6 @@ func (this *Block) EqualVT(that *Block) bool {
 	if !(*timestamppb1.Timestamp)(this.CloseTime).EqualVT((*timestamppb1.Timestamp)(that.CloseTime)) {
 		return false
 	}
-	if len(this.StateChanges) != len(that.StateChanges) {
-		return false
-	}
-	for i, vx := range this.StateChanges {
-		vy := that.StateChanges[i]
-		if p, q := vx, vy; p != q {
-			if p == nil {
-				p = &LedgerObject{}
-			}
-			if q == nil {
-				q = &LedgerObject{}
-			}
-			if !p.EqualVT(q) {
-				return false
-			}
-		}
-	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
@@ -885,15 +710,6 @@ func (this *Header) EqualVT(that *Header) bool {
 		return false
 	}
 	if this.CloseFlags != that.CloseFlags {
-		return false
-	}
-	if this.BaseFee != that.BaseFee {
-		return false
-	}
-	if this.ReserveBase != that.ReserveBase {
-		return false
-	}
-	if this.ReserveIncrement != that.ReserveIncrement {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
@@ -949,6 +765,67 @@ func (this *Transaction) EqualVT(that *Transaction) bool {
 		return false
 	}
 	if this.Sequence != that.Sequence {
+		return false
+	}
+	if this.AccountTxnId != that.AccountTxnId {
+		return false
+	}
+	if this.Delegate != that.Delegate {
+		return false
+	}
+	if this.Flags != that.Flags {
+		return false
+	}
+	if this.LastLedgerSequence != that.LastLedgerSequence {
+		return false
+	}
+	if len(this.Memos) != len(that.Memos) {
+		return false
+	}
+	for i, vx := range this.Memos {
+		vy := that.Memos[i]
+		if p, q := vx, vy; p != q {
+			if p == nil {
+				p = &Memo{}
+			}
+			if q == nil {
+				q = &Memo{}
+			}
+			if !p.EqualVT(q) {
+				return false
+			}
+		}
+	}
+	if this.NetworkId != that.NetworkId {
+		return false
+	}
+	if len(this.Signers) != len(that.Signers) {
+		return false
+	}
+	for i, vx := range this.Signers {
+		vy := that.Signers[i]
+		if p, q := vx, vy; p != q {
+			if p == nil {
+				p = &Signer{}
+			}
+			if q == nil {
+				q = &Signer{}
+			}
+			if !p.EqualVT(q) {
+				return false
+			}
+		}
+	}
+	if this.SourceTag != that.SourceTag {
+		return false
+	}
+	if this.SigningPubKey != that.SigningPubKey {
+		return false
+	}
+	if this.TicketSequence != that.TicketSequence {
+		return false
+	}
+	if this.TxnSignature != that.TxnSignature {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
@@ -1561,6 +1438,31 @@ func (this *Transaction_NftokenAcceptOffer) EqualVT(thatIface isTransaction_TxDe
 	return true
 }
 
+func (this *Transaction_NftokenModify) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_NftokenModify)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.NftokenModify, that.NftokenModify; p != q {
+		if p == nil {
+			p = &NFTokenModify{}
+		}
+		if q == nil {
+			q = &NFTokenModify{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
 func (this *Transaction_Clawback) EqualVT(thatIface isTransaction_TxDetails) bool {
 	that, ok := thatIface.(*Transaction_Clawback)
 	if !ok {
@@ -1753,206 +1655,6 @@ func (this *Transaction_AmmClawback) EqualVT(thatIface isTransaction_TxDetails) 
 		}
 		if q == nil {
 			q = &AMMClawback{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_XchainCreateBridge) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_XchainCreateBridge)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.XchainCreateBridge, that.XchainCreateBridge; p != q {
-		if p == nil {
-			p = &XChainCreateBridge{}
-		}
-		if q == nil {
-			q = &XChainCreateBridge{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_XchainModifyBridge) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_XchainModifyBridge)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.XchainModifyBridge, that.XchainModifyBridge; p != q {
-		if p == nil {
-			p = &XChainModifyBridge{}
-		}
-		if q == nil {
-			q = &XChainModifyBridge{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_XchainCreateClaimId) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_XchainCreateClaimId)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.XchainCreateClaimId, that.XchainCreateClaimId; p != q {
-		if p == nil {
-			p = &XChainCreateClaimID{}
-		}
-		if q == nil {
-			q = &XChainCreateClaimID{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_XchainCommit) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_XchainCommit)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.XchainCommit, that.XchainCommit; p != q {
-		if p == nil {
-			p = &XChainCommit{}
-		}
-		if q == nil {
-			q = &XChainCommit{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_XchainClaim) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_XchainClaim)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.XchainClaim, that.XchainClaim; p != q {
-		if p == nil {
-			p = &XChainClaim{}
-		}
-		if q == nil {
-			q = &XChainClaim{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_XchainAccountCreateCommit) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_XchainAccountCreateCommit)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.XchainAccountCreateCommit, that.XchainAccountCreateCommit; p != q {
-		if p == nil {
-			p = &XChainAccountCreateCommit{}
-		}
-		if q == nil {
-			q = &XChainAccountCreateCommit{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_XchainAddClaimAttestation) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_XchainAddClaimAttestation)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.XchainAddClaimAttestation, that.XchainAddClaimAttestation; p != q {
-		if p == nil {
-			p = &XChainAddClaimAttestation{}
-		}
-		if q == nil {
-			q = &XChainAddClaimAttestation{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_XchainAddAccountCreateAttestation) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_XchainAddAccountCreateAttestation)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.XchainAddAccountCreateAttestation, that.XchainAddAccountCreateAttestation; p != q {
-		if p == nil {
-			p = &XChainAddAccountCreateAttestation{}
-		}
-		if q == nil {
-			q = &XChainAddAccountCreateAttestation{}
 		}
 		if !p.EqualVT(q) {
 			return false
@@ -2311,8 +2013,8 @@ func (this *Transaction_DelegateSet) EqualVT(thatIface isTransaction_TxDetails) 
 	return true
 }
 
-func (this *Transaction_VaultCreate) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_VaultCreate)
+func (this *Transaction_Batch) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_Batch)
 	if !ok {
 		return false
 	}
@@ -2322,287 +2024,12 @@ func (this *Transaction_VaultCreate) EqualVT(thatIface isTransaction_TxDetails) 
 	if this == nil && that != nil || this != nil && that == nil {
 		return false
 	}
-	if p, q := this.VaultCreate, that.VaultCreate; p != q {
+	if p, q := this.Batch, that.Batch; p != q {
 		if p == nil {
-			p = &VaultCreate{}
+			p = &Batch{}
 		}
 		if q == nil {
-			q = &VaultCreate{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_VaultSet) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_VaultSet)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.VaultSet, that.VaultSet; p != q {
-		if p == nil {
-			p = &VaultSet{}
-		}
-		if q == nil {
-			q = &VaultSet{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_VaultDelete) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_VaultDelete)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.VaultDelete, that.VaultDelete; p != q {
-		if p == nil {
-			p = &VaultDelete{}
-		}
-		if q == nil {
-			q = &VaultDelete{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_VaultDeposit) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_VaultDeposit)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.VaultDeposit, that.VaultDeposit; p != q {
-		if p == nil {
-			p = &VaultDeposit{}
-		}
-		if q == nil {
-			q = &VaultDeposit{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_VaultWithdraw) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_VaultWithdraw)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.VaultWithdraw, that.VaultWithdraw; p != q {
-		if p == nil {
-			p = &VaultWithdraw{}
-		}
-		if q == nil {
-			q = &VaultWithdraw{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_VaultClawback) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_VaultClawback)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.VaultClawback, that.VaultClawback; p != q {
-		if p == nil {
-			p = &VaultClawback{}
-		}
-		if q == nil {
-			q = &VaultClawback{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_ContractCreate) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_ContractCreate)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.ContractCreate, that.ContractCreate; p != q {
-		if p == nil {
-			p = &ContractCreate{}
-		}
-		if q == nil {
-			q = &ContractCreate{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_ContractModify) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_ContractModify)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.ContractModify, that.ContractModify; p != q {
-		if p == nil {
-			p = &ContractModify{}
-		}
-		if q == nil {
-			q = &ContractModify{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_ContractDelete) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_ContractDelete)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.ContractDelete, that.ContractDelete; p != q {
-		if p == nil {
-			p = &ContractDelete{}
-		}
-		if q == nil {
-			q = &ContractDelete{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_ContractClawback) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_ContractClawback)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.ContractClawback, that.ContractClawback; p != q {
-		if p == nil {
-			p = &ContractClawback{}
-		}
-		if q == nil {
-			q = &ContractClawback{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_ContractUserDelete) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_ContractUserDelete)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.ContractUserDelete, that.ContractUserDelete; p != q {
-		if p == nil {
-			p = &ContractUserDelete{}
-		}
-		if q == nil {
-			q = &ContractUserDelete{}
-		}
-		if !p.EqualVT(q) {
-			return false
-		}
-	}
-	return true
-}
-
-func (this *Transaction_ContractCall) EqualVT(thatIface isTransaction_TxDetails) bool {
-	that, ok := thatIface.(*Transaction_ContractCall)
-	if !ok {
-		return false
-	}
-	if this == that {
-		return true
-	}
-	if this == nil && that != nil || this != nil && that == nil {
-		return false
-	}
-	if p, q := this.ContractCall, that.ContractCall; p != q {
-		if p == nil {
-			p = &ContractCall{}
-		}
-		if q == nil {
-			q = &ContractCall{}
+			q = &Batch{}
 		}
 		if !p.EqualVT(q) {
 			return false
@@ -2711,29 +2138,26 @@ func (this *Transaction_LedgerStateFix) EqualVT(thatIface isTransaction_TxDetail
 	return true
 }
 
-func (this *LedgerObject) EqualVT(that *LedgerObject) bool {
+func (this *Memo) EqualVT(that *Memo) bool {
 	if this == that {
 		return true
 	} else if this == nil || that == nil {
 		return false
 	}
-	if string(this.Key) != string(that.Key) {
+	if this.MemoData != that.MemoData {
 		return false
 	}
-	if string(this.Data) != string(that.Data) {
+	if this.MemoFormat != that.MemoFormat {
 		return false
 	}
-	if this.ModType != that.ModType {
-		return false
-	}
-	if this.EntryType != that.EntryType {
+	if this.MemoType != that.MemoType {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
-func (this *LedgerObject) EqualMessageVT(thatMsg proto.Message) bool {
-	that, ok := thatMsg.(*LedgerObject)
+func (this *Memo) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*Memo)
 	if !ok {
 		return false
 	}
@@ -2768,18 +2192,6 @@ func (m *Block) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
-	}
-	if len(m.StateChanges) > 0 {
-		for iNdEx := len(m.StateChanges) - 1; iNdEx >= 0; iNdEx-- {
-			size, err := m.StateChanges[iNdEx].MarshalToSizedBufferVT(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-			i--
-			dAtA[i] = 0x3a
-		}
 	}
 	if m.CloseTime != nil {
 		size, err := (*timestamppb1.Timestamp)(m.CloseTime).MarshalToSizedBufferVT(dAtA[:i])
@@ -2863,21 +2275,6 @@ func (m *Header) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
-	if m.ReserveIncrement != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.ReserveIncrement))
-		i--
-		dAtA[i] = 0x48
-	}
-	if m.ReserveBase != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.ReserveBase))
-		i--
-		dAtA[i] = 0x40
-	}
-	if m.BaseFee != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.BaseFee))
-		i--
-		dAtA[i] = 0x38
-	}
 	if m.CloseFlags != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.CloseFlags))
 		i--
@@ -2956,6 +2353,93 @@ func (m *Transaction) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		}
 		i -= size
 	}
+	if len(m.TxnSignature) > 0 {
+		i -= len(m.TxnSignature)
+		copy(dAtA[i:], m.TxnSignature)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.TxnSignature)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xa2
+	}
+	if m.TicketSequence != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.TicketSequence))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x98
+	}
+	if len(m.SigningPubKey) > 0 {
+		i -= len(m.SigningPubKey)
+		copy(dAtA[i:], m.SigningPubKey)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.SigningPubKey)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x92
+	}
+	if m.SourceTag != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.SourceTag))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x88
+	}
+	if len(m.Signers) > 0 {
+		for iNdEx := len(m.Signers) - 1; iNdEx >= 0; iNdEx-- {
+			size, err := m.Signers[iNdEx].MarshalToSizedBufferVT(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x82
+		}
+	}
+	if m.NetworkId != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.NetworkId))
+		i--
+		dAtA[i] = 0x78
+	}
+	if len(m.Memos) > 0 {
+		for iNdEx := len(m.Memos) - 1; iNdEx >= 0; iNdEx-- {
+			size, err := m.Memos[iNdEx].MarshalToSizedBufferVT(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+			i--
+			dAtA[i] = 0x72
+		}
+	}
+	if m.LastLedgerSequence != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.LastLedgerSequence))
+		i--
+		dAtA[i] = 0x68
+	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x60
+	}
+	if len(m.Delegate) > 0 {
+		i -= len(m.Delegate)
+		copy(dAtA[i:], m.Delegate)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.Delegate)))
+		i--
+		dAtA[i] = 0x5a
+	}
+	if len(m.AccountTxnId) > 0 {
+		i -= len(m.AccountTxnId)
+		copy(dAtA[i:], m.AccountTxnId)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.AccountTxnId)))
+		i--
+		dAtA[i] = 0x52
+	}
 	if m.Sequence != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Sequence))
 		i--
@@ -2973,10 +2457,12 @@ func (m *Transaction) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x3a
 	}
-	if m.TxType != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.TxType))
+	if len(m.TxType) > 0 {
+		i -= len(m.TxType)
+		copy(dAtA[i:], m.TxType)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.TxType)))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x32
 	}
 	if len(m.MetaBlob) > 0 {
 		i -= len(m.MetaBlob)
@@ -2997,10 +2483,12 @@ func (m *Transaction) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.Result != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Result))
+	if len(m.Result) > 0 {
+		i -= len(m.Result)
+		copy(dAtA[i:], m.Result)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.Result)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Hash) > 0 {
 		i -= len(m.Hash)
@@ -3029,7 +2517,7 @@ func (m *Transaction_Payment) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xa2
+		dAtA[i] = 0xf2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3048,9 +2536,9 @@ func (m *Transaction_OfferCreate) MarshalToSizedBufferVT(dAtA []byte) (int, erro
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xaa
+		dAtA[i] = 0xc2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3069,9 +2557,9 @@ func (m *Transaction_OfferCancel) MarshalToSizedBufferVT(dAtA []byte) (int, erro
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xb2
+		dAtA[i] = 0xca
 	}
 	return len(dAtA) - i, nil
 }
@@ -3090,9 +2578,9 @@ func (m *Transaction_TrustSet) MarshalToSizedBufferVT(dAtA []byte) (int, error) 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xba
+		dAtA[i] = 0x92
 	}
 	return len(dAtA) - i, nil
 }
@@ -3111,9 +2599,9 @@ func (m *Transaction_AccountSet) MarshalToSizedBufferVT(dAtA []byte) (int, error
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xc2
+		dAtA[i] = 0xe2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3132,9 +2620,9 @@ func (m *Transaction_AccountDelete) MarshalToSizedBufferVT(dAtA []byte) (int, er
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xca
+		dAtA[i] = 0xea
 	}
 	return len(dAtA) - i, nil
 }
@@ -3153,9 +2641,9 @@ func (m *Transaction_SetRegularKey) MarshalToSizedBufferVT(dAtA []byte) (int, er
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xd2
+		dAtA[i] = 0xf2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3174,9 +2662,9 @@ func (m *Transaction_SignerListSet) MarshalToSizedBufferVT(dAtA []byte) (int, er
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xda
+		dAtA[i] = 0xfa
 	}
 	return len(dAtA) - i, nil
 }
@@ -3195,9 +2683,9 @@ func (m *Transaction_EscrowCreate) MarshalToSizedBufferVT(dAtA []byte) (int, err
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x4
 		i--
-		dAtA[i] = 0xf2
+		dAtA[i] = 0xb2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3216,9 +2704,9 @@ func (m *Transaction_EscrowFinish) MarshalToSizedBufferVT(dAtA []byte) (int, err
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x4
 		i--
-		dAtA[i] = 0xfa
+		dAtA[i] = 0xba
 	}
 	return len(dAtA) - i, nil
 }
@@ -3237,9 +2725,9 @@ func (m *Transaction_EscrowCancel) MarshalToSizedBufferVT(dAtA []byte) (int, err
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x4
 		i--
-		dAtA[i] = 0x82
+		dAtA[i] = 0xc2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3258,9 +2746,9 @@ func (m *Transaction_PaymentChannelCreate) MarshalToSizedBufferVT(dAtA []byte) (
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0x8a
+		dAtA[i] = 0x82
 	}
 	return len(dAtA) - i, nil
 }
@@ -3279,9 +2767,9 @@ func (m *Transaction_PaymentChannelFund) MarshalToSizedBufferVT(dAtA []byte) (in
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0x92
+		dAtA[i] = 0x8a
 	}
 	return len(dAtA) - i, nil
 }
@@ -3300,9 +2788,9 @@ func (m *Transaction_PaymentChannelClaim) MarshalToSizedBufferVT(dAtA []byte) (i
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0x9a
+		dAtA[i] = 0x92
 	}
 	return len(dAtA) - i, nil
 }
@@ -3321,9 +2809,9 @@ func (m *Transaction_CheckCreate) MarshalToSizedBufferVT(dAtA []byte) (int, erro
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0xa2
+		dAtA[i] = 0xd2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3342,9 +2830,9 @@ func (m *Transaction_CheckCash) MarshalToSizedBufferVT(dAtA []byte) (int, error)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0xaa
+		dAtA[i] = 0xda
 	}
 	return len(dAtA) - i, nil
 }
@@ -3363,9 +2851,9 @@ func (m *Transaction_CheckCancel) MarshalToSizedBufferVT(dAtA []byte) (int, erro
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0xb2
+		dAtA[i] = 0xe2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3384,9 +2872,9 @@ func (m *Transaction_DepositPreauth) MarshalToSizedBufferVT(dAtA []byte) (int, e
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x6
 		i--
-		dAtA[i] = 0xba
+		dAtA[i] = 0xa2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3405,9 +2893,9 @@ func (m *Transaction_TicketCreate) MarshalToSizedBufferVT(dAtA []byte) (int, err
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x6
 		i--
-		dAtA[i] = 0xc2
+		dAtA[i] = 0xaa
 	}
 	return len(dAtA) - i, nil
 }
@@ -3426,9 +2914,9 @@ func (m *Transaction_NftokenMint) MarshalToSizedBufferVT(dAtA []byte) (int, erro
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x6
 		i--
-		dAtA[i] = 0x92
+		dAtA[i] = 0xf2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3447,9 +2935,9 @@ func (m *Transaction_NftokenBurn) MarshalToSizedBufferVT(dAtA []byte) (int, erro
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x6
 		i--
-		dAtA[i] = 0x9a
+		dAtA[i] = 0xfa
 	}
 	return len(dAtA) - i, nil
 }
@@ -3468,9 +2956,9 @@ func (m *Transaction_NftokenCreateOffer) MarshalToSizedBufferVT(dAtA []byte) (in
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x7
 		i--
-		dAtA[i] = 0xa2
+		dAtA[i] = 0x82
 	}
 	return len(dAtA) - i, nil
 }
@@ -3489,9 +2977,9 @@ func (m *Transaction_NftokenCancelOffer) MarshalToSizedBufferVT(dAtA []byte) (in
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x7
 		i--
-		dAtA[i] = 0xaa
+		dAtA[i] = 0x8a
 	}
 	return len(dAtA) - i, nil
 }
@@ -3510,9 +2998,30 @@ func (m *Transaction_NftokenAcceptOffer) MarshalToSizedBufferVT(dAtA []byte) (in
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x7
 		i--
-		dAtA[i] = 0xb2
+		dAtA[i] = 0x92
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_NftokenModify) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_NftokenModify) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.NftokenModify != nil {
+		size, err := m.NftokenModify.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0x7
+		i--
+		dAtA[i] = 0x9a
 	}
 	return len(dAtA) - i, nil
 }
@@ -3531,9 +3040,9 @@ func (m *Transaction_Clawback) MarshalToSizedBufferVT(dAtA []byte) (int, error) 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x7
 		i--
-		dAtA[i] = 0xe2
+		dAtA[i] = 0xc2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3552,9 +3061,9 @@ func (m *Transaction_AmmCreate) MarshalToSizedBufferVT(dAtA []byte) (int, error)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xb2
+		dAtA[i] = 0x92
 	}
 	return len(dAtA) - i, nil
 }
@@ -3573,9 +3082,9 @@ func (m *Transaction_AmmDeposit) MarshalToSizedBufferVT(dAtA []byte) (int, error
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xba
+		dAtA[i] = 0x9a
 	}
 	return len(dAtA) - i, nil
 }
@@ -3594,9 +3103,9 @@ func (m *Transaction_AmmWithdraw) MarshalToSizedBufferVT(dAtA []byte) (int, erro
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xc2
+		dAtA[i] = 0xa2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3615,9 +3124,9 @@ func (m *Transaction_AmmVote) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xca
+		dAtA[i] = 0xaa
 	}
 	return len(dAtA) - i, nil
 }
@@ -3636,9 +3145,9 @@ func (m *Transaction_AmmBid) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xd2
+		dAtA[i] = 0xb2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3657,9 +3166,9 @@ func (m *Transaction_AmmDelete) MarshalToSizedBufferVT(dAtA []byte) (int, error)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xda
+		dAtA[i] = 0xba
 	}
 	return len(dAtA) - i, nil
 }
@@ -3678,177 +3187,9 @@ func (m *Transaction_AmmClawback) MarshalToSizedBufferVT(dAtA []byte) (int, erro
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xe2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainCreateBridge) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_XchainCreateBridge) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainCreateBridge != nil {
-		size, err := m.XchainCreateBridge.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0x82
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainModifyBridge) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_XchainModifyBridge) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainModifyBridge != nil {
-		size, err := m.XchainModifyBridge.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0x8a
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainCreateClaimId) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_XchainCreateClaimId) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainCreateClaimId != nil {
-		size, err := m.XchainCreateClaimId.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0x92
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainCommit) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_XchainCommit) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainCommit != nil {
-		size, err := m.XchainCommit.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0x9a
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainClaim) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_XchainClaim) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainClaim != nil {
-		size, err := m.XchainClaim.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0xa2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainAccountCreateCommit) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_XchainAccountCreateCommit) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainAccountCreateCommit != nil {
-		size, err := m.XchainAccountCreateCommit.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0xaa
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainAddClaimAttestation) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_XchainAddClaimAttestation) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainAddClaimAttestation != nil {
-		size, err := m.XchainAddClaimAttestation.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0xb2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainAddAccountCreateAttestation) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_XchainAddAccountCreateAttestation) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainAddAccountCreateAttestation != nil {
-		size, err := m.XchainAddAccountCreateAttestation.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0xba
+		dAtA[i] = 0xc2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3867,9 +3208,9 @@ func (m *Transaction_DidSet) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x5
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xd2
+		dAtA[i] = 0xe2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3888,9 +3229,9 @@ func (m *Transaction_DidDelete) MarshalToSizedBufferVT(dAtA []byte) (int, error)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x5
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xda
+		dAtA[i] = 0xea
 	}
 	return len(dAtA) - i, nil
 }
@@ -3909,9 +3250,9 @@ func (m *Transaction_OracleSet) MarshalToSizedBufferVT(dAtA []byte) (int, error)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x5
+		dAtA[i] = 0x9
 		i--
-		dAtA[i] = 0xe2
+		dAtA[i] = 0xb2
 	}
 	return len(dAtA) - i, nil
 }
@@ -3930,9 +3271,9 @@ func (m *Transaction_OracleDelete) MarshalToSizedBufferVT(dAtA []byte) (int, err
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x5
+		dAtA[i] = 0x9
 		i--
-		dAtA[i] = 0xea
+		dAtA[i] = 0xba
 	}
 	return len(dAtA) - i, nil
 }
@@ -3951,9 +3292,9 @@ func (m *Transaction_MptokenIssuanceCreate) MarshalToSizedBufferVT(dAtA []byte) 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xa2
+		dAtA[i] = 0x82
 	}
 	return len(dAtA) - i, nil
 }
@@ -3972,9 +3313,9 @@ func (m *Transaction_MptokenIssuanceDestroy) MarshalToSizedBufferVT(dAtA []byte)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xaa
+		dAtA[i] = 0x8a
 	}
 	return len(dAtA) - i, nil
 }
@@ -3993,9 +3334,9 @@ func (m *Transaction_MptokenIssuanceSet) MarshalToSizedBufferVT(dAtA []byte) (in
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xb2
+		dAtA[i] = 0x92
 	}
 	return len(dAtA) - i, nil
 }
@@ -4014,9 +3355,9 @@ func (m *Transaction_MptokenAuthorize) MarshalToSizedBufferVT(dAtA []byte) (int,
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xba
+		dAtA[i] = 0x9a
 	}
 	return len(dAtA) - i, nil
 }
@@ -4035,9 +3376,9 @@ func (m *Transaction_CredentialCreate) MarshalToSizedBufferVT(dAtA []byte) (int,
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xf2
+		dAtA[i] = 0xd2
 	}
 	return len(dAtA) - i, nil
 }
@@ -4056,9 +3397,9 @@ func (m *Transaction_CredentialAccept) MarshalToSizedBufferVT(dAtA []byte) (int,
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xfa
+		dAtA[i] = 0xda
 	}
 	return len(dAtA) - i, nil
 }
@@ -4077,9 +3418,9 @@ func (m *Transaction_CredentialDelete) MarshalToSizedBufferVT(dAtA []byte) (int,
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x7
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0x82
+		dAtA[i] = 0xe2
 	}
 	return len(dAtA) - i, nil
 }
@@ -4098,9 +3439,9 @@ func (m *Transaction_PermissionedDomainSet) MarshalToSizedBufferVT(dAtA []byte) 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x7
+		dAtA[i] = 0xb
 		i--
-		dAtA[i] = 0xc2
+		dAtA[i] = 0xa2
 	}
 	return len(dAtA) - i, nil
 }
@@ -4119,9 +3460,9 @@ func (m *Transaction_PermissionedDomainDelete) MarshalToSizedBufferVT(dAtA []byt
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x7
+		dAtA[i] = 0xb
 		i--
-		dAtA[i] = 0xca
+		dAtA[i] = 0xaa
 	}
 	return len(dAtA) - i, nil
 }
@@ -4140,261 +3481,30 @@ func (m *Transaction_DelegateSet) MarshalToSizedBufferVT(dAtA []byte) (int, erro
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x7
-		i--
-		dAtA[i] = 0xd2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultCreate) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_VaultCreate) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultCreate != nil {
-		size, err := m.VaultCreate.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0x92
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultSet) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_VaultSet) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultSet != nil {
-		size, err := m.VaultSet.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0x9a
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultDelete) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_VaultDelete) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultDelete != nil {
-		size, err := m.VaultDelete.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xa2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultDeposit) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_VaultDeposit) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultDeposit != nil {
-		size, err := m.VaultDeposit.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xaa
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultWithdraw) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_VaultWithdraw) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultWithdraw != nil {
-		size, err := m.VaultWithdraw.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xb2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultClawback) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_VaultClawback) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultClawback != nil {
-		size, err := m.VaultClawback.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xba
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_ContractCreate) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_ContractCreate) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.ContractCreate != nil {
-		size, err := m.ContractCreate.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xe2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_ContractModify) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_ContractModify) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.ContractModify != nil {
-		size, err := m.ContractModify.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xea
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_ContractDelete) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_ContractDelete) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.ContractDelete != nil {
-		size, err := m.ContractDelete.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xb
 		i--
 		dAtA[i] = 0xf2
 	}
 	return len(dAtA) - i, nil
 }
-func (m *Transaction_ContractClawback) MarshalToVT(dAtA []byte) (int, error) {
+func (m *Transaction_Batch) MarshalToVT(dAtA []byte) (int, error) {
 	size := m.SizeVT()
 	return m.MarshalToSizedBufferVT(dAtA[:size])
 }
 
-func (m *Transaction_ContractClawback) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+func (m *Transaction_Batch) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	i := len(dAtA)
-	if m.ContractClawback != nil {
-		size, err := m.ContractClawback.MarshalToSizedBufferVT(dAtA[:i])
+	if m.Batch != nil {
+		size, err := m.Batch.MarshalToSizedBufferVT(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xc
 		i--
-		dAtA[i] = 0xfa
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_ContractUserDelete) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_ContractUserDelete) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.ContractUserDelete != nil {
-		size, err := m.ContractUserDelete.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x9
-		i--
-		dAtA[i] = 0x82
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_ContractCall) MarshalToVT(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVT(dAtA[:size])
-}
-
-func (m *Transaction_ContractCall) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.ContractCall != nil {
-		size, err := m.ContractCall.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x9
-		i--
-		dAtA[i] = 0x8a
+		dAtA[i] = 0xc2
 	}
 	return len(dAtA) - i, nil
 }
@@ -4413,9 +3523,9 @@ func (m *Transaction_EnableAmendment) MarshalToSizedBufferVT(dAtA []byte) (int, 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0xc
+		dAtA[i] = 0x38
 		i--
-		dAtA[i] = 0xc2
+		dAtA[i] = 0xa2
 	}
 	return len(dAtA) - i, nil
 }
@@ -4434,9 +3544,9 @@ func (m *Transaction_SetFee) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0xc
+		dAtA[i] = 0x38
 		i--
-		dAtA[i] = 0xca
+		dAtA[i] = 0xaa
 	}
 	return len(dAtA) - i, nil
 }
@@ -4455,9 +3565,9 @@ func (m *Transaction_UnlModify) MarshalToSizedBufferVT(dAtA []byte) (int, error)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0xc
+		dAtA[i] = 0x38
 		i--
-		dAtA[i] = 0xd2
+		dAtA[i] = 0xb2
 	}
 	return len(dAtA) - i, nil
 }
@@ -4476,13 +3586,13 @@ func (m *Transaction_LedgerStateFix) MarshalToSizedBufferVT(dAtA []byte) (int, e
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0xc
+		dAtA[i] = 0x38
 		i--
-		dAtA[i] = 0xda
+		dAtA[i] = 0xba
 	}
 	return len(dAtA) - i, nil
 }
-func (m *LedgerObject) MarshalVT() (dAtA []byte, err error) {
+func (m *Memo) MarshalVT() (dAtA []byte, err error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -4495,12 +3605,12 @@ func (m *LedgerObject) MarshalVT() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *LedgerObject) MarshalToVT(dAtA []byte) (int, error) {
+func (m *Memo) MarshalToVT(dAtA []byte) (int, error) {
 	size := m.SizeVT()
 	return m.MarshalToSizedBufferVT(dAtA[:size])
 }
 
-func (m *LedgerObject) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+func (m *Memo) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	if m == nil {
 		return 0, nil
 	}
@@ -4512,27 +3622,24 @@ func (m *LedgerObject) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
-	if m.EntryType != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.EntryType))
+	if len(m.MemoType) > 0 {
+		i -= len(m.MemoType)
+		copy(dAtA[i:], m.MemoType)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MemoType)))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x1a
 	}
-	if m.ModType != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.ModType))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.Data) > 0 {
-		i -= len(m.Data)
-		copy(dAtA[i:], m.Data)
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.Data)))
+	if len(m.MemoFormat) > 0 {
+		i -= len(m.MemoFormat)
+		copy(dAtA[i:], m.MemoFormat)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MemoFormat)))
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Key) > 0 {
-		i -= len(m.Key)
-		copy(dAtA[i:], m.Key)
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.Key)))
+	if len(m.MemoData) > 0 {
+		i -= len(m.MemoData)
+		copy(dAtA[i:], m.MemoData)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MemoData)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -4568,18 +3675,6 @@ func (m *Block) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
-	}
-	if len(m.StateChanges) > 0 {
-		for iNdEx := len(m.StateChanges) - 1; iNdEx >= 0; iNdEx-- {
-			size, err := m.StateChanges[iNdEx].MarshalToSizedBufferVTStrict(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-			i--
-			dAtA[i] = 0x3a
-		}
 	}
 	if m.CloseTime != nil {
 		size, err := (*timestamppb1.Timestamp)(m.CloseTime).MarshalToSizedBufferVTStrict(dAtA[:i])
@@ -4662,21 +3757,6 @@ func (m *Header) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
-	}
-	if m.ReserveIncrement != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.ReserveIncrement))
-		i--
-		dAtA[i] = 0x48
-	}
-	if m.ReserveBase != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.ReserveBase))
-		i--
-		dAtA[i] = 0x40
-	}
-	if m.BaseFee != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.BaseFee))
-		i--
-		dAtA[i] = 0x38
 	}
 	if m.CloseFlags != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.CloseFlags))
@@ -4775,84 +3855,7 @@ func (m *Transaction) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		}
 		i -= size
 	}
-	if msg, ok := m.TxDetails.(*Transaction_ContractCall); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_ContractUserDelete); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_ContractClawback); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_ContractDelete); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_ContractModify); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_ContractCreate); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_VaultClawback); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_VaultWithdraw); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_VaultDeposit); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_VaultDelete); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_VaultSet); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_VaultCreate); ok {
+	if msg, ok := m.TxDetails.(*Transaction_Batch); ok {
 		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
 		if err != nil {
 			return 0, err
@@ -4957,62 +3960,6 @@ func (m *Transaction) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		}
 		i -= size
 	}
-	if msg, ok := m.TxDetails.(*Transaction_XchainAddAccountCreateAttestation); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_XchainAddClaimAttestation); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_XchainAccountCreateCommit); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_XchainClaim); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_XchainCommit); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_XchainCreateClaimId); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_XchainModifyBridge); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
-	if msg, ok := m.TxDetails.(*Transaction_XchainCreateBridge); ok {
-		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-	}
 	if msg, ok := m.TxDetails.(*Transaction_AmmClawback); ok {
 		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
 		if err != nil {
@@ -5063,6 +4010,13 @@ func (m *Transaction) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= size
 	}
 	if msg, ok := m.TxDetails.(*Transaction_Clawback); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_NftokenModify); ok {
 		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
 		if err != nil {
 			return 0, err
@@ -5237,6 +4191,93 @@ func (m *Transaction) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		}
 		i -= size
 	}
+	if len(m.TxnSignature) > 0 {
+		i -= len(m.TxnSignature)
+		copy(dAtA[i:], m.TxnSignature)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.TxnSignature)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xa2
+	}
+	if m.TicketSequence != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.TicketSequence))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x98
+	}
+	if len(m.SigningPubKey) > 0 {
+		i -= len(m.SigningPubKey)
+		copy(dAtA[i:], m.SigningPubKey)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.SigningPubKey)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x92
+	}
+	if m.SourceTag != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.SourceTag))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x88
+	}
+	if len(m.Signers) > 0 {
+		for iNdEx := len(m.Signers) - 1; iNdEx >= 0; iNdEx-- {
+			size, err := m.Signers[iNdEx].MarshalToSizedBufferVTStrict(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x82
+		}
+	}
+	if m.NetworkId != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.NetworkId))
+		i--
+		dAtA[i] = 0x78
+	}
+	if len(m.Memos) > 0 {
+		for iNdEx := len(m.Memos) - 1; iNdEx >= 0; iNdEx-- {
+			size, err := m.Memos[iNdEx].MarshalToSizedBufferVTStrict(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+			i--
+			dAtA[i] = 0x72
+		}
+	}
+	if m.LastLedgerSequence != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.LastLedgerSequence))
+		i--
+		dAtA[i] = 0x68
+	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x60
+	}
+	if len(m.Delegate) > 0 {
+		i -= len(m.Delegate)
+		copy(dAtA[i:], m.Delegate)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.Delegate)))
+		i--
+		dAtA[i] = 0x5a
+	}
+	if len(m.AccountTxnId) > 0 {
+		i -= len(m.AccountTxnId)
+		copy(dAtA[i:], m.AccountTxnId)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.AccountTxnId)))
+		i--
+		dAtA[i] = 0x52
+	}
 	if m.Sequence != 0 {
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Sequence))
 		i--
@@ -5254,10 +4295,12 @@ func (m *Transaction) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x3a
 	}
-	if m.TxType != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.TxType))
+	if len(m.TxType) > 0 {
+		i -= len(m.TxType)
+		copy(dAtA[i:], m.TxType)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.TxType)))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x32
 	}
 	if len(m.MetaBlob) > 0 {
 		i -= len(m.MetaBlob)
@@ -5278,10 +4321,12 @@ func (m *Transaction) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.Result != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Result))
+	if len(m.Result) > 0 {
+		i -= len(m.Result)
+		copy(dAtA[i:], m.Result)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.Result)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Hash) > 0 {
 		i -= len(m.Hash)
@@ -5310,7 +4355,7 @@ func (m *Transaction_Payment) MarshalToSizedBufferVTStrict(dAtA []byte) (int, er
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xa2
+		dAtA[i] = 0xf2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5329,9 +4374,9 @@ func (m *Transaction_OfferCreate) MarshalToSizedBufferVTStrict(dAtA []byte) (int
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xaa
+		dAtA[i] = 0xc2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5350,9 +4395,9 @@ func (m *Transaction_OfferCancel) MarshalToSizedBufferVTStrict(dAtA []byte) (int
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xb2
+		dAtA[i] = 0xca
 	}
 	return len(dAtA) - i, nil
 }
@@ -5371,9 +4416,9 @@ func (m *Transaction_TrustSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int, e
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xba
+		dAtA[i] = 0x92
 	}
 	return len(dAtA) - i, nil
 }
@@ -5392,9 +4437,9 @@ func (m *Transaction_AccountSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int,
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xc2
+		dAtA[i] = 0xe2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5413,9 +4458,9 @@ func (m *Transaction_AccountDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (i
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xca
+		dAtA[i] = 0xea
 	}
 	return len(dAtA) - i, nil
 }
@@ -5434,9 +4479,9 @@ func (m *Transaction_SetRegularKey) MarshalToSizedBufferVTStrict(dAtA []byte) (i
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xd2
+		dAtA[i] = 0xf2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5455,9 +4500,9 @@ func (m *Transaction_SignerListSet) MarshalToSizedBufferVTStrict(dAtA []byte) (i
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xda
+		dAtA[i] = 0xfa
 	}
 	return len(dAtA) - i, nil
 }
@@ -5476,9 +4521,9 @@ func (m *Transaction_EscrowCreate) MarshalToSizedBufferVTStrict(dAtA []byte) (in
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x4
 		i--
-		dAtA[i] = 0xf2
+		dAtA[i] = 0xb2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5497,9 +4542,9 @@ func (m *Transaction_EscrowFinish) MarshalToSizedBufferVTStrict(dAtA []byte) (in
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x4
 		i--
-		dAtA[i] = 0xfa
+		dAtA[i] = 0xba
 	}
 	return len(dAtA) - i, nil
 }
@@ -5518,9 +4563,9 @@ func (m *Transaction_EscrowCancel) MarshalToSizedBufferVTStrict(dAtA []byte) (in
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x4
 		i--
-		dAtA[i] = 0x82
+		dAtA[i] = 0xc2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5539,9 +4584,9 @@ func (m *Transaction_PaymentChannelCreate) MarshalToSizedBufferVTStrict(dAtA []b
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0x8a
+		dAtA[i] = 0x82
 	}
 	return len(dAtA) - i, nil
 }
@@ -5560,9 +4605,9 @@ func (m *Transaction_PaymentChannelFund) MarshalToSizedBufferVTStrict(dAtA []byt
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0x92
+		dAtA[i] = 0x8a
 	}
 	return len(dAtA) - i, nil
 }
@@ -5581,9 +4626,9 @@ func (m *Transaction_PaymentChannelClaim) MarshalToSizedBufferVTStrict(dAtA []by
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0x9a
+		dAtA[i] = 0x92
 	}
 	return len(dAtA) - i, nil
 }
@@ -5602,9 +4647,9 @@ func (m *Transaction_CheckCreate) MarshalToSizedBufferVTStrict(dAtA []byte) (int
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0xa2
+		dAtA[i] = 0xd2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5623,9 +4668,9 @@ func (m *Transaction_CheckCash) MarshalToSizedBufferVTStrict(dAtA []byte) (int, 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0xaa
+		dAtA[i] = 0xda
 	}
 	return len(dAtA) - i, nil
 }
@@ -5644,9 +4689,9 @@ func (m *Transaction_CheckCancel) MarshalToSizedBufferVTStrict(dAtA []byte) (int
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x5
 		i--
-		dAtA[i] = 0xb2
+		dAtA[i] = 0xe2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5665,9 +4710,9 @@ func (m *Transaction_DepositPreauth) MarshalToSizedBufferVTStrict(dAtA []byte) (
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x6
 		i--
-		dAtA[i] = 0xba
+		dAtA[i] = 0xa2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5686,9 +4731,9 @@ func (m *Transaction_TicketCreate) MarshalToSizedBufferVTStrict(dAtA []byte) (in
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x6
 		i--
-		dAtA[i] = 0xc2
+		dAtA[i] = 0xaa
 	}
 	return len(dAtA) - i, nil
 }
@@ -5707,9 +4752,9 @@ func (m *Transaction_NftokenMint) MarshalToSizedBufferVTStrict(dAtA []byte) (int
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x6
 		i--
-		dAtA[i] = 0x92
+		dAtA[i] = 0xf2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5728,9 +4773,9 @@ func (m *Transaction_NftokenBurn) MarshalToSizedBufferVTStrict(dAtA []byte) (int
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x6
 		i--
-		dAtA[i] = 0x9a
+		dAtA[i] = 0xfa
 	}
 	return len(dAtA) - i, nil
 }
@@ -5749,9 +4794,9 @@ func (m *Transaction_NftokenCreateOffer) MarshalToSizedBufferVTStrict(dAtA []byt
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x7
 		i--
-		dAtA[i] = 0xa2
+		dAtA[i] = 0x82
 	}
 	return len(dAtA) - i, nil
 }
@@ -5770,9 +4815,9 @@ func (m *Transaction_NftokenCancelOffer) MarshalToSizedBufferVTStrict(dAtA []byt
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x7
 		i--
-		dAtA[i] = 0xaa
+		dAtA[i] = 0x8a
 	}
 	return len(dAtA) - i, nil
 }
@@ -5791,9 +4836,30 @@ func (m *Transaction_NftokenAcceptOffer) MarshalToSizedBufferVTStrict(dAtA []byt
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x7
 		i--
-		dAtA[i] = 0xb2
+		dAtA[i] = 0x92
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_NftokenModify) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_NftokenModify) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.NftokenModify != nil {
+		size, err := m.NftokenModify.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0x7
+		i--
+		dAtA[i] = 0x9a
 	}
 	return len(dAtA) - i, nil
 }
@@ -5812,9 +4878,9 @@ func (m *Transaction_Clawback) MarshalToSizedBufferVTStrict(dAtA []byte) (int, e
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x3
+		dAtA[i] = 0x7
 		i--
-		dAtA[i] = 0xe2
+		dAtA[i] = 0xc2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5833,9 +4899,9 @@ func (m *Transaction_AmmCreate) MarshalToSizedBufferVTStrict(dAtA []byte) (int, 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xb2
+		dAtA[i] = 0x92
 	}
 	return len(dAtA) - i, nil
 }
@@ -5854,9 +4920,9 @@ func (m *Transaction_AmmDeposit) MarshalToSizedBufferVTStrict(dAtA []byte) (int,
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xba
+		dAtA[i] = 0x9a
 	}
 	return len(dAtA) - i, nil
 }
@@ -5875,9 +4941,9 @@ func (m *Transaction_AmmWithdraw) MarshalToSizedBufferVTStrict(dAtA []byte) (int
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xc2
+		dAtA[i] = 0xa2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5896,9 +4962,9 @@ func (m *Transaction_AmmVote) MarshalToSizedBufferVTStrict(dAtA []byte) (int, er
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xca
+		dAtA[i] = 0xaa
 	}
 	return len(dAtA) - i, nil
 }
@@ -5917,9 +4983,9 @@ func (m *Transaction_AmmBid) MarshalToSizedBufferVTStrict(dAtA []byte) (int, err
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xd2
+		dAtA[i] = 0xb2
 	}
 	return len(dAtA) - i, nil
 }
@@ -5938,9 +5004,9 @@ func (m *Transaction_AmmDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (int, 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xda
+		dAtA[i] = 0xba
 	}
 	return len(dAtA) - i, nil
 }
@@ -5959,177 +5025,9 @@ func (m *Transaction_AmmClawback) MarshalToSizedBufferVTStrict(dAtA []byte) (int
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x4
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xe2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainCreateBridge) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_XchainCreateBridge) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainCreateBridge != nil {
-		size, err := m.XchainCreateBridge.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0x82
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainModifyBridge) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_XchainModifyBridge) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainModifyBridge != nil {
-		size, err := m.XchainModifyBridge.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0x8a
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainCreateClaimId) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_XchainCreateClaimId) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainCreateClaimId != nil {
-		size, err := m.XchainCreateClaimId.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0x92
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainCommit) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_XchainCommit) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainCommit != nil {
-		size, err := m.XchainCommit.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0x9a
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainClaim) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_XchainClaim) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainClaim != nil {
-		size, err := m.XchainClaim.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0xa2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainAccountCreateCommit) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_XchainAccountCreateCommit) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainAccountCreateCommit != nil {
-		size, err := m.XchainAccountCreateCommit.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0xaa
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainAddClaimAttestation) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_XchainAddClaimAttestation) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainAddClaimAttestation != nil {
-		size, err := m.XchainAddClaimAttestation.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0xb2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_XchainAddAccountCreateAttestation) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_XchainAddAccountCreateAttestation) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.XchainAddAccountCreateAttestation != nil {
-		size, err := m.XchainAddAccountCreateAttestation.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x5
-		i--
-		dAtA[i] = 0xba
+		dAtA[i] = 0xc2
 	}
 	return len(dAtA) - i, nil
 }
@@ -6148,9 +5046,9 @@ func (m *Transaction_DidSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int, err
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x5
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xd2
+		dAtA[i] = 0xe2
 	}
 	return len(dAtA) - i, nil
 }
@@ -6169,9 +5067,9 @@ func (m *Transaction_DidDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (int, 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x5
+		dAtA[i] = 0x8
 		i--
-		dAtA[i] = 0xda
+		dAtA[i] = 0xea
 	}
 	return len(dAtA) - i, nil
 }
@@ -6190,9 +5088,9 @@ func (m *Transaction_OracleSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int, 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x5
+		dAtA[i] = 0x9
 		i--
-		dAtA[i] = 0xe2
+		dAtA[i] = 0xb2
 	}
 	return len(dAtA) - i, nil
 }
@@ -6211,9 +5109,9 @@ func (m *Transaction_OracleDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (in
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x5
+		dAtA[i] = 0x9
 		i--
-		dAtA[i] = 0xea
+		dAtA[i] = 0xba
 	}
 	return len(dAtA) - i, nil
 }
@@ -6232,9 +5130,9 @@ func (m *Transaction_MptokenIssuanceCreate) MarshalToSizedBufferVTStrict(dAtA []
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xa2
+		dAtA[i] = 0x82
 	}
 	return len(dAtA) - i, nil
 }
@@ -6253,9 +5151,9 @@ func (m *Transaction_MptokenIssuanceDestroy) MarshalToSizedBufferVTStrict(dAtA [
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xaa
+		dAtA[i] = 0x8a
 	}
 	return len(dAtA) - i, nil
 }
@@ -6274,9 +5172,9 @@ func (m *Transaction_MptokenIssuanceSet) MarshalToSizedBufferVTStrict(dAtA []byt
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xb2
+		dAtA[i] = 0x92
 	}
 	return len(dAtA) - i, nil
 }
@@ -6295,9 +5193,9 @@ func (m *Transaction_MptokenAuthorize) MarshalToSizedBufferVTStrict(dAtA []byte)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xba
+		dAtA[i] = 0x9a
 	}
 	return len(dAtA) - i, nil
 }
@@ -6316,9 +5214,9 @@ func (m *Transaction_CredentialCreate) MarshalToSizedBufferVTStrict(dAtA []byte)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xf2
+		dAtA[i] = 0xd2
 	}
 	return len(dAtA) - i, nil
 }
@@ -6337,9 +5235,9 @@ func (m *Transaction_CredentialAccept) MarshalToSizedBufferVTStrict(dAtA []byte)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x6
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0xfa
+		dAtA[i] = 0xda
 	}
 	return len(dAtA) - i, nil
 }
@@ -6358,9 +5256,9 @@ func (m *Transaction_CredentialDelete) MarshalToSizedBufferVTStrict(dAtA []byte)
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x7
+		dAtA[i] = 0xa
 		i--
-		dAtA[i] = 0x82
+		dAtA[i] = 0xe2
 	}
 	return len(dAtA) - i, nil
 }
@@ -6379,9 +5277,9 @@ func (m *Transaction_PermissionedDomainSet) MarshalToSizedBufferVTStrict(dAtA []
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x7
+		dAtA[i] = 0xb
 		i--
-		dAtA[i] = 0xc2
+		dAtA[i] = 0xa2
 	}
 	return len(dAtA) - i, nil
 }
@@ -6400,9 +5298,9 @@ func (m *Transaction_PermissionedDomainDelete) MarshalToSizedBufferVTStrict(dAtA
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x7
+		dAtA[i] = 0xb
 		i--
-		dAtA[i] = 0xca
+		dAtA[i] = 0xaa
 	}
 	return len(dAtA) - i, nil
 }
@@ -6421,261 +5319,30 @@ func (m *Transaction_DelegateSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x7
-		i--
-		dAtA[i] = 0xd2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultCreate) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_VaultCreate) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultCreate != nil {
-		size, err := m.VaultCreate.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0x92
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultSet) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_VaultSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultSet != nil {
-		size, err := m.VaultSet.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0x9a
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultDelete) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_VaultDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultDelete != nil {
-		size, err := m.VaultDelete.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xa2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultDeposit) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_VaultDeposit) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultDeposit != nil {
-		size, err := m.VaultDeposit.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xaa
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultWithdraw) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_VaultWithdraw) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultWithdraw != nil {
-		size, err := m.VaultWithdraw.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xb2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_VaultClawback) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_VaultClawback) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.VaultClawback != nil {
-		size, err := m.VaultClawback.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xba
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_ContractCreate) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_ContractCreate) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.ContractCreate != nil {
-		size, err := m.ContractCreate.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xe2
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_ContractModify) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_ContractModify) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.ContractModify != nil {
-		size, err := m.ContractModify.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
-		i--
-		dAtA[i] = 0xea
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_ContractDelete) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_ContractDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.ContractDelete != nil {
-		size, err := m.ContractDelete.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xb
 		i--
 		dAtA[i] = 0xf2
 	}
 	return len(dAtA) - i, nil
 }
-func (m *Transaction_ContractClawback) MarshalToVTStrict(dAtA []byte) (int, error) {
+func (m *Transaction_Batch) MarshalToVTStrict(dAtA []byte) (int, error) {
 	size := m.SizeVT()
 	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
 }
 
-func (m *Transaction_ContractClawback) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+func (m *Transaction_Batch) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 	i := len(dAtA)
-	if m.ContractClawback != nil {
-		size, err := m.ContractClawback.MarshalToSizedBufferVTStrict(dAtA[:i])
+	if m.Batch != nil {
+		size, err := m.Batch.MarshalToSizedBufferVTStrict(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xc
 		i--
-		dAtA[i] = 0xfa
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_ContractUserDelete) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_ContractUserDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.ContractUserDelete != nil {
-		size, err := m.ContractUserDelete.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x9
-		i--
-		dAtA[i] = 0x82
-	}
-	return len(dAtA) - i, nil
-}
-func (m *Transaction_ContractCall) MarshalToVTStrict(dAtA []byte) (int, error) {
-	size := m.SizeVT()
-	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
-}
-
-func (m *Transaction_ContractCall) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.ContractCall != nil {
-		size, err := m.ContractCall.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
-		i--
-		dAtA[i] = 0x9
-		i--
-		dAtA[i] = 0x8a
+		dAtA[i] = 0xc2
 	}
 	return len(dAtA) - i, nil
 }
@@ -6694,9 +5361,9 @@ func (m *Transaction_EnableAmendment) MarshalToSizedBufferVTStrict(dAtA []byte) 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0xc
+		dAtA[i] = 0x38
 		i--
-		dAtA[i] = 0xc2
+		dAtA[i] = 0xa2
 	}
 	return len(dAtA) - i, nil
 }
@@ -6715,9 +5382,9 @@ func (m *Transaction_SetFee) MarshalToSizedBufferVTStrict(dAtA []byte) (int, err
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0xc
+		dAtA[i] = 0x38
 		i--
-		dAtA[i] = 0xca
+		dAtA[i] = 0xaa
 	}
 	return len(dAtA) - i, nil
 }
@@ -6736,9 +5403,9 @@ func (m *Transaction_UnlModify) MarshalToSizedBufferVTStrict(dAtA []byte) (int, 
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0xc
+		dAtA[i] = 0x38
 		i--
-		dAtA[i] = 0xd2
+		dAtA[i] = 0xb2
 	}
 	return len(dAtA) - i, nil
 }
@@ -6757,13 +5424,13 @@ func (m *Transaction_LedgerStateFix) MarshalToSizedBufferVTStrict(dAtA []byte) (
 		i -= size
 		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
 		i--
-		dAtA[i] = 0xc
+		dAtA[i] = 0x38
 		i--
-		dAtA[i] = 0xda
+		dAtA[i] = 0xba
 	}
 	return len(dAtA) - i, nil
 }
-func (m *LedgerObject) MarshalVTStrict() (dAtA []byte, err error) {
+func (m *Memo) MarshalVTStrict() (dAtA []byte, err error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -6776,12 +5443,12 @@ func (m *LedgerObject) MarshalVTStrict() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *LedgerObject) MarshalToVTStrict(dAtA []byte) (int, error) {
+func (m *Memo) MarshalToVTStrict(dAtA []byte) (int, error) {
 	size := m.SizeVT()
 	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
 }
 
-func (m *LedgerObject) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+func (m *Memo) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 	if m == nil {
 		return 0, nil
 	}
@@ -6793,27 +5460,24 @@ func (m *LedgerObject) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
-	if m.EntryType != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.EntryType))
+	if len(m.MemoType) > 0 {
+		i -= len(m.MemoType)
+		copy(dAtA[i:], m.MemoType)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MemoType)))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x1a
 	}
-	if m.ModType != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.ModType))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.Data) > 0 {
-		i -= len(m.Data)
-		copy(dAtA[i:], m.Data)
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.Data)))
+	if len(m.MemoFormat) > 0 {
+		i -= len(m.MemoFormat)
+		copy(dAtA[i:], m.MemoFormat)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MemoFormat)))
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Key) > 0 {
-		i -= len(m.Key)
-		copy(dAtA[i:], m.Key)
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.Key)))
+	if len(m.MemoData) > 0 {
+		i -= len(m.MemoData)
+		copy(dAtA[i:], m.MemoData)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MemoData)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -6850,12 +5514,6 @@ func (m *Block) SizeVT() (n int) {
 		l = (*timestamppb1.Timestamp)(m.CloseTime).SizeVT()
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
-	if len(m.StateChanges) > 0 {
-		for _, e := range m.StateChanges {
-			l = e.SizeVT()
-			n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
-		}
-	}
 	n += len(m.unknownFields)
 	return n
 }
@@ -6887,15 +5545,6 @@ func (m *Header) SizeVT() (n int) {
 	if m.CloseFlags != 0 {
 		n += 1 + protohelpers.SizeOfVarint(uint64(m.CloseFlags))
 	}
-	if m.BaseFee != 0 {
-		n += 1 + protohelpers.SizeOfVarint(uint64(m.BaseFee))
-	}
-	if m.ReserveBase != 0 {
-		n += 1 + protohelpers.SizeOfVarint(uint64(m.ReserveBase))
-	}
-	if m.ReserveIncrement != 0 {
-		n += 1 + protohelpers.SizeOfVarint(uint64(m.ReserveIncrement))
-	}
 	n += len(m.unknownFields)
 	return n
 }
@@ -6910,8 +5559,9 @@ func (m *Transaction) SizeVT() (n int) {
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
-	if m.Result != 0 {
-		n += 1 + protohelpers.SizeOfVarint(uint64(m.Result))
+	l = len(m.Result)
+	if l > 0 {
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	if m.Index != 0 {
 		n += 1 + protohelpers.SizeOfVarint(uint64(m.Index))
@@ -6924,8 +5574,9 @@ func (m *Transaction) SizeVT() (n int) {
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
-	if m.TxType != 0 {
-		n += 1 + protohelpers.SizeOfVarint(uint64(m.TxType))
+	l = len(m.TxType)
+	if l > 0 {
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	l = len(m.Account)
 	if l > 0 {
@@ -6936,6 +5587,49 @@ func (m *Transaction) SizeVT() (n int) {
 	}
 	if m.Sequence != 0 {
 		n += 1 + protohelpers.SizeOfVarint(uint64(m.Sequence))
+	}
+	l = len(m.AccountTxnId)
+	if l > 0 {
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	l = len(m.Delegate)
+	if l > 0 {
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	if m.Flags != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.Flags))
+	}
+	if m.LastLedgerSequence != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.LastLedgerSequence))
+	}
+	if len(m.Memos) > 0 {
+		for _, e := range m.Memos {
+			l = e.SizeVT()
+			n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+		}
+	}
+	if m.NetworkId != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.NetworkId))
+	}
+	if len(m.Signers) > 0 {
+		for _, e := range m.Signers {
+			l = e.SizeVT()
+			n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+		}
+	}
+	if m.SourceTag != 0 {
+		n += 2 + protohelpers.SizeOfVarint(uint64(m.SourceTag))
+	}
+	l = len(m.SigningPubKey)
+	if l > 0 {
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	if m.TicketSequence != 0 {
+		n += 2 + protohelpers.SizeOfVarint(uint64(m.TicketSequence))
+	}
+	l = len(m.TxnSignature)
+	if l > 0 {
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	if vtmsg, ok := m.TxDetails.(interface{ SizeVT() int }); ok {
 		n += vtmsg.SizeVT()
@@ -7232,6 +5926,18 @@ func (m *Transaction_NftokenAcceptOffer) SizeVT() (n int) {
 	}
 	return n
 }
+func (m *Transaction_NftokenModify) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.NftokenModify != nil {
+		l = m.NftokenModify.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
 func (m *Transaction_Clawback) SizeVT() (n int) {
 	if m == nil {
 		return 0
@@ -7324,102 +6030,6 @@ func (m *Transaction_AmmClawback) SizeVT() (n int) {
 	_ = l
 	if m.AmmClawback != nil {
 		l = m.AmmClawback.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_XchainCreateBridge) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XchainCreateBridge != nil {
-		l = m.XchainCreateBridge.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_XchainModifyBridge) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XchainModifyBridge != nil {
-		l = m.XchainModifyBridge.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_XchainCreateClaimId) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XchainCreateClaimId != nil {
-		l = m.XchainCreateClaimId.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_XchainCommit) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XchainCommit != nil {
-		l = m.XchainCommit.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_XchainClaim) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XchainClaim != nil {
-		l = m.XchainClaim.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_XchainAccountCreateCommit) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XchainAccountCreateCommit != nil {
-		l = m.XchainAccountCreateCommit.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_XchainAddClaimAttestation) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XchainAddClaimAttestation != nil {
-		l = m.XchainAddClaimAttestation.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_XchainAddAccountCreateAttestation) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.XchainAddAccountCreateAttestation != nil {
-		l = m.XchainAddAccountCreateAttestation.SizeVT()
 		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	return n
@@ -7592,146 +6202,14 @@ func (m *Transaction_DelegateSet) SizeVT() (n int) {
 	}
 	return n
 }
-func (m *Transaction_VaultCreate) SizeVT() (n int) {
+func (m *Transaction_Batch) SizeVT() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.VaultCreate != nil {
-		l = m.VaultCreate.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_VaultSet) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.VaultSet != nil {
-		l = m.VaultSet.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_VaultDelete) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.VaultDelete != nil {
-		l = m.VaultDelete.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_VaultDeposit) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.VaultDeposit != nil {
-		l = m.VaultDeposit.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_VaultWithdraw) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.VaultWithdraw != nil {
-		l = m.VaultWithdraw.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_VaultClawback) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.VaultClawback != nil {
-		l = m.VaultClawback.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_ContractCreate) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.ContractCreate != nil {
-		l = m.ContractCreate.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_ContractModify) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.ContractModify != nil {
-		l = m.ContractModify.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_ContractDelete) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.ContractDelete != nil {
-		l = m.ContractDelete.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_ContractClawback) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.ContractClawback != nil {
-		l = m.ContractClawback.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_ContractUserDelete) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.ContractUserDelete != nil {
-		l = m.ContractUserDelete.SizeVT()
-		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	return n
-}
-func (m *Transaction_ContractCall) SizeVT() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.ContractCall != nil {
-		l = m.ContractCall.SizeVT()
+	if m.Batch != nil {
+		l = m.Batch.SizeVT()
 		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	return n
@@ -7784,25 +6262,23 @@ func (m *Transaction_LedgerStateFix) SizeVT() (n int) {
 	}
 	return n
 }
-func (m *LedgerObject) SizeVT() (n int) {
+func (m *Memo) SizeVT() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Key)
+	l = len(m.MemoData)
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
-	l = len(m.Data)
+	l = len(m.MemoFormat)
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
-	if m.ModType != 0 {
-		n += 1 + protohelpers.SizeOfVarint(uint64(m.ModType))
-	}
-	if m.EntryType != 0 {
-		n += 1 + protohelpers.SizeOfVarint(uint64(m.EntryType))
+	l = len(m.MemoType)
+	if l > 0 {
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	n += len(m.unknownFields)
 	return n
@@ -8012,40 +6488,6 @@ func (m *Block) UnmarshalVT(dAtA []byte) error {
 				m.CloseTime = &timestamppb.Timestamp{}
 			}
 			if err := (*timestamppb1.Timestamp)(m.CloseTime).UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 7:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field StateChanges", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.StateChanges = append(m.StateChanges, &LedgerObject{})
-			if err := m.StateChanges[len(m.StateChanges)-1].UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -8259,63 +6701,6 @@ func (m *Header) UnmarshalVT(dAtA []byte) error {
 					break
 				}
 			}
-		case 7:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BaseFee", wireType)
-			}
-			m.BaseFee = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.BaseFee |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 8:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ReserveBase", wireType)
-			}
-			m.ReserveBase = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ReserveBase |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 9:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ReserveIncrement", wireType)
-			}
-			m.ReserveIncrement = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ReserveIncrement |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -8402,10 +6787,10 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Result", wireType)
 			}
-			m.Result = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -8415,11 +6800,24 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Result |= TransactionResult(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Result = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
@@ -8508,10 +6906,10 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 6:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TxType", wireType)
 			}
-			m.TxType = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -8521,11 +6919,24 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.TxType |= TransactionType(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TxType = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
@@ -8596,7 +7007,298 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 					break
 				}
 			}
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AccountTxnId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AccountTxnId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 11:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Delegate = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 12:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 13:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LastLedgerSequence", wireType)
+			}
+			m.LastLedgerSequence = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.LastLedgerSequence |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 14:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Memos", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Memos = append(m.Memos, &Memo{})
+			if err := m.Memos[len(m.Memos)-1].UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 15:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NetworkId", wireType)
+			}
+			m.NetworkId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.NetworkId |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 16:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signers", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signers = append(m.Signers, &Signer{})
+			if err := m.Signers[len(m.Signers)-1].UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 17:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceTag", wireType)
+			}
+			m.SourceTag = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SourceTag |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 18:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SigningPubKey", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SigningPubKey = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 19:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TicketSequence", wireType)
+			}
+			m.TicketSequence = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.TicketSequence |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		case 20:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TxnSignature", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TxnSignature = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 30:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Payment", wireType)
 			}
@@ -8637,7 +7339,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_Payment{Payment: v}
 			}
 			iNdEx = postIndex
-		case 21:
+		case 40:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OfferCreate", wireType)
 			}
@@ -8678,7 +7380,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_OfferCreate{OfferCreate: v}
 			}
 			iNdEx = postIndex
-		case 22:
+		case 41:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OfferCancel", wireType)
 			}
@@ -8719,7 +7421,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_OfferCancel{OfferCancel: v}
 			}
 			iNdEx = postIndex
-		case 23:
+		case 50:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TrustSet", wireType)
 			}
@@ -8760,7 +7462,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_TrustSet{TrustSet: v}
 			}
 			iNdEx = postIndex
-		case 24:
+		case 60:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AccountSet", wireType)
 			}
@@ -8801,7 +7503,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_AccountSet{AccountSet: v}
 			}
 			iNdEx = postIndex
-		case 25:
+		case 61:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AccountDelete", wireType)
 			}
@@ -8842,7 +7544,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_AccountDelete{AccountDelete: v}
 			}
 			iNdEx = postIndex
-		case 26:
+		case 62:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SetRegularKey", wireType)
 			}
@@ -8883,7 +7585,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_SetRegularKey{SetRegularKey: v}
 			}
 			iNdEx = postIndex
-		case 27:
+		case 63:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SignerListSet", wireType)
 			}
@@ -8924,7 +7626,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_SignerListSet{SignerListSet: v}
 			}
 			iNdEx = postIndex
-		case 30:
+		case 70:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EscrowCreate", wireType)
 			}
@@ -8965,7 +7667,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_EscrowCreate{EscrowCreate: v}
 			}
 			iNdEx = postIndex
-		case 31:
+		case 71:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EscrowFinish", wireType)
 			}
@@ -9006,7 +7708,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_EscrowFinish{EscrowFinish: v}
 			}
 			iNdEx = postIndex
-		case 32:
+		case 72:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EscrowCancel", wireType)
 			}
@@ -9047,7 +7749,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_EscrowCancel{EscrowCancel: v}
 			}
 			iNdEx = postIndex
-		case 33:
+		case 80:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PaymentChannelCreate", wireType)
 			}
@@ -9088,7 +7790,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_PaymentChannelCreate{PaymentChannelCreate: v}
 			}
 			iNdEx = postIndex
-		case 34:
+		case 81:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PaymentChannelFund", wireType)
 			}
@@ -9129,7 +7831,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_PaymentChannelFund{PaymentChannelFund: v}
 			}
 			iNdEx = postIndex
-		case 35:
+		case 82:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PaymentChannelClaim", wireType)
 			}
@@ -9170,7 +7872,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_PaymentChannelClaim{PaymentChannelClaim: v}
 			}
 			iNdEx = postIndex
-		case 36:
+		case 90:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CheckCreate", wireType)
 			}
@@ -9211,7 +7913,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_CheckCreate{CheckCreate: v}
 			}
 			iNdEx = postIndex
-		case 37:
+		case 91:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CheckCash", wireType)
 			}
@@ -9252,7 +7954,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_CheckCash{CheckCash: v}
 			}
 			iNdEx = postIndex
-		case 38:
+		case 92:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CheckCancel", wireType)
 			}
@@ -9293,7 +7995,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_CheckCancel{CheckCancel: v}
 			}
 			iNdEx = postIndex
-		case 39:
+		case 100:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DepositPreauth", wireType)
 			}
@@ -9334,7 +8036,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_DepositPreauth{DepositPreauth: v}
 			}
 			iNdEx = postIndex
-		case 40:
+		case 101:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TicketCreate", wireType)
 			}
@@ -9375,7 +8077,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_TicketCreate{TicketCreate: v}
 			}
 			iNdEx = postIndex
-		case 50:
+		case 110:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NftokenMint", wireType)
 			}
@@ -9416,7 +8118,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_NftokenMint{NftokenMint: v}
 			}
 			iNdEx = postIndex
-		case 51:
+		case 111:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NftokenBurn", wireType)
 			}
@@ -9457,7 +8159,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_NftokenBurn{NftokenBurn: v}
 			}
 			iNdEx = postIndex
-		case 52:
+		case 112:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NftokenCreateOffer", wireType)
 			}
@@ -9498,7 +8200,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_NftokenCreateOffer{NftokenCreateOffer: v}
 			}
 			iNdEx = postIndex
-		case 53:
+		case 113:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NftokenCancelOffer", wireType)
 			}
@@ -9539,7 +8241,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_NftokenCancelOffer{NftokenCancelOffer: v}
 			}
 			iNdEx = postIndex
-		case 54:
+		case 114:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NftokenAcceptOffer", wireType)
 			}
@@ -9580,7 +8282,48 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_NftokenAcceptOffer{NftokenAcceptOffer: v}
 			}
 			iNdEx = postIndex
-		case 60:
+		case 115:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NftokenModify", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_NftokenModify); ok {
+				if err := oneof.NftokenModify.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &NFTokenModify{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_NftokenModify{NftokenModify: v}
+			}
+			iNdEx = postIndex
+		case 120:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Clawback", wireType)
 			}
@@ -9621,7 +8364,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_Clawback{Clawback: v}
 			}
 			iNdEx = postIndex
-		case 70:
+		case 130:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmCreate", wireType)
 			}
@@ -9662,7 +8405,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmCreate{AmmCreate: v}
 			}
 			iNdEx = postIndex
-		case 71:
+		case 131:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmDeposit", wireType)
 			}
@@ -9703,7 +8446,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmDeposit{AmmDeposit: v}
 			}
 			iNdEx = postIndex
-		case 72:
+		case 132:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmWithdraw", wireType)
 			}
@@ -9744,7 +8487,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmWithdraw{AmmWithdraw: v}
 			}
 			iNdEx = postIndex
-		case 73:
+		case 133:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmVote", wireType)
 			}
@@ -9785,7 +8528,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmVote{AmmVote: v}
 			}
 			iNdEx = postIndex
-		case 74:
+		case 134:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmBid", wireType)
 			}
@@ -9826,7 +8569,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmBid{AmmBid: v}
 			}
 			iNdEx = postIndex
-		case 75:
+		case 135:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmDelete", wireType)
 			}
@@ -9867,7 +8610,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmDelete{AmmDelete: v}
 			}
 			iNdEx = postIndex
-		case 76:
+		case 136:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmClawback", wireType)
 			}
@@ -9908,335 +8651,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmClawback{AmmClawback: v}
 			}
 			iNdEx = postIndex
-		case 80:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainCreateBridge", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainCreateBridge); ok {
-				if err := oneof.XchainCreateBridge.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainCreateBridge{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainCreateBridge{XchainCreateBridge: v}
-			}
-			iNdEx = postIndex
-		case 81:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainModifyBridge", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainModifyBridge); ok {
-				if err := oneof.XchainModifyBridge.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainModifyBridge{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainModifyBridge{XchainModifyBridge: v}
-			}
-			iNdEx = postIndex
-		case 82:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainCreateClaimId", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainCreateClaimId); ok {
-				if err := oneof.XchainCreateClaimId.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainCreateClaimID{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainCreateClaimId{XchainCreateClaimId: v}
-			}
-			iNdEx = postIndex
-		case 83:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainCommit", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainCommit); ok {
-				if err := oneof.XchainCommit.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainCommit{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainCommit{XchainCommit: v}
-			}
-			iNdEx = postIndex
-		case 84:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainClaim", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainClaim); ok {
-				if err := oneof.XchainClaim.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainClaim{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainClaim{XchainClaim: v}
-			}
-			iNdEx = postIndex
-		case 85:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainAccountCreateCommit", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainAccountCreateCommit); ok {
-				if err := oneof.XchainAccountCreateCommit.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainAccountCreateCommit{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainAccountCreateCommit{XchainAccountCreateCommit: v}
-			}
-			iNdEx = postIndex
-		case 86:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainAddClaimAttestation", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainAddClaimAttestation); ok {
-				if err := oneof.XchainAddClaimAttestation.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainAddClaimAttestation{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainAddClaimAttestation{XchainAddClaimAttestation: v}
-			}
-			iNdEx = postIndex
-		case 87:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainAddAccountCreateAttestation", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainAddAccountCreateAttestation); ok {
-				if err := oneof.XchainAddAccountCreateAttestation.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainAddAccountCreateAttestation{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainAddAccountCreateAttestation{XchainAddAccountCreateAttestation: v}
-			}
-			iNdEx = postIndex
-		case 90:
+		case 140:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DidSet", wireType)
 			}
@@ -10277,7 +8692,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_DidSet{DidSet: v}
 			}
 			iNdEx = postIndex
-		case 91:
+		case 141:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DidDelete", wireType)
 			}
@@ -10318,7 +8733,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_DidDelete{DidDelete: v}
 			}
 			iNdEx = postIndex
-		case 92:
+		case 150:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OracleSet", wireType)
 			}
@@ -10359,7 +8774,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_OracleSet{OracleSet: v}
 			}
 			iNdEx = postIndex
-		case 93:
+		case 151:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OracleDelete", wireType)
 			}
@@ -10400,7 +8815,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_OracleDelete{OracleDelete: v}
 			}
 			iNdEx = postIndex
-		case 100:
+		case 160:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MptokenIssuanceCreate", wireType)
 			}
@@ -10441,7 +8856,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_MptokenIssuanceCreate{MptokenIssuanceCreate: v}
 			}
 			iNdEx = postIndex
-		case 101:
+		case 161:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MptokenIssuanceDestroy", wireType)
 			}
@@ -10482,7 +8897,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_MptokenIssuanceDestroy{MptokenIssuanceDestroy: v}
 			}
 			iNdEx = postIndex
-		case 102:
+		case 162:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MptokenIssuanceSet", wireType)
 			}
@@ -10523,7 +8938,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_MptokenIssuanceSet{MptokenIssuanceSet: v}
 			}
 			iNdEx = postIndex
-		case 103:
+		case 163:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MptokenAuthorize", wireType)
 			}
@@ -10564,7 +8979,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_MptokenAuthorize{MptokenAuthorize: v}
 			}
 			iNdEx = postIndex
-		case 110:
+		case 170:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialCreate", wireType)
 			}
@@ -10605,7 +9020,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_CredentialCreate{CredentialCreate: v}
 			}
 			iNdEx = postIndex
-		case 111:
+		case 171:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialAccept", wireType)
 			}
@@ -10646,7 +9061,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_CredentialAccept{CredentialAccept: v}
 			}
 			iNdEx = postIndex
-		case 112:
+		case 172:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialDelete", wireType)
 			}
@@ -10687,7 +9102,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_CredentialDelete{CredentialDelete: v}
 			}
 			iNdEx = postIndex
-		case 120:
+		case 180:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PermissionedDomainSet", wireType)
 			}
@@ -10728,7 +9143,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_PermissionedDomainSet{PermissionedDomainSet: v}
 			}
 			iNdEx = postIndex
-		case 121:
+		case 181:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PermissionedDomainDelete", wireType)
 			}
@@ -10769,7 +9184,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_PermissionedDomainDelete{PermissionedDomainDelete: v}
 			}
 			iNdEx = postIndex
-		case 122:
+		case 190:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DelegateSet", wireType)
 			}
@@ -10810,499 +9225,48 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_DelegateSet{DelegateSet: v}
 			}
 			iNdEx = postIndex
-		case 130:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultCreate", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultCreate); ok {
-				if err := oneof.VaultCreate.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultCreate{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultCreate{VaultCreate: v}
-			}
-			iNdEx = postIndex
-		case 131:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultSet", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultSet); ok {
-				if err := oneof.VaultSet.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultSet{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultSet{VaultSet: v}
-			}
-			iNdEx = postIndex
-		case 132:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultDelete", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultDelete); ok {
-				if err := oneof.VaultDelete.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultDelete{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultDelete{VaultDelete: v}
-			}
-			iNdEx = postIndex
-		case 133:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultDeposit", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultDeposit); ok {
-				if err := oneof.VaultDeposit.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultDeposit{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultDeposit{VaultDeposit: v}
-			}
-			iNdEx = postIndex
-		case 134:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultWithdraw", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultWithdraw); ok {
-				if err := oneof.VaultWithdraw.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultWithdraw{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultWithdraw{VaultWithdraw: v}
-			}
-			iNdEx = postIndex
-		case 135:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultClawback", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultClawback); ok {
-				if err := oneof.VaultClawback.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultClawback{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultClawback{VaultClawback: v}
-			}
-			iNdEx = postIndex
-		case 140:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractCreate", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractCreate); ok {
-				if err := oneof.ContractCreate.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractCreate{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractCreate{ContractCreate: v}
-			}
-			iNdEx = postIndex
-		case 141:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractModify", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractModify); ok {
-				if err := oneof.ContractModify.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractModify{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractModify{ContractModify: v}
-			}
-			iNdEx = postIndex
-		case 142:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractDelete", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractDelete); ok {
-				if err := oneof.ContractDelete.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractDelete{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractDelete{ContractDelete: v}
-			}
-			iNdEx = postIndex
-		case 143:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractClawback", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractClawback); ok {
-				if err := oneof.ContractClawback.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractClawback{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractClawback{ContractClawback: v}
-			}
-			iNdEx = postIndex
-		case 144:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractUserDelete", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractUserDelete); ok {
-				if err := oneof.ContractUserDelete.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractUserDelete{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractUserDelete{ContractUserDelete: v}
-			}
-			iNdEx = postIndex
-		case 145:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractCall", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractCall); ok {
-				if err := oneof.ContractCall.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractCall{}
-				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractCall{ContractCall: v}
-			}
-			iNdEx = postIndex
 		case 200:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Batch", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_Batch); ok {
+				if err := oneof.Batch.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &Batch{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_Batch{Batch: v}
+			}
+			iNdEx = postIndex
+		case 900:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EnableAmendment", wireType)
 			}
@@ -11343,7 +9307,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_EnableAmendment{EnableAmendment: v}
 			}
 			iNdEx = postIndex
-		case 201:
+		case 901:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SetFee", wireType)
 			}
@@ -11384,7 +9348,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_SetFee{SetFee: v}
 			}
 			iNdEx = postIndex
-		case 202:
+		case 902:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UnlModify", wireType)
 			}
@@ -11425,7 +9389,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 				m.TxDetails = &Transaction_UnlModify{UnlModify: v}
 			}
 			iNdEx = postIndex
-		case 203:
+		case 903:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field LedgerStateFix", wireType)
 			}
@@ -11488,7 +9452,7 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *LedgerObject) UnmarshalVT(dAtA []byte) error {
+func (m *Memo) UnmarshalVT(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -11511,17 +9475,17 @@ func (m *LedgerObject) UnmarshalVT(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: LedgerObject: wiretype end group for non-group")
+			return fmt.Errorf("proto: Memo: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: LedgerObject: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Memo: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Key", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MemoData", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -11531,31 +9495,29 @@ func (m *LedgerObject) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return protohelpers.ErrInvalidLength
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return protohelpers.ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Key = append(m.Key[:0], dAtA[iNdEx:postIndex]...)
-			if m.Key == nil {
-				m.Key = []byte{}
-			}
+			m.MemoData = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MemoFormat", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -11565,31 +9527,29 @@ func (m *LedgerObject) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return protohelpers.ErrInvalidLength
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return protohelpers.ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Data = append(m.Data[:0], dAtA[iNdEx:postIndex]...)
-			if m.Data == nil {
-				m.Data = []byte{}
-			}
+			m.MemoFormat = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ModType", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MemoType", wireType)
 			}
-			m.ModType = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -11599,30 +9559,24 @@ func (m *LedgerObject) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ModType |= LedgerObject_ModificationType(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field EntryType", wireType)
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
 			}
-			m.EntryType = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.EntryType |= LedgerEntryType(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
 			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MemoType = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -11849,40 +9803,6 @@ func (m *Block) UnmarshalVTUnsafe(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 7:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field StateChanges", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.StateChanges = append(m.StateChanges, &LedgerObject{})
-			if err := m.StateChanges[len(m.StateChanges)-1].UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -12084,63 +10004,6 @@ func (m *Header) UnmarshalVTUnsafe(dAtA []byte) error {
 					break
 				}
 			}
-		case 7:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BaseFee", wireType)
-			}
-			m.BaseFee = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.BaseFee |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 8:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ReserveBase", wireType)
-			}
-			m.ReserveBase = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ReserveBase |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 9:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ReserveIncrement", wireType)
-			}
-			m.ReserveIncrement = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ReserveIncrement |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -12224,10 +10087,10 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 			m.Hash = dAtA[iNdEx:postIndex]
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Result", wireType)
 			}
-			m.Result = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -12237,11 +10100,28 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Result |= TransactionResult(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.Result = stringValue
+			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
@@ -12324,10 +10204,10 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 			m.MetaBlob = dAtA[iNdEx:postIndex]
 			iNdEx = postIndex
 		case 6:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TxType", wireType)
 			}
-			m.TxType = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -12337,11 +10217,28 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.TxType |= TransactionType(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.TxType = stringValue
+			iNdEx = postIndex
 		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
@@ -12416,7 +10313,314 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 					break
 				}
 			}
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AccountTxnId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.AccountTxnId = stringValue
+			iNdEx = postIndex
+		case 11:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.Delegate = stringValue
+			iNdEx = postIndex
+		case 12:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 13:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LastLedgerSequence", wireType)
+			}
+			m.LastLedgerSequence = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.LastLedgerSequence |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 14:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Memos", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Memos = append(m.Memos, &Memo{})
+			if err := m.Memos[len(m.Memos)-1].UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 15:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NetworkId", wireType)
+			}
+			m.NetworkId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.NetworkId |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 16:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signers", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signers = append(m.Signers, &Signer{})
+			if err := m.Signers[len(m.Signers)-1].UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 17:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceTag", wireType)
+			}
+			m.SourceTag = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SourceTag |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 18:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SigningPubKey", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.SigningPubKey = stringValue
+			iNdEx = postIndex
+		case 19:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TicketSequence", wireType)
+			}
+			m.TicketSequence = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.TicketSequence |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		case 20:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TxnSignature", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.TxnSignature = stringValue
+			iNdEx = postIndex
+		case 30:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Payment", wireType)
 			}
@@ -12457,7 +10661,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_Payment{Payment: v}
 			}
 			iNdEx = postIndex
-		case 21:
+		case 40:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OfferCreate", wireType)
 			}
@@ -12498,7 +10702,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_OfferCreate{OfferCreate: v}
 			}
 			iNdEx = postIndex
-		case 22:
+		case 41:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OfferCancel", wireType)
 			}
@@ -12539,7 +10743,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_OfferCancel{OfferCancel: v}
 			}
 			iNdEx = postIndex
-		case 23:
+		case 50:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TrustSet", wireType)
 			}
@@ -12580,7 +10784,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_TrustSet{TrustSet: v}
 			}
 			iNdEx = postIndex
-		case 24:
+		case 60:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AccountSet", wireType)
 			}
@@ -12621,7 +10825,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_AccountSet{AccountSet: v}
 			}
 			iNdEx = postIndex
-		case 25:
+		case 61:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AccountDelete", wireType)
 			}
@@ -12662,7 +10866,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_AccountDelete{AccountDelete: v}
 			}
 			iNdEx = postIndex
-		case 26:
+		case 62:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SetRegularKey", wireType)
 			}
@@ -12703,7 +10907,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_SetRegularKey{SetRegularKey: v}
 			}
 			iNdEx = postIndex
-		case 27:
+		case 63:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SignerListSet", wireType)
 			}
@@ -12744,7 +10948,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_SignerListSet{SignerListSet: v}
 			}
 			iNdEx = postIndex
-		case 30:
+		case 70:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EscrowCreate", wireType)
 			}
@@ -12785,7 +10989,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_EscrowCreate{EscrowCreate: v}
 			}
 			iNdEx = postIndex
-		case 31:
+		case 71:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EscrowFinish", wireType)
 			}
@@ -12826,7 +11030,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_EscrowFinish{EscrowFinish: v}
 			}
 			iNdEx = postIndex
-		case 32:
+		case 72:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EscrowCancel", wireType)
 			}
@@ -12867,7 +11071,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_EscrowCancel{EscrowCancel: v}
 			}
 			iNdEx = postIndex
-		case 33:
+		case 80:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PaymentChannelCreate", wireType)
 			}
@@ -12908,7 +11112,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_PaymentChannelCreate{PaymentChannelCreate: v}
 			}
 			iNdEx = postIndex
-		case 34:
+		case 81:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PaymentChannelFund", wireType)
 			}
@@ -12949,7 +11153,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_PaymentChannelFund{PaymentChannelFund: v}
 			}
 			iNdEx = postIndex
-		case 35:
+		case 82:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PaymentChannelClaim", wireType)
 			}
@@ -12990,7 +11194,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_PaymentChannelClaim{PaymentChannelClaim: v}
 			}
 			iNdEx = postIndex
-		case 36:
+		case 90:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CheckCreate", wireType)
 			}
@@ -13031,7 +11235,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_CheckCreate{CheckCreate: v}
 			}
 			iNdEx = postIndex
-		case 37:
+		case 91:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CheckCash", wireType)
 			}
@@ -13072,7 +11276,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_CheckCash{CheckCash: v}
 			}
 			iNdEx = postIndex
-		case 38:
+		case 92:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CheckCancel", wireType)
 			}
@@ -13113,7 +11317,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_CheckCancel{CheckCancel: v}
 			}
 			iNdEx = postIndex
-		case 39:
+		case 100:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DepositPreauth", wireType)
 			}
@@ -13154,7 +11358,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_DepositPreauth{DepositPreauth: v}
 			}
 			iNdEx = postIndex
-		case 40:
+		case 101:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TicketCreate", wireType)
 			}
@@ -13195,7 +11399,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_TicketCreate{TicketCreate: v}
 			}
 			iNdEx = postIndex
-		case 50:
+		case 110:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NftokenMint", wireType)
 			}
@@ -13236,7 +11440,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_NftokenMint{NftokenMint: v}
 			}
 			iNdEx = postIndex
-		case 51:
+		case 111:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NftokenBurn", wireType)
 			}
@@ -13277,7 +11481,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_NftokenBurn{NftokenBurn: v}
 			}
 			iNdEx = postIndex
-		case 52:
+		case 112:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NftokenCreateOffer", wireType)
 			}
@@ -13318,7 +11522,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_NftokenCreateOffer{NftokenCreateOffer: v}
 			}
 			iNdEx = postIndex
-		case 53:
+		case 113:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NftokenCancelOffer", wireType)
 			}
@@ -13359,7 +11563,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_NftokenCancelOffer{NftokenCancelOffer: v}
 			}
 			iNdEx = postIndex
-		case 54:
+		case 114:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NftokenAcceptOffer", wireType)
 			}
@@ -13400,7 +11604,48 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_NftokenAcceptOffer{NftokenAcceptOffer: v}
 			}
 			iNdEx = postIndex
-		case 60:
+		case 115:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NftokenModify", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_NftokenModify); ok {
+				if err := oneof.NftokenModify.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &NFTokenModify{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_NftokenModify{NftokenModify: v}
+			}
+			iNdEx = postIndex
+		case 120:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Clawback", wireType)
 			}
@@ -13441,7 +11686,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_Clawback{Clawback: v}
 			}
 			iNdEx = postIndex
-		case 70:
+		case 130:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmCreate", wireType)
 			}
@@ -13482,7 +11727,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmCreate{AmmCreate: v}
 			}
 			iNdEx = postIndex
-		case 71:
+		case 131:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmDeposit", wireType)
 			}
@@ -13523,7 +11768,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmDeposit{AmmDeposit: v}
 			}
 			iNdEx = postIndex
-		case 72:
+		case 132:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmWithdraw", wireType)
 			}
@@ -13564,7 +11809,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmWithdraw{AmmWithdraw: v}
 			}
 			iNdEx = postIndex
-		case 73:
+		case 133:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmVote", wireType)
 			}
@@ -13605,7 +11850,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmVote{AmmVote: v}
 			}
 			iNdEx = postIndex
-		case 74:
+		case 134:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmBid", wireType)
 			}
@@ -13646,7 +11891,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmBid{AmmBid: v}
 			}
 			iNdEx = postIndex
-		case 75:
+		case 135:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmDelete", wireType)
 			}
@@ -13687,7 +11932,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmDelete{AmmDelete: v}
 			}
 			iNdEx = postIndex
-		case 76:
+		case 136:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AmmClawback", wireType)
 			}
@@ -13728,335 +11973,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_AmmClawback{AmmClawback: v}
 			}
 			iNdEx = postIndex
-		case 80:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainCreateBridge", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainCreateBridge); ok {
-				if err := oneof.XchainCreateBridge.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainCreateBridge{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainCreateBridge{XchainCreateBridge: v}
-			}
-			iNdEx = postIndex
-		case 81:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainModifyBridge", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainModifyBridge); ok {
-				if err := oneof.XchainModifyBridge.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainModifyBridge{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainModifyBridge{XchainModifyBridge: v}
-			}
-			iNdEx = postIndex
-		case 82:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainCreateClaimId", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainCreateClaimId); ok {
-				if err := oneof.XchainCreateClaimId.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainCreateClaimID{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainCreateClaimId{XchainCreateClaimId: v}
-			}
-			iNdEx = postIndex
-		case 83:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainCommit", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainCommit); ok {
-				if err := oneof.XchainCommit.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainCommit{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainCommit{XchainCommit: v}
-			}
-			iNdEx = postIndex
-		case 84:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainClaim", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainClaim); ok {
-				if err := oneof.XchainClaim.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainClaim{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainClaim{XchainClaim: v}
-			}
-			iNdEx = postIndex
-		case 85:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainAccountCreateCommit", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainAccountCreateCommit); ok {
-				if err := oneof.XchainAccountCreateCommit.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainAccountCreateCommit{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainAccountCreateCommit{XchainAccountCreateCommit: v}
-			}
-			iNdEx = postIndex
-		case 86:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainAddClaimAttestation", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainAddClaimAttestation); ok {
-				if err := oneof.XchainAddClaimAttestation.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainAddClaimAttestation{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainAddClaimAttestation{XchainAddClaimAttestation: v}
-			}
-			iNdEx = postIndex
-		case 87:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field XchainAddAccountCreateAttestation", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_XchainAddAccountCreateAttestation); ok {
-				if err := oneof.XchainAddAccountCreateAttestation.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &XChainAddAccountCreateAttestation{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_XchainAddAccountCreateAttestation{XchainAddAccountCreateAttestation: v}
-			}
-			iNdEx = postIndex
-		case 90:
+		case 140:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DidSet", wireType)
 			}
@@ -14097,7 +12014,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_DidSet{DidSet: v}
 			}
 			iNdEx = postIndex
-		case 91:
+		case 141:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DidDelete", wireType)
 			}
@@ -14138,7 +12055,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_DidDelete{DidDelete: v}
 			}
 			iNdEx = postIndex
-		case 92:
+		case 150:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OracleSet", wireType)
 			}
@@ -14179,7 +12096,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_OracleSet{OracleSet: v}
 			}
 			iNdEx = postIndex
-		case 93:
+		case 151:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OracleDelete", wireType)
 			}
@@ -14220,7 +12137,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_OracleDelete{OracleDelete: v}
 			}
 			iNdEx = postIndex
-		case 100:
+		case 160:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MptokenIssuanceCreate", wireType)
 			}
@@ -14261,7 +12178,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_MptokenIssuanceCreate{MptokenIssuanceCreate: v}
 			}
 			iNdEx = postIndex
-		case 101:
+		case 161:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MptokenIssuanceDestroy", wireType)
 			}
@@ -14302,7 +12219,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_MptokenIssuanceDestroy{MptokenIssuanceDestroy: v}
 			}
 			iNdEx = postIndex
-		case 102:
+		case 162:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MptokenIssuanceSet", wireType)
 			}
@@ -14343,7 +12260,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_MptokenIssuanceSet{MptokenIssuanceSet: v}
 			}
 			iNdEx = postIndex
-		case 103:
+		case 163:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MptokenAuthorize", wireType)
 			}
@@ -14384,7 +12301,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_MptokenAuthorize{MptokenAuthorize: v}
 			}
 			iNdEx = postIndex
-		case 110:
+		case 170:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialCreate", wireType)
 			}
@@ -14425,7 +12342,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_CredentialCreate{CredentialCreate: v}
 			}
 			iNdEx = postIndex
-		case 111:
+		case 171:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialAccept", wireType)
 			}
@@ -14466,7 +12383,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_CredentialAccept{CredentialAccept: v}
 			}
 			iNdEx = postIndex
-		case 112:
+		case 172:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialDelete", wireType)
 			}
@@ -14507,7 +12424,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_CredentialDelete{CredentialDelete: v}
 			}
 			iNdEx = postIndex
-		case 120:
+		case 180:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PermissionedDomainSet", wireType)
 			}
@@ -14548,7 +12465,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_PermissionedDomainSet{PermissionedDomainSet: v}
 			}
 			iNdEx = postIndex
-		case 121:
+		case 181:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PermissionedDomainDelete", wireType)
 			}
@@ -14589,7 +12506,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_PermissionedDomainDelete{PermissionedDomainDelete: v}
 			}
 			iNdEx = postIndex
-		case 122:
+		case 190:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DelegateSet", wireType)
 			}
@@ -14630,499 +12547,48 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_DelegateSet{DelegateSet: v}
 			}
 			iNdEx = postIndex
-		case 130:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultCreate", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultCreate); ok {
-				if err := oneof.VaultCreate.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultCreate{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultCreate{VaultCreate: v}
-			}
-			iNdEx = postIndex
-		case 131:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultSet", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultSet); ok {
-				if err := oneof.VaultSet.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultSet{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultSet{VaultSet: v}
-			}
-			iNdEx = postIndex
-		case 132:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultDelete", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultDelete); ok {
-				if err := oneof.VaultDelete.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultDelete{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultDelete{VaultDelete: v}
-			}
-			iNdEx = postIndex
-		case 133:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultDeposit", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultDeposit); ok {
-				if err := oneof.VaultDeposit.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultDeposit{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultDeposit{VaultDeposit: v}
-			}
-			iNdEx = postIndex
-		case 134:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultWithdraw", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultWithdraw); ok {
-				if err := oneof.VaultWithdraw.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultWithdraw{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultWithdraw{VaultWithdraw: v}
-			}
-			iNdEx = postIndex
-		case 135:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultClawback", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_VaultClawback); ok {
-				if err := oneof.VaultClawback.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &VaultClawback{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_VaultClawback{VaultClawback: v}
-			}
-			iNdEx = postIndex
-		case 140:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractCreate", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractCreate); ok {
-				if err := oneof.ContractCreate.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractCreate{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractCreate{ContractCreate: v}
-			}
-			iNdEx = postIndex
-		case 141:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractModify", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractModify); ok {
-				if err := oneof.ContractModify.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractModify{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractModify{ContractModify: v}
-			}
-			iNdEx = postIndex
-		case 142:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractDelete", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractDelete); ok {
-				if err := oneof.ContractDelete.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractDelete{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractDelete{ContractDelete: v}
-			}
-			iNdEx = postIndex
-		case 143:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractClawback", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractClawback); ok {
-				if err := oneof.ContractClawback.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractClawback{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractClawback{ContractClawback: v}
-			}
-			iNdEx = postIndex
-		case 144:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractUserDelete", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractUserDelete); ok {
-				if err := oneof.ContractUserDelete.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractUserDelete{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractUserDelete{ContractUserDelete: v}
-			}
-			iNdEx = postIndex
-		case 145:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContractCall", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if oneof, ok := m.TxDetails.(*Transaction_ContractCall); ok {
-				if err := oneof.ContractCall.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-			} else {
-				v := &ContractCall{}
-				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-					return err
-				}
-				m.TxDetails = &Transaction_ContractCall{ContractCall: v}
-			}
-			iNdEx = postIndex
 		case 200:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Batch", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_Batch); ok {
+				if err := oneof.Batch.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &Batch{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_Batch{Batch: v}
+			}
+			iNdEx = postIndex
+		case 900:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EnableAmendment", wireType)
 			}
@@ -15163,7 +12629,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_EnableAmendment{EnableAmendment: v}
 			}
 			iNdEx = postIndex
-		case 201:
+		case 901:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SetFee", wireType)
 			}
@@ -15204,7 +12670,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_SetFee{SetFee: v}
 			}
 			iNdEx = postIndex
-		case 202:
+		case 902:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UnlModify", wireType)
 			}
@@ -15245,7 +12711,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 				m.TxDetails = &Transaction_UnlModify{UnlModify: v}
 			}
 			iNdEx = postIndex
-		case 203:
+		case 903:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field LedgerStateFix", wireType)
 			}
@@ -15308,7 +12774,7 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *LedgerObject) UnmarshalVTUnsafe(dAtA []byte) error {
+func (m *Memo) UnmarshalVTUnsafe(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -15331,17 +12797,17 @@ func (m *LedgerObject) UnmarshalVTUnsafe(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: LedgerObject: wiretype end group for non-group")
+			return fmt.Errorf("proto: Memo: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: LedgerObject: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Memo: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Key", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MemoData", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -15351,28 +12817,33 @@ func (m *LedgerObject) UnmarshalVTUnsafe(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return protohelpers.ErrInvalidLength
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return protohelpers.ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Key = dAtA[iNdEx:postIndex]
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.MemoData = stringValue
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MemoFormat", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -15382,28 +12853,33 @@ func (m *LedgerObject) UnmarshalVTUnsafe(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return protohelpers.ErrInvalidLength
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return protohelpers.ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Data = dAtA[iNdEx:postIndex]
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.MemoFormat = stringValue
 			iNdEx = postIndex
 		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ModType", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MemoType", wireType)
 			}
-			m.ModType = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -15413,30 +12889,28 @@ func (m *LedgerObject) UnmarshalVTUnsafe(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ModType |= LedgerObject_ModificationType(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field EntryType", wireType)
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
 			}
-			m.EntryType = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.EntryType |= LedgerEntryType(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
 			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.MemoType = stringValue
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])

@@ -73,7 +73,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 		sleepDuration = f.latestBlockRetryInterval
 	}
 
-	// 2. Fetch the ledger with all transactions (single call - simpler than Stellar!)
+	// 2. Fetch the ledger with all transactions
 	ledgerResult, err := client.GetLedger(ctx, requestBlockNum)
 	if err != nil {
 		return nil, false, fmt.Errorf("fetching ledger %d: %w", requestBlockNum, err)
@@ -102,49 +102,13 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 			return nil, false, fmt.Errorf("decoding meta blob: %w", err)
 		}
 
-		// Extract transaction type and result using decoder
-		txType := f.decoder.GetTransactionType(txBlob)
-		result := f.decoder.GetTransactionResult(metaBlob)
-
-		// Try to extract additional info from the transaction
-		var account string
-		var fee uint64
-		var sequence uint32
-		var decodedJSON map[string]interface{}
-
-		txInfo, decodeErr := f.decoder.ExtractTransactionInfo(txBlob, metaBlob)
-		if decodeErr == nil {
-			account = txInfo.Account
-			fee = txInfo.Fee
-			sequence = txInfo.Sequence
-		} else {
-			f.logger.Debug("failed to extract full transaction info",
+		// Use decoder to map transaction to protobuf (includes all fields and tx_details)
+		protoTx, err := f.decoder.MapTransactionToProto(txBlob, metaBlob, txHash, uint32(i))
+		if err != nil {
+			f.logger.Warn("failed to map transaction to protobuf, skipping",
 				zap.String("tx_hash", tx.Hash),
-				zap.Error(decodeErr))
-		}
-
-		// Decode the raw JSON for tx_details population
-		decodedTx, jsonErr := f.decoder.DecodeTransactionFromBytes(txBlob)
-		if jsonErr == nil {
-			decodedJSON = decodedTx.RawJSON
-		}
-
-		// Build the base transaction
-		protoTx := &pbxrpl.Transaction{
-			Hash:     txHash,
-			Result:   result,
-			Index:    uint32(i),
-			TxBlob:   txBlob,
-			MetaBlob: metaBlob,
-			TxType:   txType,
-			Account:  account,
-			Fee:      fee,
-			Sequence: sequence,
-		}
-
-		// Populate tx_details if we have decoded JSON
-		if decodedJSON != nil {
-			f.populateTxDetails(protoTx, decodedJSON, txType)
+				zap.Error(err))
+			continue
 		}
 
 		transactions = append(transactions, protoTx)
@@ -194,8 +158,6 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 			TransactionHash:     transactionHash,
 			CloseTimeResolution: ledger.CloseTimeResolution,
 			CloseFlags:          ledger.CloseFlags,
-			// Note: base_fee, reserve_base, reserve_increment would need server_info call
-			// or could be extracted from fee settings in ledger if available
 		},
 		Version:      1,
 		Transactions: transactions,
@@ -226,79 +188,6 @@ func (f *Fetcher) IsBlockAvailable(blockNum uint64) bool {
 func xrplEpochToTime(xrplTime uint64) time.Time {
 	unixTime := int64(xrplTime) + xrplEpochOffset
 	return time.Unix(unixTime, 0).UTC()
-}
-
-// populateTxDetails populates the tx_details oneof field based on transaction type
-func (f *Fetcher) populateTxDetails(tx *pbxrpl.Transaction, decoded map[string]interface{}, txType pbxrpl.TransactionType) {
-	details := f.decoder.DecodeTransactionDetails(decoded, txType)
-	if details == nil {
-		return
-	}
-
-	switch d := details.(type) {
-	case *pbxrpl.Payment:
-		tx.TxDetails = &pbxrpl.Transaction_Payment{Payment: d}
-	case *pbxrpl.OfferCreate:
-		tx.TxDetails = &pbxrpl.Transaction_OfferCreate{OfferCreate: d}
-	case *pbxrpl.OfferCancel:
-		tx.TxDetails = &pbxrpl.Transaction_OfferCancel{OfferCancel: d}
-	case *pbxrpl.TrustSet:
-		tx.TxDetails = &pbxrpl.Transaction_TrustSet{TrustSet: d}
-	case *pbxrpl.AccountSet:
-		tx.TxDetails = &pbxrpl.Transaction_AccountSet{AccountSet: d}
-	case *pbxrpl.AccountDelete:
-		tx.TxDetails = &pbxrpl.Transaction_AccountDelete{AccountDelete: d}
-	case *pbxrpl.SetRegularKey:
-		tx.TxDetails = &pbxrpl.Transaction_SetRegularKey{SetRegularKey: d}
-	case *pbxrpl.SignerListSet:
-		tx.TxDetails = &pbxrpl.Transaction_SignerListSet{SignerListSet: d}
-	case *pbxrpl.EscrowCreate:
-		tx.TxDetails = &pbxrpl.Transaction_EscrowCreate{EscrowCreate: d}
-	case *pbxrpl.EscrowFinish:
-		tx.TxDetails = &pbxrpl.Transaction_EscrowFinish{EscrowFinish: d}
-	case *pbxrpl.EscrowCancel:
-		tx.TxDetails = &pbxrpl.Transaction_EscrowCancel{EscrowCancel: d}
-	case *pbxrpl.PaymentChannelCreate:
-		tx.TxDetails = &pbxrpl.Transaction_PaymentChannelCreate{PaymentChannelCreate: d}
-	case *pbxrpl.PaymentChannelFund:
-		tx.TxDetails = &pbxrpl.Transaction_PaymentChannelFund{PaymentChannelFund: d}
-	case *pbxrpl.PaymentChannelClaim:
-		tx.TxDetails = &pbxrpl.Transaction_PaymentChannelClaim{PaymentChannelClaim: d}
-	case *pbxrpl.CheckCreate:
-		tx.TxDetails = &pbxrpl.Transaction_CheckCreate{CheckCreate: d}
-	case *pbxrpl.CheckCash:
-		tx.TxDetails = &pbxrpl.Transaction_CheckCash{CheckCash: d}
-	case *pbxrpl.CheckCancel:
-		tx.TxDetails = &pbxrpl.Transaction_CheckCancel{CheckCancel: d}
-	case *pbxrpl.DepositPreauth:
-		tx.TxDetails = &pbxrpl.Transaction_DepositPreauth{DepositPreauth: d}
-	case *pbxrpl.TicketCreate:
-		tx.TxDetails = &pbxrpl.Transaction_TicketCreate{TicketCreate: d}
-	case *pbxrpl.NFTokenMint:
-		tx.TxDetails = &pbxrpl.Transaction_NftokenMint{NftokenMint: d}
-	case *pbxrpl.NFTokenBurn:
-		tx.TxDetails = &pbxrpl.Transaction_NftokenBurn{NftokenBurn: d}
-	case *pbxrpl.NFTokenCreateOffer:
-		tx.TxDetails = &pbxrpl.Transaction_NftokenCreateOffer{NftokenCreateOffer: d}
-	case *pbxrpl.NFTokenCancelOffer:
-		tx.TxDetails = &pbxrpl.Transaction_NftokenCancelOffer{NftokenCancelOffer: d}
-	case *pbxrpl.NFTokenAcceptOffer:
-		tx.TxDetails = &pbxrpl.Transaction_NftokenAcceptOffer{NftokenAcceptOffer: d}
-	case *pbxrpl.Clawback:
-		tx.TxDetails = &pbxrpl.Transaction_Clawback{Clawback: d}
-	case *pbxrpl.AMMCreate:
-		tx.TxDetails = &pbxrpl.Transaction_AmmCreate{AmmCreate: d}
-	case *pbxrpl.AMMDeposit:
-		tx.TxDetails = &pbxrpl.Transaction_AmmDeposit{AmmDeposit: d}
-	case *pbxrpl.AMMWithdraw:
-		tx.TxDetails = &pbxrpl.Transaction_AmmWithdraw{AmmWithdraw: d}
-	case *pbxrpl.AMMVote:
-		tx.TxDetails = &pbxrpl.Transaction_AmmVote{AmmVote: d}
-	case *pbxrpl.AMMBid:
-		tx.TxDetails = &pbxrpl.Transaction_AmmBid{AmmBid: d}
-	case *pbxrpl.AMMDelete:
-		tx.TxDetails = &pbxrpl.Transaction_AmmDelete{AmmDelete: d}
-	}
 }
 
 // convertBlock converts an XRPL Block to a bstream Block

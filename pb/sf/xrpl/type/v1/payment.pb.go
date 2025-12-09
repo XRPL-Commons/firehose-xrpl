@@ -27,21 +27,33 @@ type Payment struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Destination account
 	Destination string `protobuf:"bytes,1,opt,name=destination,proto3" json:"destination,omitempty"`
-	// Amount to deliver to destination
+	// Amount to deliver to destination (alias for deliver_max in API v1)
 	Amount *Amount `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	// (Optional) Maximum amount to deliver (API v2+, same as amount)
+	DeliverMax *Amount `protobuf:"bytes,3,opt,name=deliver_max,json=deliverMax,proto3" json:"deliver_max,omitempty"`
 	// (Optional) Maximum amount to send, including transfer fees
-	SendMax *Amount `protobuf:"bytes,3,opt,name=send_max,json=sendMax,proto3" json:"send_max,omitempty"`
+	SendMax *Amount `protobuf:"bytes,4,opt,name=send_max,json=sendMax,proto3" json:"send_max,omitempty"`
 	// (Optional) Minimum amount to deliver (for partial payments)
-	DeliverMin *Amount `protobuf:"bytes,4,opt,name=deliver_min,json=deliverMin,proto3" json:"deliver_min,omitempty"`
+	DeliverMin *Amount `protobuf:"bytes,5,opt,name=deliver_min,json=deliverMin,proto3" json:"deliver_min,omitempty"`
 	// (Optional) Payment paths for cross-currency payments
-	Paths []*Path `protobuf:"bytes,5,rep,name=paths,proto3" json:"paths,omitempty"`
+	Paths []*Path `protobuf:"bytes,6,rep,name=paths,proto3" json:"paths,omitempty"`
 	// (Optional) Arbitrary 256-bit hash for invoice/reference
-	InvoiceId string `protobuf:"bytes,6,opt,name=invoice_id,json=invoiceId,proto3" json:"invoice_id,omitempty"`
+	InvoiceId string `protobuf:"bytes,7,opt,name=invoice_id,json=invoiceId,proto3" json:"invoice_id,omitempty"`
 	// (Optional) Destination tag
-	DestinationTag uint32 `protobuf:"varint,7,opt,name=destination_tag,json=destinationTag,proto3" json:"destination_tag,omitempty"`
+	DestinationTag uint32 `protobuf:"varint,8,opt,name=destination_tag,json=destinationTag,proto3" json:"destination_tag,omitempty"`
+	// (Optional) Set of Credentials to authorize deposit (array of ledger entry IDs)
+	CredentialIds []string `protobuf:"bytes,9,rep,name=credential_ids,json=credentialIds,proto3" json:"credential_ids,omitempty"`
+	// (Optional) Ledger entry ID of a permissioned domain
+	// For cross-currency payments, only use the permissioned DEX of that domain
+	DomainId string `protobuf:"bytes,10,opt,name=domain_id,json=domainId,proto3" json:"domain_id,omitempty"`
+	// (Optional) Transaction flags
+	// tfNoRippleDirect = 65536 (0x00010000) - Do not use default path
+	// tfPartialPayment = 131072 (0x00020000) - Allow partial payment
+	// tfLimitQuality = 262144 (0x00040000) - Only use paths with good quality
+	Flags uint32 `protobuf:"varint,11,opt,name=flags,proto3" json:"flags,omitempty"`
 	// --- From metadata ---
 	// Actual amount delivered (may differ from amount for partial payments)
-	DeliveredAmount *Amount `protobuf:"bytes,10,opt,name=delivered_amount,json=deliveredAmount,proto3" json:"delivered_amount,omitempty"`
+	DeliveredAmount *Amount `protobuf:"bytes,20,opt,name=delivered_amount,json=deliveredAmount,proto3" json:"delivered_amount,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -90,6 +102,13 @@ func (x *Payment) GetAmount() *Amount {
 	return nil
 }
 
+func (x *Payment) GetDeliverMax() *Amount {
+	if x != nil {
+		return x.DeliverMax
+	}
+	return nil
+}
+
 func (x *Payment) GetSendMax() *Amount {
 	if x != nil {
 		return x.SendMax
@@ -125,6 +144,27 @@ func (x *Payment) GetDestinationTag() uint32 {
 	return 0
 }
 
+func (x *Payment) GetCredentialIds() []string {
+	if x != nil {
+		return x.CredentialIds
+	}
+	return nil
+}
+
+func (x *Payment) GetDomainId() string {
+	if x != nil {
+		return x.DomainId
+	}
+	return ""
+}
+
+func (x *Payment) GetFlags() uint32 {
+	if x != nil {
+		return x.Flags
+	}
+	return 0
+}
+
 func (x *Payment) GetDeliveredAmount() *Amount {
 	if x != nil {
 		return x.DeliveredAmount
@@ -136,19 +176,24 @@ var File_sf_xrpl_type_v1_payment_proto protoreflect.FileDescriptor
 
 const file_sf_xrpl_type_v1_payment_proto_rawDesc = "" +
 	"\n" +
-	"\x1dsf/xrpl/type/v1/payment.proto\x12\x0fsf.xrpl.type.v1\x1a\x1csf/xrpl/type/v1/amount.proto\"\x83\x03\n" +
+	"\x1dsf/xrpl/type/v1/payment.proto\x12\x0fsf.xrpl.type.v1\x1a\x1csf/xrpl/type/v1/amount.proto\"\x97\x04\n" +
 	"\aPayment\x12 \n" +
 	"\vdestination\x18\x01 \x01(\tR\vdestination\x12/\n" +
-	"\x06amount\x18\x02 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x06amount\x122\n" +
-	"\bsend_max\x18\x03 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\asendMax\x128\n" +
-	"\vdeliver_min\x18\x04 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\n" +
+	"\x06amount\x18\x02 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x06amount\x128\n" +
+	"\vdeliver_max\x18\x03 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\n" +
+	"deliverMax\x122\n" +
+	"\bsend_max\x18\x04 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\asendMax\x128\n" +
+	"\vdeliver_min\x18\x05 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\n" +
 	"deliverMin\x12+\n" +
-	"\x05paths\x18\x05 \x03(\v2\x15.sf.xrpl.type.v1.PathR\x05paths\x12\x1d\n" +
+	"\x05paths\x18\x06 \x03(\v2\x15.sf.xrpl.type.v1.PathR\x05paths\x12\x1d\n" +
 	"\n" +
-	"invoice_id\x18\x06 \x01(\tR\tinvoiceId\x12'\n" +
-	"\x0fdestination_tag\x18\a \x01(\rR\x0edestinationTag\x12B\n" +
-	"\x10delivered_amount\x18\n" +
-	" \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x0fdeliveredAmountBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
+	"invoice_id\x18\a \x01(\tR\tinvoiceId\x12'\n" +
+	"\x0fdestination_tag\x18\b \x01(\rR\x0edestinationTag\x12%\n" +
+	"\x0ecredential_ids\x18\t \x03(\tR\rcredentialIds\x12\x1b\n" +
+	"\tdomain_id\x18\n" +
+	" \x01(\tR\bdomainId\x12\x14\n" +
+	"\x05flags\x18\v \x01(\rR\x05flags\x12B\n" +
+	"\x10delivered_amount\x18\x14 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\x0fdeliveredAmountBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
 
 var (
 	file_sf_xrpl_type_v1_payment_proto_rawDescOnce sync.Once
@@ -170,15 +215,16 @@ var file_sf_xrpl_type_v1_payment_proto_goTypes = []any{
 }
 var file_sf_xrpl_type_v1_payment_proto_depIdxs = []int32{
 	1, // 0: sf.xrpl.type.v1.Payment.amount:type_name -> sf.xrpl.type.v1.Amount
-	1, // 1: sf.xrpl.type.v1.Payment.send_max:type_name -> sf.xrpl.type.v1.Amount
-	1, // 2: sf.xrpl.type.v1.Payment.deliver_min:type_name -> sf.xrpl.type.v1.Amount
-	2, // 3: sf.xrpl.type.v1.Payment.paths:type_name -> sf.xrpl.type.v1.Path
-	1, // 4: sf.xrpl.type.v1.Payment.delivered_amount:type_name -> sf.xrpl.type.v1.Amount
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	1, // 1: sf.xrpl.type.v1.Payment.deliver_max:type_name -> sf.xrpl.type.v1.Amount
+	1, // 2: sf.xrpl.type.v1.Payment.send_max:type_name -> sf.xrpl.type.v1.Amount
+	1, // 3: sf.xrpl.type.v1.Payment.deliver_min:type_name -> sf.xrpl.type.v1.Amount
+	2, // 4: sf.xrpl.type.v1.Payment.paths:type_name -> sf.xrpl.type.v1.Path
+	1, // 5: sf.xrpl.type.v1.Payment.delivered_amount:type_name -> sf.xrpl.type.v1.Amount
+	6, // [6:6] is the sub-list for method output_type
+	6, // [6:6] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_sf_xrpl_type_v1_payment_proto_init() }

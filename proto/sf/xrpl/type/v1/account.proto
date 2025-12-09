@@ -29,6 +29,12 @@ message AccountSet {
 
   // (Optional) NFT minter account
   string nftoken_minter = 8;
+
+  // (Optional) Arbitrary 256-bit value stored with the account
+  string wallet_locator = 9;
+
+  // (Optional) Not used - valid but has no effect
+  uint32 wallet_size = 10;
 }
 
 // AccountDelete - Deletes an account
@@ -39,6 +45,9 @@ message AccountDelete {
 
   // (Optional) Destination tag
   uint32 destination_tag = 2;
+
+  // (Optional) Set of Credentials to authorize deposit (array of ledger entry IDs)
+  repeated string credential_ids = 3;
 }
 
 // SetRegularKey - Sets or clears an account's regular key
@@ -59,6 +68,12 @@ message SignerListSet {
 }
 
 message SignerEntry {
+  // XRP Ledger address whose signature contributes to multi-signature
   string account = 1;
+
+  // Weight of a signature from this signer (UInt16)
   uint32 signer_weight = 2;
+
+  // (Optional) Arbitrary hexadecimal data to identify the signer
+  string wallet_locator = 3;
 }

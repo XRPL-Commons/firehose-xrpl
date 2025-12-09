@@ -21,16 +21,29 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Amount can be XRP (drops) or issued currency/MPT
+// Amount can be XRP (drops), issued currency/token, or MPT
+// The format depends on which fields are populated:
+// - XRP: Only value field (drops as string)
+// - Token: value, currency, and issuer fields
+// - MPT: value and mpt_issuance_id fields
 type Amount struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// For XRP: value in drops as string
-	// For issued currency: decimal value as string
+	// Value of the amount
+	// For XRP: drops as string (e.g., "13100000" for 13.1 XRP)
+	// For token: decimal value as string, may use scientific notation (e.g., "153.75" or "1.23e11")
+	// For MPT: positive integer as string (0x0 to 0x7FFFFFFFFFFFFFFF)
 	Value string `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
-	// Empty for XRP, currency code for issued currencies (3-char or 40-hex)
+	// Currency code for tokens (3-char or 40-hex)
+	// Empty for XRP and MPTs
+	// Must not be "XRP" for tokens
 	Currency string `protobuf:"bytes,2,opt,name=currency,proto3" json:"currency,omitempty"`
-	// Issuer address (empty for XRP)
-	Issuer        string `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	// Issuer address for tokens (empty for XRP and MPTs)
+	// The account that issues the token, or in special cases the holder
+	Issuer string `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	// MPT issuance ID (40-char hex string)
+	// Only used for MPT amounts
+	// Empty for XRP and tokens
+	MptIssuanceId string `protobuf:"bytes,4,opt,name=mpt_issuance_id,json=mptIssuanceId,proto3" json:"mpt_issuance_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -86,11 +99,30 @@ func (x *Amount) GetIssuer() string {
 	return ""
 }
 
-// Currency asset identifier (for AMM, etc.)
+func (x *Amount) GetMptIssuanceId() string {
+	if x != nil {
+		return x.MptIssuanceId
+	}
+	return ""
+}
+
+// Currency asset identifier (for AMM, specifying without amounts, etc.)
+// Can represent XRP, tokens, or MPTs:
+// - XRP: Only currency field set to "XRP"
+// - Token: currency and issuer fields (no issuer for XRP)
+// - MPT: Only mpt_issuance_id field
 type Asset struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Currency      string                 `protobuf:"bytes,1,opt,name=currency,proto3" json:"currency,omitempty"`
-	Issuer        string                 `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Currency code (e.g., "USD", "XRP")
+	// Empty for MPTs
+	Currency string `protobuf:"bytes,1,opt,name=currency,proto3" json:"currency,omitempty"`
+	// Issuer address for tokens
+	// Empty for XRP and MPTs
+	Issuer string `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	// MPT issuance ID (40-char hex string)
+	// Only used for MPT assets
+	// Empty for XRP and tokens
+	MptIssuanceId string `protobuf:"bytes,3,opt,name=mpt_issuance_id,json=mptIssuanceId,proto3" json:"mpt_issuance_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -135,6 +167,13 @@ func (x *Asset) GetCurrency() string {
 func (x *Asset) GetIssuer() string {
 	if x != nil {
 		return x.Issuer
+	}
+	return ""
+}
+
+func (x *Asset) GetMptIssuanceId() string {
+	if x != nil {
+		return x.MptIssuanceId
 	}
 	return ""
 }
@@ -249,14 +288,16 @@ var File_sf_xrpl_type_v1_amount_proto protoreflect.FileDescriptor
 
 const file_sf_xrpl_type_v1_amount_proto_rawDesc = "" +
 	"\n" +
-	"\x1csf/xrpl/type/v1/amount.proto\x12\x0fsf.xrpl.type.v1\"R\n" +
+	"\x1csf/xrpl/type/v1/amount.proto\x12\x0fsf.xrpl.type.v1\"z\n" +
 	"\x06Amount\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12\x1a\n" +
 	"\bcurrency\x18\x02 \x01(\tR\bcurrency\x12\x16\n" +
-	"\x06issuer\x18\x03 \x01(\tR\x06issuer\";\n" +
+	"\x06issuer\x18\x03 \x01(\tR\x06issuer\x12&\n" +
+	"\x0fmpt_issuance_id\x18\x04 \x01(\tR\rmptIssuanceId\"c\n" +
 	"\x05Asset\x12\x1a\n" +
 	"\bcurrency\x18\x01 \x01(\tR\bcurrency\x12\x16\n" +
-	"\x06issuer\x18\x02 \x01(\tR\x06issuer\"[\n" +
+	"\x06issuer\x18\x02 \x01(\tR\x06issuer\x12&\n" +
+	"\x0fmpt_issuance_id\x18\x03 \x01(\tR\rmptIssuanceId\"[\n" +
 	"\vPathElement\x12\x18\n" +
 	"\aaccount\x18\x01 \x01(\tR\aaccount\x12\x1a\n" +
 	"\bcurrency\x18\x02 \x01(\tR\bcurrency\x12\x16\n" +

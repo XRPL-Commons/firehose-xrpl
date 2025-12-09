@@ -28,6 +28,7 @@ func (m *Amount) CloneVT() *Amount {
 	r.Value = m.Value
 	r.Currency = m.Currency
 	r.Issuer = m.Issuer
+	r.MptIssuanceId = m.MptIssuanceId
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -46,6 +47,7 @@ func (m *Asset) CloneVT() *Asset {
 	r := new(Asset)
 	r.Currency = m.Currency
 	r.Issuer = m.Issuer
+	r.MptIssuanceId = m.MptIssuanceId
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -114,6 +116,9 @@ func (this *Amount) EqualVT(that *Amount) bool {
 	if this.Issuer != that.Issuer {
 		return false
 	}
+	if this.MptIssuanceId != that.MptIssuanceId {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
@@ -134,6 +139,9 @@ func (this *Asset) EqualVT(that *Asset) bool {
 		return false
 	}
 	if this.Issuer != that.Issuer {
+		return false
+	}
+	if this.MptIssuanceId != that.MptIssuanceId {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
@@ -234,6 +242,13 @@ func (m *Amount) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if len(m.MptIssuanceId) > 0 {
+		i -= len(m.MptIssuanceId)
+		copy(dAtA[i:], m.MptIssuanceId)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MptIssuanceId)))
+		i--
+		dAtA[i] = 0x22
+	}
 	if len(m.Issuer) > 0 {
 		i -= len(m.Issuer)
 		copy(dAtA[i:], m.Issuer)
@@ -287,6 +302,13 @@ func (m *Asset) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if len(m.MptIssuanceId) > 0 {
+		i -= len(m.MptIssuanceId)
+		copy(dAtA[i:], m.MptIssuanceId)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MptIssuanceId)))
+		i--
+		dAtA[i] = 0x1a
 	}
 	if len(m.Issuer) > 0 {
 		i -= len(m.Issuer)
@@ -434,6 +456,13 @@ func (m *Amount) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if len(m.MptIssuanceId) > 0 {
+		i -= len(m.MptIssuanceId)
+		copy(dAtA[i:], m.MptIssuanceId)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MptIssuanceId)))
+		i--
+		dAtA[i] = 0x22
+	}
 	if len(m.Issuer) > 0 {
 		i -= len(m.Issuer)
 		copy(dAtA[i:], m.Issuer)
@@ -487,6 +516,13 @@ func (m *Asset) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if len(m.MptIssuanceId) > 0 {
+		i -= len(m.MptIssuanceId)
+		copy(dAtA[i:], m.MptIssuanceId)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MptIssuanceId)))
+		i--
+		dAtA[i] = 0x1a
 	}
 	if len(m.Issuer) > 0 {
 		i -= len(m.Issuer)
@@ -622,6 +658,10 @@ func (m *Amount) SizeVT() (n int) {
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
+	l = len(m.MptIssuanceId)
+	if l > 0 {
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
 	n += len(m.unknownFields)
 	return n
 }
@@ -637,6 +677,10 @@ func (m *Asset) SizeVT() (n int) {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	l = len(m.Issuer)
+	if l > 0 {
+		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	l = len(m.MptIssuanceId)
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
@@ -807,6 +851,38 @@ func (m *Amount) UnmarshalVT(dAtA []byte) error {
 			}
 			m.Issuer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MptIssuanceId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MptIssuanceId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -921,6 +997,38 @@ func (m *Asset) UnmarshalVT(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Issuer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MptIssuanceId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MptIssuanceId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1313,6 +1421,42 @@ func (m *Amount) UnmarshalVTUnsafe(dAtA []byte) error {
 			}
 			m.Issuer = stringValue
 			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MptIssuanceId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.MptIssuanceId = stringValue
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -1435,6 +1579,42 @@ func (m *Asset) UnmarshalVTUnsafe(dAtA []byte) error {
 				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
 			}
 			m.Issuer = stringValue
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MptIssuanceId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
+			}
+			m.MptIssuanceId = stringValue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

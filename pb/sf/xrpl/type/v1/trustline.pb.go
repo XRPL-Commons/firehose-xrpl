@@ -26,11 +26,25 @@ const (
 type TrustSet struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The limit of the trust line (currency/issuer defines the line)
+	// currency: The currency code (3-char ISO 4217 or 160-bit hex)
+	// value: Quoted decimal limit to set on this trust line
+	// issuer: Address of the account to extend trust to
 	LimitAmount *Amount `protobuf:"bytes,1,opt,name=limit_amount,json=limitAmount,proto3" json:"limit_amount,omitempty"`
-	// (Optional) Incoming value transfer fee (0-100%, scaled by 1 billion)
+	// (Optional) Value incoming balances at ratio of this per 1,000,000,000 units
+	// 0 = face value. E.g., 10,000,000 = 1% retained by sender
 	QualityIn uint32 `protobuf:"varint,2,opt,name=quality_in,json=qualityIn,proto3" json:"quality_in,omitempty"`
-	// (Optional) Outgoing value transfer fee
-	QualityOut    uint32 `protobuf:"varint,3,opt,name=quality_out,json=qualityOut,proto3" json:"quality_out,omitempty"`
+	// (Optional) Value outgoing balances at ratio of this per 1,000,000,000 units
+	// 0 = face value. E.g., 10,000,000 = 1% retained by issuer
+	QualityOut uint32 `protobuf:"varint,3,opt,name=quality_out,json=qualityOut,proto3" json:"quality_out,omitempty"`
+	// (Optional) Transaction flags
+	// tfSetfAuth = 65536 (0x00010000) - Authorize other party to hold issued currency
+	// tfSetNoRipple = 131072 (0x00020000) - Enable No Ripple flag
+	// tfClearNoRipple = 262144 (0x00040000) - Disable No Ripple flag
+	// tfSetFreeze = 1048576 (0x00100000) - Freeze the trust line
+	// tfClearFreeze = 2097152 (0x00200000) - Unfreeze the trust line
+	// tfSetDeepFreeze = 4194304 (0x00400000) - Deep Freeze the trust line
+	// tfClearDeepFreeze = 8388608 (0x00800000) - Clear Deep Freeze on trust line
+	Flags         uint32 `protobuf:"varint,4,opt,name=flags,proto3" json:"flags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -86,17 +100,25 @@ func (x *TrustSet) GetQualityOut() uint32 {
 	return 0
 }
 
+func (x *TrustSet) GetFlags() uint32 {
+	if x != nil {
+		return x.Flags
+	}
+	return 0
+}
+
 var File_sf_xrpl_type_v1_trustline_proto protoreflect.FileDescriptor
 
 const file_sf_xrpl_type_v1_trustline_proto_rawDesc = "" +
 	"\n" +
-	"\x1fsf/xrpl/type/v1/trustline.proto\x12\x0fsf.xrpl.type.v1\x1a\x1csf/xrpl/type/v1/amount.proto\"\x86\x01\n" +
+	"\x1fsf/xrpl/type/v1/trustline.proto\x12\x0fsf.xrpl.type.v1\x1a\x1csf/xrpl/type/v1/amount.proto\"\x9c\x01\n" +
 	"\bTrustSet\x12:\n" +
 	"\flimit_amount\x18\x01 \x01(\v2\x17.sf.xrpl.type.v1.AmountR\vlimitAmount\x12\x1d\n" +
 	"\n" +
 	"quality_in\x18\x02 \x01(\rR\tqualityIn\x12\x1f\n" +
 	"\vquality_out\x18\x03 \x01(\rR\n" +
-	"qualityOutBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
+	"qualityOut\x12\x14\n" +
+	"\x05flags\x18\x04 \x01(\rR\x05flagsBAZ?github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrplb\x06proto3"
 
 var (
 	file_sf_xrpl_type_v1_trustline_proto_rawDescOnce sync.Once

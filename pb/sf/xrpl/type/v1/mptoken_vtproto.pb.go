@@ -29,8 +29,7 @@ func (m *MPTokenIssuanceCreate) CloneVT() *MPTokenIssuanceCreate {
 	r.TransferFee = m.TransferFee
 	r.MaximumAmount = m.MaximumAmount
 	r.MptokenMetadata = m.MptokenMetadata
-	r.DomainId = m.DomainId
-	r.MutableFlags = m.MutableFlags
+	r.Flags = m.Flags
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -66,10 +65,7 @@ func (m *MPTokenIssuanceSet) CloneVT() *MPTokenIssuanceSet {
 	r := new(MPTokenIssuanceSet)
 	r.MptokenIssuanceId = m.MptokenIssuanceId
 	r.Holder = m.Holder
-	r.DomainId = m.DomainId
-	r.MptokenMetadata = m.MptokenMetadata
-	r.TransferFee = m.TransferFee
-	r.MutableFlags = m.MutableFlags
+	r.Flags = m.Flags
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -88,6 +84,7 @@ func (m *MPTokenAuthorize) CloneVT() *MPTokenAuthorize {
 	r := new(MPTokenAuthorize)
 	r.MptokenIssuanceId = m.MptokenIssuanceId
 	r.Holder = m.Holder
+	r.Flags = m.Flags
 	if len(m.unknownFields) > 0 {
 		r.unknownFields = make([]byte, len(m.unknownFields))
 		copy(r.unknownFields, m.unknownFields)
@@ -117,10 +114,7 @@ func (this *MPTokenIssuanceCreate) EqualVT(that *MPTokenIssuanceCreate) bool {
 	if this.MptokenMetadata != that.MptokenMetadata {
 		return false
 	}
-	if this.DomainId != that.DomainId {
-		return false
-	}
-	if this.MutableFlags != that.MutableFlags {
+	if this.Flags != that.Flags {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
@@ -164,16 +158,7 @@ func (this *MPTokenIssuanceSet) EqualVT(that *MPTokenIssuanceSet) bool {
 	if this.Holder != that.Holder {
 		return false
 	}
-	if this.DomainId != that.DomainId {
-		return false
-	}
-	if this.MptokenMetadata != that.MptokenMetadata {
-		return false
-	}
-	if this.TransferFee != that.TransferFee {
-		return false
-	}
-	if this.MutableFlags != that.MutableFlags {
+	if this.Flags != that.Flags {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
@@ -196,6 +181,9 @@ func (this *MPTokenAuthorize) EqualVT(that *MPTokenAuthorize) bool {
 		return false
 	}
 	if this.Holder != that.Holder {
+		return false
+	}
+	if this.Flags != that.Flags {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
@@ -238,17 +226,10 @@ func (m *MPTokenIssuanceCreate) MarshalToSizedBufferVT(dAtA []byte) (int, error)
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
-	if m.MutableFlags != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.MutableFlags))
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
 		i--
-		dAtA[i] = 0x30
-	}
-	if len(m.DomainId) > 0 {
-		i -= len(m.DomainId)
-		copy(dAtA[i:], m.DomainId)
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.DomainId)))
-		i--
-		dAtA[i] = 0x2a
+		dAtA[i] = 0x28
 	}
 	if len(m.MptokenMetadata) > 0 {
 		i -= len(m.MptokenMetadata)
@@ -345,29 +326,10 @@ func (m *MPTokenIssuanceSet) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
-	if m.MutableFlags != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.MutableFlags))
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
 		i--
-		dAtA[i] = 0x30
-	}
-	if m.TransferFee != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.TransferFee))
-		i--
-		dAtA[i] = 0x28
-	}
-	if len(m.MptokenMetadata) > 0 {
-		i -= len(m.MptokenMetadata)
-		copy(dAtA[i:], m.MptokenMetadata)
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MptokenMetadata)))
-		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.DomainId) > 0 {
-		i -= len(m.DomainId)
-		copy(dAtA[i:], m.DomainId)
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.DomainId)))
-		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x18
 	}
 	if len(m.Holder) > 0 {
 		i -= len(m.Holder)
@@ -416,6 +378,11 @@ func (m *MPTokenAuthorize) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x18
+	}
 	if len(m.Holder) > 0 {
 		i -= len(m.Holder)
 		copy(dAtA[i:], m.Holder)
@@ -463,17 +430,10 @@ func (m *MPTokenIssuanceCreate) MarshalToSizedBufferVTStrict(dAtA []byte) (int, 
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
-	if m.MutableFlags != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.MutableFlags))
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
 		i--
-		dAtA[i] = 0x30
-	}
-	if len(m.DomainId) > 0 {
-		i -= len(m.DomainId)
-		copy(dAtA[i:], m.DomainId)
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.DomainId)))
-		i--
-		dAtA[i] = 0x2a
+		dAtA[i] = 0x28
 	}
 	if len(m.MptokenMetadata) > 0 {
 		i -= len(m.MptokenMetadata)
@@ -570,29 +530,10 @@ func (m *MPTokenIssuanceSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int, err
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
-	if m.MutableFlags != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.MutableFlags))
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
 		i--
-		dAtA[i] = 0x30
-	}
-	if m.TransferFee != 0 {
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.TransferFee))
-		i--
-		dAtA[i] = 0x28
-	}
-	if len(m.MptokenMetadata) > 0 {
-		i -= len(m.MptokenMetadata)
-		copy(dAtA[i:], m.MptokenMetadata)
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.MptokenMetadata)))
-		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.DomainId) > 0 {
-		i -= len(m.DomainId)
-		copy(dAtA[i:], m.DomainId)
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.DomainId)))
-		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x18
 	}
 	if len(m.Holder) > 0 {
 		i -= len(m.Holder)
@@ -641,6 +582,11 @@ func (m *MPTokenAuthorize) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if m.Flags != 0 {
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(m.Flags))
+		i--
+		dAtA[i] = 0x18
+	}
 	if len(m.Holder) > 0 {
 		i -= len(m.Holder)
 		copy(dAtA[i:], m.Holder)
@@ -677,12 +623,8 @@ func (m *MPTokenIssuanceCreate) SizeVT() (n int) {
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
-	l = len(m.DomainId)
-	if l > 0 {
-		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	if m.MutableFlags != 0 {
-		n += 1 + protohelpers.SizeOfVarint(uint64(m.MutableFlags))
+	if m.Flags != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.Flags))
 	}
 	n += len(m.unknownFields)
 	return n
@@ -716,19 +658,8 @@ func (m *MPTokenIssuanceSet) SizeVT() (n int) {
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
-	l = len(m.DomainId)
-	if l > 0 {
-		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	l = len(m.MptokenMetadata)
-	if l > 0 {
-		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
-	}
-	if m.TransferFee != 0 {
-		n += 1 + protohelpers.SizeOfVarint(uint64(m.TransferFee))
-	}
-	if m.MutableFlags != 0 {
-		n += 1 + protohelpers.SizeOfVarint(uint64(m.MutableFlags))
+	if m.Flags != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.Flags))
 	}
 	n += len(m.unknownFields)
 	return n
@@ -747,6 +678,9 @@ func (m *MPTokenAuthorize) SizeVT() (n int) {
 	l = len(m.Holder)
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	if m.Flags != 0 {
+		n += 1 + protohelpers.SizeOfVarint(uint64(m.Flags))
 	}
 	n += len(m.unknownFields)
 	return n
@@ -871,42 +805,10 @@ func (m *MPTokenIssuanceCreate) UnmarshalVT(dAtA []byte) error {
 			m.MptokenMetadata = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DomainId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DomainId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 6:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MutableFlags", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
 			}
-			m.MutableFlags = 0
+			m.Flags = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -916,7 +818,7 @@ func (m *MPTokenIssuanceCreate) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.MutableFlags |= uint32(b&0x7F) << shift
+				m.Flags |= uint32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1120,74 +1022,10 @@ func (m *MPTokenIssuanceSet) UnmarshalVT(dAtA []byte) error {
 			m.Holder = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DomainId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DomainId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MptokenMetadata", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.MptokenMetadata = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TransferFee", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
 			}
-			m.TransferFee = 0
+			m.Flags = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -1197,26 +1035,7 @@ func (m *MPTokenIssuanceSet) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.TransferFee |= uint32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 6:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MutableFlags", wireType)
-			}
-			m.MutableFlags = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MutableFlags |= uint32(b&0x7F) << shift
+				m.Flags |= uint32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1336,6 +1155,25 @@ func (m *MPTokenAuthorize) UnmarshalVT(dAtA []byte) error {
 			}
 			m.Holder = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
@@ -1481,46 +1319,10 @@ func (m *MPTokenIssuanceCreate) UnmarshalVTUnsafe(dAtA []byte) error {
 			m.MptokenMetadata = stringValue
 			iNdEx = postIndex
 		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DomainId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			var stringValue string
-			if intStringLen > 0 {
-				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
-			}
-			m.DomainId = stringValue
-			iNdEx = postIndex
-		case 6:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MutableFlags", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
 			}
-			m.MutableFlags = 0
+			m.Flags = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -1530,7 +1332,7 @@ func (m *MPTokenIssuanceCreate) UnmarshalVTUnsafe(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.MutableFlags |= uint32(b&0x7F) << shift
+				m.Flags |= uint32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1746,82 +1548,10 @@ func (m *MPTokenIssuanceSet) UnmarshalVTUnsafe(dAtA []byte) error {
 			m.Holder = stringValue
 			iNdEx = postIndex
 		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DomainId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			var stringValue string
-			if intStringLen > 0 {
-				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
-			}
-			m.DomainId = stringValue
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MptokenMetadata", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return protohelpers.ErrInvalidLength
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			var stringValue string
-			if intStringLen > 0 {
-				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
-			}
-			m.MptokenMetadata = stringValue
-			iNdEx = postIndex
-		case 5:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TransferFee", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
 			}
-			m.TransferFee = 0
+			m.Flags = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -1831,26 +1561,7 @@ func (m *MPTokenIssuanceSet) UnmarshalVTUnsafe(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.TransferFee |= uint32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 6:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MutableFlags", wireType)
-			}
-			m.MutableFlags = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protohelpers.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MutableFlags |= uint32(b&0x7F) << shift
+				m.Flags |= uint32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1978,6 +1689,25 @@ func (m *MPTokenAuthorize) UnmarshalVTUnsafe(dAtA []byte) error {
 			}
 			m.Holder = stringValue
 			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Flags", wireType)
+			}
+			m.Flags = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Flags |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := protohelpers.Skip(dAtA[iNdEx:])
