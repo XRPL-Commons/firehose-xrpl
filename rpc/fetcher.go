@@ -98,11 +98,6 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	if err != nil {
 		return nil, false, fmt.Errorf("fetching ledger %d: %w", requestBlockNum, err)
 	}
-
-	// Update performance metrics
-	blocksProcessed++
-	transactionsProcessed += len(ledgerResult.Ledger.Transactions)
-
 	ledger := ledgerResult.Ledger
 
 	// 3. Build transactions from the ledger data using parallel processing
@@ -300,7 +295,14 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	return bstreamBlock, false, nil
 }
 
+// Add performance monitoring variables
+var (
+	blocksProcessed       int
+	transactionsProcessed int
+	startTime             = time.Now()
+)
 
+// GetPerformanceMetrics returns performance statistics
 
 // IsBlockAvailable checks if a block number is available
 func (f *Fetcher) IsBlockAvailable(blockNum uint64) bool {
