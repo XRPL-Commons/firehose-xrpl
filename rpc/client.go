@@ -81,6 +81,12 @@ type rawLedgerResponse struct {
 
 // GetLedger fetches a ledger with all transactions in binary format
 func (c *Client) GetLedger(ctx context.Context, ledgerIndex uint64) (*types.LedgerResult, error) {
+	startTime := time.Now()
+	defer func() {
+		c.logger.Debug("GetLedger completed",
+			zap.Uint64("ledger_index", ledgerIndex),
+			zap.Duration("duration", time.Since(startTime)))
+	}()
 	// Make raw HTTP request to get ledger_data blob which xrpl-go doesn't expose
 	reqBody := fmt.Sprintf(`{"method":"ledger","params":[{"ledger_index":%d,"transactions":true,"expand":true,"binary":true}]}`, ledgerIndex)
 

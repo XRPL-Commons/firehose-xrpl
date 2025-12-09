@@ -68,7 +68,11 @@ func NewFetcherWithWorkerPool(fetchInterval, latestBlockRetryInterval time.Durat
 
 // Fetch retrieves a ledger by number and converts it to a bstream Block
 func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uint64) (b *pbbstream.Block, skipped bool, err error) {
+	// Add context with block number for better logging
+	ctx = context.WithValue(ctx, "block_num", requestBlockNum)
+	f.logger.Debug("starting fetch for block", zap.Uint64("block_num", requestBlockNum))
 	// 1. Poll until the requested ledger is validated
+	blockStartTime := time.Now()
 	sleepDuration := time.Duration(0)
 	for f.lastBlockInfo.blockNum < requestBlockNum {
 		time.Sleep(sleepDuration)
@@ -94,6 +98,10 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	if err != nil {
 		return nil, false, fmt.Errorf("fetching ledger %d: %w", requestBlockNum, err)
 	}
+	
+	// Update performance metrics
+	blocksProcessed++
+	transactionsProcessed += len(ledgerResult.Ledger.Transactions)
 
 	ledger := ledgerResult.Ledger
 
@@ -286,14 +294,95 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	f.logger.Info("fetched ledger",
 		zap.Uint64("ledger_index", ledger.LedgerIndex),
 		zap.Int("tx_count", len(transactions)),
-		zap.Time("close_time", closeTime))
+		zap.Time("close_time", closeTime),
+		zap.Duration("processing_time", time.Since(blockStartTime)))
 
 	return bstreamBlock, false, nil
+}
+
+// Add performance monitoring variables
+var (
+	blocksProcessed int
+	transactionsProcessed int
+	startTime = time.Now()
+)
+
+// GetPerformanceMetrics returns performance statistics
+func (f *Fetcher) GetPerformanceMetrics() map[string]interface{} {
+	uptime := time.Since(startTime)
+	bps := float64(0)
+	tps := float64(0)
+	if uptime.Seconds() > 0 {
+		bps = float64(blocksProcessed) / uptime.Seconds()
+		tps = float64(transactionsProcessed) / uptime.Seconds()
+	}
+	
+	return map[string]interface{}{
+		"uptime_seconds": uptime.Seconds(),
+		"blocks_processed": blocksProcessed,
+		"transactions_processed": transactionsProcessed,
+		"blocks_per_second": bps,
+		"transactions_per_second": tps,
+	}
 }
 
 // IsBlockAvailable checks if a block number is available
 func (f *Fetcher) IsBlockAvailable(blockNum uint64) bool {
 	return blockNum <= f.lastBlockInfo.blockNum
+}
+
+// FetchBatch retrieves multiple ledgers in parallel and converts them to bstream Blocks
+func (f *Fetcher) FetchBatch(ctx context.Context, client *Client, requestBlockNums []uint64) ([]*pbbstream.Block, error) {
+	if len(requestBlockNums) == 0 {
+		return nil, nil
+	}
+	
+	// Create a context for the batch operation
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	
+	// Use a worker pool for parallel block fetching
+	blocks := make([]*pbbstream.Block, len(requestBlockNums))
+	var wg sync.WaitGroup
+	errChan := make(chan error, len(requestBlockNums))
+	
+	// Limit concurrent block fetches to avoid overwhelming the RPC endpoint
+	concurrencyLimit := 5
+	if len(requestBlockNums) < concurrencyLimit {
+		concurrencyLimit = len(requestBlockNums)
+	}
+	
+	semaphore := make(chan struct{}, concurrencyLimit)
+	
+	for i, blockNum := range requestBlockNums {
+		wg.Add(1)
+		go func(idx int, num uint64) {
+			defer wg.Done()
+			
+			// Acquire semaphore
+			semaphore <- struct{}{}
+			defer func() { <-semaphore }()
+			
+			// Fetch individual block
+			block, _, err := f.Fetch(ctx, client, num)
+			if err != nil {
+				errChan <- fmt.Errorf("failed to fetch block %d: %w", num, err)
+				return
+			}
+			
+			blocks[idx] = block
+		}(i, blockNum)
+	}
+	
+	wg.Wait()
+	close(errChan)
+	
+	// Check for errors
+	if len(errChan) > 0 {
+		return nil, <-errChan
+	}
+	
+	return blocks, nil
 }
 
 // xrplEpochToTime converts XRPL epoch seconds to Go time.Time
