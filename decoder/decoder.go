@@ -3,6 +3,7 @@ package decoder
 import (
 	"encoding/hex"
 	"fmt"
+	"sync"
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
 	xrpltx "github.com/Peersyst/xrpl-go/xrpl/transaction"
@@ -89,16 +90,32 @@ func (d *Decoder) GetTransactionResult(metaBlob []byte) string {
 // MapTransactionToProto converts a decoded FlatTransaction and metadata to protobuf
 // This is the main entry point used by the fetcher
 func (d *Decoder) MapTransactionToProto(txBlob, metaBlob []byte, txHash []byte, txIndex uint32) (*pbxrpl.Transaction, error) {
-	// Decode the transaction
-	flatTx, err := d.DecodeTransactionFromBytes(txBlob)
-	if err != nil {
-		return nil, fmt.Errorf("decoding transaction: %w", err)
-	}
+	// Decode the transaction and metadata in parallel
+	var flatTx xrpltx.FlatTransaction
+	var meta map[string]interface{}
+	var txErr, metaErr error
+	var wg sync.WaitGroup
 
-	// Decode the metadata to get the result
-	meta, err := d.DecodeMetadataFromBytes(metaBlob)
-	if err != nil {
-		return nil, fmt.Errorf("decoding metadata: %w", err)
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		flatTx, txErr = d.DecodeTransactionFromBytes(txBlob)
+	}()
+
+	go func() {
+		defer wg.Done()
+		meta, metaErr = d.DecodeMetadataFromBytes(metaBlob)
+	}()
+
+	wg.Wait()
+
+	// Check for errors
+	if txErr != nil {
+		return nil, fmt.Errorf("decoding transaction: %w", txErr)
+	}
+	if metaErr != nil {
+		return nil, fmt.Errorf("decoding metadata: %w", metaErr)
 	}
 
 	result := ""

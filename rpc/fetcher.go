@@ -5,11 +5,13 @@ import (
 	"encoding/hex"
 	"fmt"
 	"strconv"
+	"sync"
 	"time"
 
 	pbbstream "github.com/streamingfast/bstream/pb/sf/bstream/v1"
 	"github.com/xrpl-commons/firehose-xrpl/decoder"
 	pbxrpl "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1"
+	"github.com/xrpl-commons/firehose-xrpl/types"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -35,6 +37,7 @@ type Fetcher struct {
 	latestBlockRetryInterval time.Duration
 	lastBlockInfo            *LastBlockInfo
 	decoder                  *decoder.Decoder
+	workerPoolSize           int
 
 	logger *zap.Logger
 }
@@ -46,6 +49,19 @@ func NewFetcher(fetchInterval, latestBlockRetryInterval time.Duration, logger *z
 		latestBlockRetryInterval: latestBlockRetryInterval,
 		lastBlockInfo:            NewLastBlockInfo(),
 		decoder:                  decoder.NewDecoder(logger),
+		workerPoolSize:           10, // Default worker pool size
+		logger:                   logger,
+	}
+}
+
+// NewFetcherWithWorkerPool creates a new XRPL ledger fetcher with custom worker pool size
+func NewFetcherWithWorkerPool(fetchInterval, latestBlockRetryInterval time.Duration, workerPoolSize int, logger *zap.Logger) *Fetcher {
+	return &Fetcher{
+		fetchInterval:            fetchInterval,
+		latestBlockRetryInterval: latestBlockRetryInterval,
+		lastBlockInfo:            NewLastBlockInfo(),
+		decoder:                  decoder.NewDecoder(logger),
+		workerPoolSize:           workerPoolSize,
 		logger:                   logger,
 	}
 }
@@ -81,60 +97,157 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 
 	ledger := ledgerResult.Ledger
 
-	// 3. Build transactions from the ledger data
-	transactions := make([]*pbxrpl.Transaction, 0, len(ledger.Transactions))
+	// 3. Build transactions from the ledger data using parallel processing
+	transactions := make([]*pbxrpl.Transaction, len(ledger.Transactions))
+	var wg sync.WaitGroup
+	errChan := make(chan error, len(ledger.Transactions))
+
+	// Use worker pool pattern for parallel processing
+	workerCount := f.workerPoolSize
+	if len(ledger.Transactions) < workerCount {
+		workerCount = len(ledger.Transactions)
+	}
+	if workerCount == 0 {
+		workerCount = 1 // Ensure at least one worker
+	}
+
+	txChan := make(chan struct {
+		index int
+		tx    types.LedgerTransaction
+	}, len(ledger.Transactions))
+
+	// Start worker pool
+	for w := 0; w < workerCount; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for txData := range txChan {
+				i, tx := txData.index, txData.tx
+
+				// Decode hash
+				txHash, err := hex.DecodeString(tx.Hash)
+				if err != nil {
+					errChan <- fmt.Errorf("decoding tx hash at index %d: %w", i, err)
+					continue
+				}
+
+				// Decode tx_blob (binary transaction)
+				txBlob, err := hex.DecodeString(tx.TxBlob)
+				if err != nil {
+					errChan <- fmt.Errorf("decoding tx blob at index %d: %w", i, err)
+					continue
+				}
+
+				// Decode meta (binary metadata)
+				metaBlob, err := hex.DecodeString(tx.Meta)
+				if err != nil {
+					errChan <- fmt.Errorf("decoding meta blob at index %d: %w", i, err)
+					continue
+				}
+
+				// Use decoder to map transaction to protobuf (includes all fields and tx_details)
+				protoTx, err := f.decoder.MapTransactionToProto(txBlob, metaBlob, txHash, uint32(i))
+				if err != nil {
+					f.logger.Warn("failed to map transaction to protobuf, skipping",
+						zap.Int("tx_index", i),
+						zap.String("tx_hash", tx.Hash),
+						zap.Error(err))
+					continue
+				}
+
+				transactions[i] = protoTx
+			}
+		}()
+	}
+
+	// Feed transactions to workers
 	for i, tx := range ledger.Transactions {
-		// Decode hash
-		txHash, err := hex.DecodeString(tx.Hash)
-		if err != nil {
-			return nil, false, fmt.Errorf("decoding tx hash: %w", err)
+		txChan <- struct {
+			index int
+			tx    types.LedgerTransaction
+		}{
+			index: i,
+			tx:    tx,
 		}
+	}
+	close(txChan)
 
-		// Decode tx_blob (binary transaction)
-		txBlob, err := hex.DecodeString(tx.TxBlob)
-		if err != nil {
-			return nil, false, fmt.Errorf("decoding tx blob: %w", err)
-		}
+	// Wait for all workers to complete
+	wg.Wait()
+	close(errChan)
 
-		// Decode meta (binary metadata)
-		metaBlob, err := hex.DecodeString(tx.Meta)
-		if err != nil {
-			return nil, false, fmt.Errorf("decoding meta blob: %w", err)
-		}
-
-		// Use decoder to map transaction to protobuf (includes all fields and tx_details)
-		protoTx, err := f.decoder.MapTransactionToProto(txBlob, metaBlob, txHash, uint32(i))
-		if err != nil {
-			f.logger.Warn("failed to map transaction to protobuf, skipping",
-				zap.String("tx_hash", tx.Hash),
-				zap.Error(err))
-			continue
-		}
-
-		transactions = append(transactions, protoTx)
+	// Check for any errors
+	if len(errChan) > 0 {
+		return nil, false, <-errChan
 	}
 
-	// 4. Build the block header
-	ledgerHash, err := hex.DecodeString(ledger.LedgerHash)
-	if err != nil {
-		return nil, false, fmt.Errorf("decoding ledger hash: %w", err)
+	// Filter out nil transactions (failed mappings)
+	var validTransactions []*pbxrpl.Transaction
+	for _, tx := range transactions {
+		if tx != nil {
+			validTransactions = append(validTransactions, tx)
+		}
 	}
+	transactions = validTransactions
 
-	parentHash, err := hex.DecodeString(ledger.ParentHash)
-	if err != nil {
-		return nil, false, fmt.Errorf("decoding parent hash: %w", err)
-	}
+	// 4. Build the block header with parallel hex decoding
+	var ledgerHash, parentHash, accountHash, transactionHash []byte
+	var decodeWg sync.WaitGroup
+	var decodeErr error
+	var decodeErrMutex sync.Mutex
 
-	accountHash, err := hex.DecodeString(ledger.AccountHash)
-	if err != nil {
-		f.logger.Debug("failed to decode account hash", zap.Error(err))
-		accountHash = nil
-	}
+	decodeWg.Add(4)
 
-	transactionHash, err := hex.DecodeString(ledger.TransactionHash)
-	if err != nil {
-		f.logger.Debug("failed to decode transaction hash", zap.Error(err))
-		transactionHash = nil
+	go func() {
+		defer decodeWg.Done()
+		var err error
+		ledgerHash, err = hex.DecodeString(ledger.LedgerHash)
+		if err != nil {
+			decodeErrMutex.Lock()
+			if decodeErr == nil {
+				decodeErr = fmt.Errorf("decoding ledger hash: %w", err)
+			}
+			decodeErrMutex.Unlock()
+		}
+	}()
+
+	go func() {
+		defer decodeWg.Done()
+		var err error
+		parentHash, err = hex.DecodeString(ledger.ParentHash)
+		if err != nil {
+			decodeErrMutex.Lock()
+			if decodeErr == nil {
+				decodeErr = fmt.Errorf("decoding parent hash: %w", err)
+			}
+			decodeErrMutex.Unlock()
+		}
+	}()
+
+	go func() {
+		defer decodeWg.Done()
+		var err error
+		accountHash, err = hex.DecodeString(ledger.AccountHash)
+		if err != nil {
+			f.logger.Debug("failed to decode account hash", zap.Error(err))
+			accountHash = nil
+		}
+	}()
+
+	go func() {
+		defer decodeWg.Done()
+		var err error
+		transactionHash, err = hex.DecodeString(ledger.TransactionHash)
+		if err != nil {
+			f.logger.Debug("failed to decode transaction hash", zap.Error(err))
+			transactionHash = nil
+		}
+	}()
+
+	decodeWg.Wait()
+
+	if decodeErr != nil {
+		return nil, false, decodeErr
 	}
 
 	// Parse total coins (drops)
