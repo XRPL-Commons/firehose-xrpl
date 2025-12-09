@@ -98,7 +98,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	if err != nil {
 		return nil, false, fmt.Errorf("fetching ledger %d: %w", requestBlockNum, err)
 	}
-	
+
 	// Update performance metrics
 	blocksProcessed++
 	transactionsProcessed += len(ledgerResult.Ledger.Transactions)
@@ -300,31 +300,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	return bstreamBlock, false, nil
 }
 
-// Add performance monitoring variables
-var (
-	blocksProcessed int
-	transactionsProcessed int
-	startTime = time.Now()
-)
 
-// GetPerformanceMetrics returns performance statistics
-func (f *Fetcher) GetPerformanceMetrics() map[string]interface{} {
-	uptime := time.Since(startTime)
-	bps := float64(0)
-	tps := float64(0)
-	if uptime.Seconds() > 0 {
-		bps = float64(blocksProcessed) / uptime.Seconds()
-		tps = float64(transactionsProcessed) / uptime.Seconds()
-	}
-	
-	return map[string]interface{}{
-		"uptime_seconds": uptime.Seconds(),
-		"blocks_processed": blocksProcessed,
-		"transactions_processed": transactionsProcessed,
-		"blocks_per_second": bps,
-		"transactions_per_second": tps,
-	}
-}
 
 // IsBlockAvailable checks if a block number is available
 func (f *Fetcher) IsBlockAvailable(blockNum uint64) bool {
@@ -336,52 +312,52 @@ func (f *Fetcher) FetchBatch(ctx context.Context, client *Client, requestBlockNu
 	if len(requestBlockNums) == 0 {
 		return nil, nil
 	}
-	
+
 	// Create a context for the batch operation
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
-	
+
 	// Use a worker pool for parallel block fetching
 	blocks := make([]*pbbstream.Block, len(requestBlockNums))
 	var wg sync.WaitGroup
 	errChan := make(chan error, len(requestBlockNums))
-	
+
 	// Limit concurrent block fetches to avoid overwhelming the RPC endpoint
 	concurrencyLimit := 5
 	if len(requestBlockNums) < concurrencyLimit {
 		concurrencyLimit = len(requestBlockNums)
 	}
-	
+
 	semaphore := make(chan struct{}, concurrencyLimit)
-	
+
 	for i, blockNum := range requestBlockNums {
 		wg.Add(1)
 		go func(idx int, num uint64) {
 			defer wg.Done()
-			
+
 			// Acquire semaphore
 			semaphore <- struct{}{}
 			defer func() { <-semaphore }()
-			
+
 			// Fetch individual block
 			block, _, err := f.Fetch(ctx, client, num)
 			if err != nil {
 				errChan <- fmt.Errorf("failed to fetch block %d: %w", num, err)
 				return
 			}
-			
+
 			blocks[idx] = block
 		}(i, blockNum)
 	}
-	
+
 	wg.Wait()
 	close(errChan)
-	
+
 	// Check for errors
 	if len(errChan) > 0 {
 		return nil, <-errChan
 	}
-	
+
 	return blocks, nil
 }
 
