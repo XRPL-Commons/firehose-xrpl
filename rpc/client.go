@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -95,7 +94,12 @@ func (c *Client) GetLedger(ctx context.Context, ledgerIndex uint64) (*types.Ledg
 	if err != nil {
 		return nil, fmt.Errorf("ledger request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			_ = fmt.Errorf("failed to close response body: %w", err)
+		}
+	}(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -244,29 +248,4 @@ func (c *Client) GetServerInfo(ctx context.Context) (*types.ServerInfoResult, er
 			},
 		},
 	}, nil
-}
-
-// parseLedgerIndex handles ledger_index which can be string or number
-func parseLedgerIndex(v interface{}) (uint64, error) {
-	switch val := v.(type) {
-	case uint64:
-		return val, nil
-	case int64:
-		return uint64(val), nil
-	case float64:
-		return uint64(val), nil
-	case int:
-		return uint64(val), nil
-	case string:
-		return strconv.ParseUint(val, 10, 64)
-	case json.Number:
-		return strconv.ParseUint(val.String(), 10, 64)
-	default:
-		return 0, fmt.Errorf("unexpected ledger_index type: %T", v)
-	}
-}
-
-// HexToBytes converts a hex string to bytes
-func HexToBytes(hexStr string) ([]byte, error) {
-	return hex.DecodeString(hexStr)
 }

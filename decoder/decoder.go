@@ -31,7 +31,7 @@ func (d *Decoder) DecodeTransactionFromHex(txBlobHex string) (xrpltx.FlatTransac
 		return nil, fmt.Errorf("failed to decode transaction blob: %w", err)
 	}
 
-	return xrpltx.FlatTransaction(decoded), nil
+	return decoded, nil
 }
 
 // DecodeTransactionFromBytes decodes a transaction from raw bytes

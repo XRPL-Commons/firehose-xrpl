@@ -21,7 +21,6 @@ import "sf/xrpl/type/v1/deposit_preauth.proto";
 import "sf/xrpl/type/v1/ticket.proto";
 import "sf/xrpl/type/v1/clawback.proto";
 import "sf/xrpl/type/v1/amm.proto";
-import "sf/xrpl/type/v1/xchain.proto";
 import "sf/xrpl/type/v1/did.proto";
 import "sf/xrpl/type/v1/oracle.proto";
 import "sf/xrpl/type/v1/mptoken.proto";
@@ -150,95 +149,85 @@ message Transaction {
     Payment payment = 30;
 
     // DEX transactions
-    OfferCreate offer_create = 31;
-    OfferCancel offer_cancel = 32;
+    OfferCreate offer_create = 40;
+    OfferCancel offer_cancel = 41;
 
     // Trustline
-    TrustSet trust_set = 33;
+    TrustSet trust_set = 50;
 
     // Account management
-    AccountSet account_set = 34;
-    AccountDelete account_delete = 35;
-    SetRegularKey set_regular_key = 36;
-    SignerListSet signer_list_set = 37;
+    AccountSet account_set = 60;
+    AccountDelete account_delete = 61;
+    SetRegularKey set_regular_key = 62;
+    SignerListSet signer_list_set = 63;
 
     // Escrow
-    EscrowCreate escrow_create = 40;
-    EscrowFinish escrow_finish = 41;
-    EscrowCancel escrow_cancel = 42;
+    EscrowCreate escrow_create = 70;
+    EscrowFinish escrow_finish = 71;
+    EscrowCancel escrow_cancel = 72;
 
     // Payment channels
-    PaymentChannelCreate payment_channel_create = 43;
-    PaymentChannelFund payment_channel_fund = 44;
-    PaymentChannelClaim payment_channel_claim = 45;
+    PaymentChannelCreate payment_channel_create = 80;
+    PaymentChannelFund payment_channel_fund = 81;
+    PaymentChannelClaim payment_channel_claim = 82;
 
     // Checks
-    CheckCreate check_create = 46;
-    CheckCash check_cash = 47;
-    CheckCancel check_cancel = 48;
+    CheckCreate check_create = 90;
+    CheckCash check_cash = 91;
+    CheckCancel check_cancel = 92;
 
     // Other account features
-    DepositPreauth deposit_preauth = 49;
-    TicketCreate ticket_create = 50;
+    DepositPreauth deposit_preauth = 100;
+    TicketCreate ticket_create = 101;
 
     // NFT transactions
-    NFTokenMint nftoken_mint = 60;
-    NFTokenBurn nftoken_burn = 61;
-    NFTokenCreateOffer nftoken_create_offer = 62;
-    NFTokenCancelOffer nftoken_cancel_offer = 63;
-    NFTokenAcceptOffer nftoken_accept_offer = 64;
-    NFTokenModify nftoken_modify = 65;
+    NFTokenMint nftoken_mint = 110;
+    NFTokenBurn nftoken_burn = 111;
+    NFTokenCreateOffer nftoken_create_offer = 112;
+    NFTokenCancelOffer nftoken_cancel_offer = 113;
+    NFTokenAcceptOffer nftoken_accept_offer = 114;
+    NFTokenModify nftoken_modify = 115;
 
     // Clawback
-    Clawback clawback = 70;
+    Clawback clawback = 120;
 
     // AMM transactions
-    AMMCreate amm_create = 80;
-    AMMDeposit amm_deposit = 81;
-    AMMWithdraw amm_withdraw = 82;
-    AMMVote amm_vote = 83;
-    AMMBid amm_bid = 84;
-    AMMDelete amm_delete = 85;
-    AMMClawback amm_clawback = 86;
-
-    // Cross-chain bridge transactions
-    XChainCreateBridge xchain_create_bridge = 90;
-    XChainModifyBridge xchain_modify_bridge = 91;
-    XChainCreateClaimID xchain_create_claim_id = 92;
-    XChainCommit xchain_commit = 93;
-    XChainClaim xchain_claim = 94;
-    XChainAccountCreateCommit xchain_account_create_commit = 95;
-    XChainAddClaimAttestation xchain_add_claim_attestation = 96;
-    XChainAddAccountCreateAttestation xchain_add_account_create_attestation =
-        97;
+    AMMCreate amm_create = 130;
+    AMMDeposit amm_deposit = 131;
+    AMMWithdraw amm_withdraw = 132;
+    AMMVote amm_vote = 133;
+    AMMBid amm_bid = 134;
+    AMMDelete amm_delete = 135;
+    AMMClawback amm_clawback = 136;
 
     // DID transactions
-    DIDSet did_set = 100;
-    DIDDelete did_delete = 101;
+    DIDSet did_set = 140;
+    DIDDelete did_delete = 141;
 
     // Oracle transactions
-    OracleSet oracle_set = 102;
-    OracleDelete oracle_delete = 103;
+    OracleSet oracle_set = 150;
+    OracleDelete oracle_delete = 151;
 
     // MPToken transactions
-    MPTokenIssuanceCreate mptoken_issuance_create = 110;
-    MPTokenIssuanceDestroy mptoken_issuance_destroy = 111;
-    MPTokenIssuanceSet mptoken_issuance_set = 112;
-    MPTokenAuthorize mptoken_authorize = 113;
+    MPTokenIssuanceCreate mptoken_issuance_create = 160;
+    MPTokenIssuanceDestroy mptoken_issuance_destroy = 161;
+    MPTokenIssuanceSet mptoken_issuance_set = 162;
+    MPTokenAuthorize mptoken_authorize = 163;
 
     // Credential transactions
-    CredentialCreate credential_create = 120;
-    CredentialAccept credential_accept = 121;
-    CredentialDelete credential_delete = 122;
+    CredentialCreate credential_create = 170;
+    CredentialAccept credential_accept = 171;
+    CredentialDelete credential_delete = 172;
 
     // Permissioned domain transactions
-    PermissionedDomainSet permissioned_domain_set = 130;
-    PermissionedDomainDelete permissioned_domain_delete = 131;
+    PermissionedDomainSet permissioned_domain_set = 180;
+    PermissionedDomainDelete permissioned_domain_delete = 181;
 
     // Delegate transactions
-    DelegateSet delegate_set = 132;
+    DelegateSet delegate_set = 190;
+
     // Batch transaction
-    Batch batch = 133;
+    Batch batch = 200;
 
     // System transactions (pseudo-transactions)
     EnableAmendment enable_amendment = 900;

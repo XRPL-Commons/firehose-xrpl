@@ -397,7 +397,7 @@ func (m *Mapper) mapTxDetails(tx *pbxrpl.Transaction, flatTx xrpltx.FlatTransact
 	case "DIDSet":
 		tx.TxDetails = &pbxrpl.Transaction_DidSet{DidSet: m.mapDIDSet(flatTx)}
 	case "DIDDelete":
-		tx.TxDetails = &pbxrpl.Transaction_DidDelete{DidDelete: m.mapDIDDelete(flatTx)}
+		tx.TxDetails = &pbxrpl.Transaction_DidDelete{DidDelete: m.mapDIDDelete()}
 	case "OracleSet":
 		tx.TxDetails = &pbxrpl.Transaction_OracleSet{OracleSet: m.mapOracleSet(flatTx)}
 	case "OracleDelete":
@@ -936,6 +936,7 @@ func (m *Mapper) mapClawback(flat xrpltx.FlatTransaction) *pbxrpl.Clawback {
 
 	return clawback
 }
+
 // AMM transactions
 func (m *Mapper) mapAMMCreate(flat xrpltx.FlatTransaction) *pbxrpl.AMMCreate {
 	amm := &pbxrpl.AMMCreate{}
@@ -1050,7 +1051,7 @@ func (m *Mapper) mapDIDSet(flat xrpltx.FlatTransaction) *pbxrpl.DIDSet {
 	return did
 }
 
-func (m *Mapper) mapDIDDelete(flat xrpltx.FlatTransaction) *pbxrpl.DIDDelete {
+func (m *Mapper) mapDIDDelete() *pbxrpl.DIDDelete {
 	return &pbxrpl.DIDDelete{}
 }
 

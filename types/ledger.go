@@ -19,13 +19,6 @@ type LedgerClosedRequest struct {
 	Params []any  `json:"params"`
 }
 
-func NewLedgerClosedRequest() *LedgerClosedRequest {
-	return &LedgerClosedRequest{
-		Method: "ledger_closed",
-		Params: []any{map[string]any{}},
-	}
-}
-
 // LedgerClosedResponse represents the response from ledger_closed
 type LedgerClosedResponse struct {
 	Result LedgerClosedResult `json:"result"`
@@ -48,7 +41,7 @@ type LedgerRequest struct {
 }
 
 type LedgerParams struct {
-	LedgerIndex  any  `json:"ledger_index,omitempty"` // Can be uint64 or string ("validated", "closed", "current")
+	LedgerIndex  any    `json:"ledger_index,omitempty"` // Can be uint64 or string ("validated", "closed", "current")
 	LedgerHash   string `json:"ledger_hash,omitempty"`
 	Transactions bool   `json:"transactions"`
 	Expand       bool   `json:"expand"`
@@ -63,43 +56,17 @@ type LedgerOptions struct {
 	OwnerFunds   bool
 }
 
-func NewLedgerRequest(ledgerIndex uint64, opts LedgerOptions) *LedgerRequest {
-	return &LedgerRequest{
-		Method: "ledger",
-		Params: []LedgerParams{{
-			LedgerIndex:  ledgerIndex,
-			Transactions: opts.Transactions,
-			Expand:       opts.Expand,
-			Binary:       opts.Binary,
-			OwnerFunds:   opts.OwnerFunds,
-		}},
-	}
-}
-
-func NewLedgerRequestByHash(ledgerHash string, opts LedgerOptions) *LedgerRequest {
-	return &LedgerRequest{
-		Method: "ledger",
-		Params: []LedgerParams{{
-			LedgerHash:   ledgerHash,
-			Transactions: opts.Transactions,
-			Expand:       opts.Expand,
-			Binary:       opts.Binary,
-			OwnerFunds:   opts.OwnerFunds,
-		}},
-	}
-}
-
 // LedgerResponse represents the response from the ledger method
 type LedgerResponse struct {
 	Result LedgerResult `json:"result"`
 }
 
 type LedgerResult struct {
-	Ledger       Ledger `json:"ledger"`
-	LedgerHash   string `json:"ledger_hash"`
-	LedgerIndex  uint64 `json:"ledger_index"`
-	Validated    bool   `json:"validated"`
-	Status       string `json:"status"`
+	Ledger      Ledger `json:"ledger"`
+	LedgerHash  string `json:"ledger_hash"`
+	LedgerIndex uint64 `json:"ledger_index"`
+	Validated   bool   `json:"validated"`
+	Status      string `json:"status"`
 	// Error fields
 	Error        string `json:"error,omitempty"`
 	ErrorCode    int    `json:"error_code,omitempty"`
@@ -109,9 +76,9 @@ type LedgerResult struct {
 // Ledger represents an XRPL ledger
 type Ledger struct {
 	// Core identifiers
-	LedgerIndex  uint64 `json:"ledger_index"`
-	LedgerHash   string `json:"ledger_hash"`
-	ParentHash   string `json:"parent_hash"`
+	LedgerIndex uint64 `json:"ledger_index"`
+	LedgerHash  string `json:"ledger_hash"`
+	ParentHash  string `json:"parent_hash"`
 
 	// Timestamps - XRPL uses seconds since Ripple Epoch (2000-01-01)
 	CloseTime       uint64 `json:"close_time"`
@@ -160,13 +127,6 @@ type ServerInfoRequest struct {
 	Params []any  `json:"params"`
 }
 
-func NewServerInfoRequest() *ServerInfoRequest {
-	return &ServerInfoRequest{
-		Method: "server_info",
-		Params: []any{map[string]any{}},
-	}
-}
-
 // ServerInfoResponse represents the response from server_info
 type ServerInfoResponse struct {
 	Result ServerInfoResult `json:"result"`
@@ -186,10 +146,10 @@ type ServerInfo struct {
 }
 
 type ValidatedInfo struct {
-	Age            uint32 `json:"age"`
+	Age            uint32  `json:"age"`
 	BaseFeeXRP     float64 `json:"base_fee_xrp"`
-	Hash           string `json:"hash"`
+	Hash           string  `json:"hash"`
 	ReserveBaseXRP float64 `json:"reserve_base_xrp"`
 	ReserveIncXRP  float64 `json:"reserve_inc_xrp"`
-	Seq            uint64 `json:"seq"`
+	Seq            uint64  `json:"seq"`
 }
