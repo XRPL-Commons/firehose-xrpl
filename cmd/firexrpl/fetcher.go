@@ -47,6 +47,7 @@ XRPL Endpoints:
 	cmd.Flags().Duration("latest-block-retry-interval", time.Second, "Interval to wait before retrying when waiting for new ledger")
 	cmd.Flags().Duration("max-block-fetch-duration", 10*time.Second, "Maximum duration for fetching a single block")
 	cmd.Flags().Int("block-fetch-batch-size", 1, "Number of blocks to fetch in a single batch")
+	cmd.Flags().Int("worker-pool-size", 10, "Number of concurrent workers for processing transactions within a block")
 
 	return cmd
 }
@@ -92,7 +93,8 @@ func fetchRunE(logger *zap.Logger, tracer logging.Tracer) firecore.CommandExecut
 			logger.Info("added RPC endpoint", zap.String("endpoint", endpoint))
 		}
 
-		fetcher := rpc.NewFetcher(fetchInterval, latestBlockRetryInterval, logger)
+		workerPoolSize := sflags.MustGetInt(cmd, "worker-pool-size")
+	fetcher := rpc.NewFetcherWithWorkerPool(fetchInterval, latestBlockRetryInterval, workerPoolSize, logger)
 
 		poller := blockpoller.New(
 			fetcher,

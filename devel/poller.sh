@@ -17,4 +17,6 @@ firecore start reader-node merger \
   --reader-node-path=firexrpl  \
   --reader-node-arguments='fetch rpc 80000000 \
   --state-dir data  \
-  --endpoints https://s1.ripple.com:51234/'
+  --endpoints https://s1.ripple.com:51234/
+  --worker-pool-size 20 \
+  --block-fetch-batch-size 5'
