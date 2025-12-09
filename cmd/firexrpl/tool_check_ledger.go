@@ -114,26 +114,38 @@ func runToolCheckLedger(cmd *cobra.Command, args []string) error {
 
 			// Decode if requested
 			if decodeTransactions && tx.TxBlob != "" {
-				decoded, err := dec.DecodeTransaction(tx.TxBlob)
+				decoded, err := dec.DecodeTransactionFromHex(tx.TxBlob)
 				if err != nil {
 					fmt.Printf("Failed to decode: %v\n", err)
 				} else {
-					fmt.Printf("Type:    %s\n", decoded.TransactionType)
-					fmt.Printf("Account: %s\n", decoded.Account)
-					if decoded.Destination != "" {
-						fmt.Printf("Destination: %s\n", decoded.Destination)
+					if txType, ok := decoded["TransactionType"].(string); ok {
+						fmt.Printf("Type:    %s\n", txType)
 					}
-					fmt.Printf("Fee:     %d drops\n", decoded.Fee)
-					fmt.Printf("Sequence: %d\n", decoded.Sequence)
+					if account, ok := decoded["Account"].(string); ok {
+						fmt.Printf("Account: %s\n", account)
+					}
+					if dest, ok := decoded["Destination"].(string); ok {
+						fmt.Printf("Destination: %s\n", dest)
+					}
+					if feeStr, ok := decoded["Fee"].(string); ok {
+						fmt.Printf("Fee:     %s drops\n", feeStr)
+					}
+					if seq, ok := decoded["Sequence"].(float64); ok {
+						fmt.Printf("Sequence: %d\n", uint32(seq))
+					}
 				}
 
 				if tx.Meta != "" {
-					meta, err := dec.DecodeMetadata(tx.Meta)
+					meta, err := dec.DecodeMetadataFromHex(tx.Meta)
 					if err != nil {
 						fmt.Printf("Failed to decode metadata: %v\n", err)
 					} else {
-						fmt.Printf("Result:  %s\n", meta.TransactionResult)
-						fmt.Printf("Affected Nodes: %d\n", len(meta.AffectedNodes))
+						if result, ok := meta["TransactionResult"].(string); ok {
+							fmt.Printf("Result:  %s\n", result)
+						}
+						if affectedNodes, ok := meta["AffectedNodes"].([]interface{}); ok {
+							fmt.Printf("Affected Nodes: %d\n", len(affectedNodes))
+						}
 					}
 				}
 			}

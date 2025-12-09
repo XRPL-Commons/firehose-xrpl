@@ -64,9 +64,6 @@ func runToolDecodeBlock(cmd *cobra.Command, args []string) error {
 		fmt.Printf("Transaction Hash:     %s\n", hex.EncodeToString(block.Header.TransactionHash))
 		fmt.Printf("Close Time Resolution: %d\n", block.Header.CloseTimeResolution)
 		fmt.Printf("Close Flags:          %d\n", block.Header.CloseFlags)
-		fmt.Printf("Base Fee:             %d drops\n", block.Header.BaseFee)
-		fmt.Printf("Reserve Base:         %d drops\n", block.Header.ReserveBase)
-		fmt.Printf("Reserve Increment:    %d drops\n", block.Header.ReserveIncrement)
 	}
 
 	if showTransactions && len(block.Transactions) > 0 {
@@ -75,8 +72,8 @@ func runToolDecodeBlock(cmd *cobra.Command, args []string) error {
 			fmt.Printf("\n--- Transaction %d ---\n", i)
 			fmt.Printf("Hash:     %s\n", hex.EncodeToString(tx.Hash))
 			fmt.Printf("Index:    %d\n", tx.Index)
-			fmt.Printf("Type:     %s\n", tx.TxType.String())
-			fmt.Printf("Result:   %s\n", tx.Result.String())
+			fmt.Printf("Type:     %s\n", tx.TxType)
+			fmt.Printf("Result:   %s\n", tx.Result)
 			fmt.Printf("Account:  %s\n", tx.Account)
 			fmt.Printf("Fee:      %d drops\n", tx.Fee)
 			fmt.Printf("Sequence: %d\n", tx.Sequence)
@@ -85,22 +82,6 @@ func runToolDecodeBlock(cmd *cobra.Command, args []string) error {
 				fmt.Printf("TxBlob:   %s\n", hex.EncodeToString(tx.TxBlob))
 				fmt.Printf("MetaBlob: %s\n", hex.EncodeToString(tx.MetaBlob))
 			}
-		}
-	}
-
-	if len(block.StateChanges) > 0 {
-		fmt.Printf("\n=== State Changes ===\n")
-		fmt.Printf("Count: %d\n", len(block.StateChanges))
-		for i, sc := range block.StateChanges {
-			if i >= 10 {
-				fmt.Printf("... and %d more\n", len(block.StateChanges)-10)
-				break
-			}
-			fmt.Printf("  [%d] %s %s: %s\n",
-				i,
-				sc.ModType.String(),
-				sc.EntryType.String(),
-				hex.EncodeToString(sc.Key)[:16]+"...")
 		}
 	}
 
