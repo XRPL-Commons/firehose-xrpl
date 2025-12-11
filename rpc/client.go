@@ -29,8 +29,13 @@ type Client struct {
 	logger      *zap.Logger
 }
 
-// NewClient creates a new XRPL RPC client
+// NewClient creates a new XRPL RPC client with default HTTP settings
 func NewClient(rpcEndpoint string, logger *zap.Logger) (*Client, error) {
+	return NewClientWithHTTPConfig(rpcEndpoint, logger, 100, 10, 90*time.Second)
+}
+
+// NewClientWithHTTPConfig creates a new XRPL RPC client with custom HTTP connection pool settings
+func NewClientWithHTTPConfig(rpcEndpoint string, logger *zap.Logger, maxIdleConns, maxIdleConnsPerHost int, idleConnTimeout time.Duration) (*Client, error) {
 	cfg, err := rpc.NewClientConfig(rpcEndpoint,
 		rpc.WithTimeout(60*time.Second),
 	)
@@ -40,11 +45,26 @@ func NewClient(rpcEndpoint string, logger *zap.Logger) (*Client, error) {
 
 	client := rpc.NewClient(cfg)
 
+	// Configure HTTP transport with connection pooling
+	transport := &http.Transport{
+		MaxIdleConns:          maxIdleConns,
+		MaxIdleConnsPerHost:   maxIdleConnsPerHost,
+		IdleConnTimeout:       idleConnTimeout,
+		DisableCompression:    false,
+		ForceAttemptHTTP2:     true,
+		MaxConnsPerHost:       0, // No limit on total connections per host
+		ResponseHeaderTimeout: 30 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
+
 	return &Client{
 		rpcEndpoint: rpcEndpoint,
 		client:      client,
-		httpClient:  &http.Client{Timeout: 60 * time.Second},
-		logger:      logger,
+		httpClient: &http.Client{
+			Timeout:   60 * time.Second,
+			Transport: transport,
+		},
+		logger: logger,
 	}, nil
 }
 

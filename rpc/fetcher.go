@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"bytes"
 	"context"
 	"encoding/hex"
 	"fmt"
@@ -20,6 +21,79 @@ import (
 // XRPL Epoch starts at January 1, 2000 (00:00 UTC)
 // This is 946684800 seconds after Unix epoch (January 1, 1970)
 const xrplEpochOffset = 946684800
+
+// Buffer pools for reducing memory allocations
+var (
+	// bufferPool reuses byte buffers for hex decoding operations
+	bufferPool = sync.Pool{
+		New: func() interface{} {
+			// Allocate a reasonable default size for XRPL transaction data
+			// Most transactions are < 2KB, but we allocate 4KB to handle larger ones
+			buf := make([]byte, 0, 4096)
+			return &buf
+		},
+	}
+
+	// bytesBufferPool reuses bytes.Buffer for general purpose operations
+	bytesBufferPool = sync.Pool{
+		New: func() interface{} {
+			return new(bytes.Buffer)
+		},
+	}
+)
+
+// getBuffer retrieves a byte slice from the pool
+func getBuffer() *[]byte {
+	return bufferPool.Get().(*[]byte)
+}
+
+// putBuffer returns a byte slice to the pool after resetting it
+func putBuffer(buf *[]byte) {
+	// Reset the slice but keep the underlying capacity
+	*buf = (*buf)[:0]
+	bufferPool.Put(buf)
+}
+
+// getBytesBuffer retrieves a bytes.Buffer from the pool
+func getBytesBuffer() *bytes.Buffer {
+	return bytesBufferPool.Get().(*bytes.Buffer)
+}
+
+// putBytesBuffer returns a bytes.Buffer to the pool after resetting it
+func putBytesBuffer(buf *bytes.Buffer) {
+	buf.Reset()
+	bytesBufferPool.Put(buf)
+}
+
+// decodeHexWithPool decodes a hex string into a byte slice using pooled buffers
+// The caller must copy the result if they need to retain it after the pool buffer is returned
+func decodeHexWithPool(hexStr string) ([]byte, error) {
+	// Calculate the required size
+	expectedLen := hex.DecodedLen(len(hexStr))
+
+	// Get a buffer from the pool
+	buf := getBuffer()
+	defer putBuffer(buf)
+
+	// Ensure the buffer has enough capacity
+	if cap(*buf) < expectedLen {
+		*buf = make([]byte, expectedLen)
+	} else {
+		*buf = (*buf)[:expectedLen]
+	}
+
+	// Decode directly into the pooled buffer
+	n, err := hex.Decode(*buf, []byte(hexStr))
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a copy to return (the original buffer goes back to the pool)
+	result := make([]byte, n)
+	copy(result, (*buf)[:n])
+
+	return result, nil
+}
 
 // LastBlockInfo tracks the latest fetched block information
 type LastBlockInfo struct {
@@ -127,22 +201,22 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 			for txData := range txChan {
 				i, tx := txData.index, txData.tx
 
-				// Decode hash
-				txHash, err := hex.DecodeString(tx.Hash)
+				// Decode hash using pooled buffers
+				txHash, err := decodeHexWithPool(tx.Hash)
 				if err != nil {
 					errChan <- fmt.Errorf("decoding tx hash at index %d: %w", i, err)
 					continue
 				}
 
-				// Decode tx_blob (binary transaction)
-				txBlob, err := hex.DecodeString(tx.TxBlob)
+				// Decode tx_blob (binary transaction) using pooled buffers
+				txBlob, err := decodeHexWithPool(tx.TxBlob)
 				if err != nil {
 					errChan <- fmt.Errorf("decoding tx blob at index %d: %w", i, err)
 					continue
 				}
 
-				// Decode meta (binary metadata)
-				metaBlob, err := hex.DecodeString(tx.Meta)
+				// Decode meta (binary metadata) using pooled buffers
+				metaBlob, err := decodeHexWithPool(tx.Meta)
 				if err != nil {
 					errChan <- fmt.Errorf("decoding meta blob at index %d: %w", i, err)
 					continue
@@ -193,7 +267,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	}
 	transactions = validTransactions
 
-	// 4. Build the block header with parallel hex decoding
+	// 4. Build the block header with parallel hex decoding using pooled buffers
 	var ledgerHash, parentHash, accountHash, transactionHash []byte
 	var decodeWg sync.WaitGroup
 	var decodeErr error
@@ -204,7 +278,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	go func() {
 		defer decodeWg.Done()
 		var err error
-		ledgerHash, err = hex.DecodeString(ledger.LedgerHash)
+		ledgerHash, err = decodeHexWithPool(ledger.LedgerHash)
 		if err != nil {
 			decodeErrMutex.Lock()
 			if decodeErr == nil {
@@ -217,7 +291,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	go func() {
 		defer decodeWg.Done()
 		var err error
-		parentHash, err = hex.DecodeString(ledger.ParentHash)
+		parentHash, err = decodeHexWithPool(ledger.ParentHash)
 		if err != nil {
 			decodeErrMutex.Lock()
 			if decodeErr == nil {
@@ -230,7 +304,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	go func() {
 		defer decodeWg.Done()
 		var err error
-		accountHash, err = hex.DecodeString(ledger.AccountHash)
+		accountHash, err = decodeHexWithPool(ledger.AccountHash)
 		if err != nil {
 			f.logger.Debug("failed to decode account hash", zap.Error(err))
 			accountHash = nil
@@ -240,7 +314,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	go func() {
 		defer decodeWg.Done()
 		var err error
-		transactionHash, err = hex.DecodeString(ledger.TransactionHash)
+		transactionHash, err = decodeHexWithPool(ledger.TransactionHash)
 		if err != nil {
 			f.logger.Debug("failed to decode transaction hash", zap.Error(err))
 			transactionHash = nil

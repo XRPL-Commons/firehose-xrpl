@@ -48,6 +48,9 @@ XRPL Endpoints:
 	cmd.Flags().Duration("max-block-fetch-duration", 10*time.Second, "Maximum duration for fetching a single block")
 	cmd.Flags().Int("block-fetch-batch-size", 1, "Number of blocks to fetch in a single batch")
 	cmd.Flags().Int("worker-pool-size", 10, "Number of concurrent workers for processing transactions within a block")
+	cmd.Flags().Int("http-max-idle-conns", 100, "Maximum number of idle HTTP connections in the pool")
+	cmd.Flags().Int("http-max-idle-conns-per-host", 10, "Maximum number of idle HTTP connections per host")
+	cmd.Flags().Duration("http-idle-conn-timeout", 90*time.Second, "Maximum time an idle connection is kept alive")
 
 	return cmd
 }
@@ -79,18 +82,27 @@ func fetchRunE(logger *zap.Logger, tracer logging.Tracer) firecore.CommandExecut
 			return fmt.Errorf("at least one --endpoints must be provided")
 		}
 
+		// Get HTTP connection pool settings
+		httpMaxIdleConns := sflags.MustGetInt(cmd, "http-max-idle-conns")
+		httpMaxIdleConnsPerHost := sflags.MustGetInt(cmd, "http-max-idle-conns-per-host")
+		httpIdleConnTimeout := sflags.MustGetDuration(cmd, "http-idle-conn-timeout")
+
 		// Create rolling strategy for RPC clients
 		rollingStrategy := firecoreRPC.NewStickyRollingStrategy[*rpc.Client]()
 
 		// Create RPC clients manager
 		rpcClients := firecoreRPC.NewClients(maxBlockFetchDuration, rollingStrategy, logger)
 		for _, endpoint := range rpcEndpoints {
-			client, err := rpc.NewClient(endpoint, logger)
+			client, err := rpc.NewClientWithHTTPConfig(endpoint, logger, httpMaxIdleConns, httpMaxIdleConnsPerHost, httpIdleConnTimeout)
 			if err != nil {
 				return fmt.Errorf("failed to create client for endpoint %s: %w", endpoint, err)
 			}
 			rpcClients.Add(client)
-			logger.Info("added RPC endpoint", zap.String("endpoint", endpoint))
+			logger.Info("added RPC endpoint",
+				zap.String("endpoint", endpoint),
+				zap.Int("max_idle_conns", httpMaxIdleConns),
+				zap.Int("max_idle_conns_per_host", httpMaxIdleConnsPerHost),
+				zap.Duration("idle_conn_timeout", httpIdleConnTimeout))
 		}
 
 		workerPoolSize := sflags.MustGetInt(cmd, "worker-pool-size")
