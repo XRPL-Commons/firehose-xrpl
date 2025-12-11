@@ -223,7 +223,8 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	}
 
 	// Filter out nil transactions (failed mappings)
-	var validTransactions []*pbxrpl.Transaction
+	// Pre-allocate with capacity to avoid reallocation
+	validTransactions := make([]*pbxrpl.Transaction, 0, len(transactions))
 	for _, tx := range transactions {
 		if tx != nil {
 			validTransactions = append(validTransactions, tx)
@@ -231,64 +232,28 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	}
 	transactions = validTransactions
 
-	// 4. Build the block header with parallel hex decoding using pooled buffers
-	var ledgerHash, parentHash, accountHash, transactionHash []byte
-	var decodeWg sync.WaitGroup
-	var decodeErr error
-	var decodeErrMutex sync.Mutex
+	// 4. Build the block header - sequential decoding is faster than goroutine overhead for small hashes
+	ledgerHash, err := decodeHex(ledger.LedgerHash)
+	if err != nil {
+		return nil, false, fmt.Errorf("decoding ledger hash: %w", err)
+	}
 
-	decodeWg.Add(4)
+	parentHash, err := decodeHex(ledger.ParentHash)
+	if err != nil {
+		return nil, false, fmt.Errorf("decoding parent hash: %w", err)
+	}
 
-	go func() {
-		defer decodeWg.Done()
-		var err error
-		ledgerHash, err = decodeHex(ledger.LedgerHash)
-		if err != nil {
-			decodeErrMutex.Lock()
-			if decodeErr == nil {
-				decodeErr = fmt.Errorf("decoding ledger hash: %w", err)
-			}
-			decodeErrMutex.Unlock()
-		}
-	}()
+	// Optional hashes - don't fail on error
+	accountHash, err := decodeHex(ledger.AccountHash)
+	if err != nil {
+		f.logger.Debug("failed to decode account hash", zap.Error(err))
+		accountHash = nil
+	}
 
-	go func() {
-		defer decodeWg.Done()
-		var err error
-		parentHash, err = decodeHex(ledger.ParentHash)
-		if err != nil {
-			decodeErrMutex.Lock()
-			if decodeErr == nil {
-				decodeErr = fmt.Errorf("decoding parent hash: %w", err)
-			}
-			decodeErrMutex.Unlock()
-		}
-	}()
-
-	go func() {
-		defer decodeWg.Done()
-		var err error
-		accountHash, err = decodeHex(ledger.AccountHash)
-		if err != nil {
-			f.logger.Debug("failed to decode account hash", zap.Error(err))
-			accountHash = nil
-		}
-	}()
-
-	go func() {
-		defer decodeWg.Done()
-		var err error
-		transactionHash, err = decodeHex(ledger.TransactionHash)
-		if err != nil {
-			f.logger.Debug("failed to decode transaction hash", zap.Error(err))
-			transactionHash = nil
-		}
-	}()
-
-	decodeWg.Wait()
-
-	if decodeErr != nil {
-		return nil, false, decodeErr
+	transactionHash, err := decodeHex(ledger.TransactionHash)
+	if err != nil {
+		f.logger.Debug("failed to decode transaction hash", zap.Error(err))
+		transactionHash = nil
 	}
 
 	// Parse total coins (drops)
