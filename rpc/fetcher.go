@@ -12,7 +12,6 @@ import (
 	pbbstream "github.com/streamingfast/bstream/pb/sf/bstream/v1"
 	"github.com/xrpl-commons/firehose-xrpl/decoder"
 	pbxrpl "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1"
-	"github.com/xrpl-commons/firehose-xrpl/types"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -65,34 +64,19 @@ func putBytesBuffer(buf *bytes.Buffer) {
 	bytesBufferPool.Put(buf)
 }
 
-// decodeHexWithPool decodes a hex string into a byte slice using pooled buffers
-// The caller must copy the result if they need to retain it after the pool buffer is returned
-func decodeHexWithPool(hexStr string) ([]byte, error) {
-	// Calculate the required size
-	expectedLen := hex.DecodedLen(len(hexStr))
+// decodeHex decodes a hex string into a byte slice
+// Direct allocation is faster than pool + copy for retained data
+func decodeHex(hexStr string) ([]byte, error) {
+	// Pre-allocate exact size needed
+	result := make([]byte, hex.DecodedLen(len(hexStr)))
 
-	// Get a buffer from the pool
-	buf := getBuffer()
-	defer putBuffer(buf)
-
-	// Ensure the buffer has enough capacity
-	if cap(*buf) < expectedLen {
-		*buf = make([]byte, expectedLen)
-	} else {
-		*buf = (*buf)[:expectedLen]
-	}
-
-	// Decode directly into the pooled buffer
-	n, err := hex.Decode(*buf, []byte(hexStr))
+	// Decode directly into final destination
+	n, err := hex.Decode(result, []byte(hexStr))
 	if err != nil {
 		return nil, err
 	}
 
-	// Create a copy to return (the original buffer goes back to the pool)
-	result := make([]byte, n)
-	copy(result, (*buf)[:n])
-
-	return result, nil
+	return result[:n], nil
 }
 
 // LastBlockInfo tracks the latest fetched block information
@@ -188,42 +172,28 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 		workerCount = 1 // Ensure at least one worker
 	}
 
-	txChan := make(chan struct {
-		index int
-		tx    types.LedgerTransaction
-	}, len(ledger.Transactions))
+	// Use index-only channel for zero-copy work distribution
+	// Buffer size matches worker pool for optimal throughput without memory spike
+	txChan := make(chan int, workerCount)
 
 	// Start worker pool
 	for w := 0; w < workerCount; w++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for txData := range txChan {
-				i, tx := txData.index, txData.tx
+			for i := range txChan {
+				// Access transaction directly from original slice (zero-copy)
+				tx := &ledger.Transactions[i]
 
-				// Decode hash using pooled buffers
-				txHash, err := decodeHexWithPool(tx.Hash)
+				// Decode hash (still needed for protobuf)
+				txHash, err := decodeHex(tx.Hash)
 				if err != nil {
 					errChan <- fmt.Errorf("decoding tx hash at index %d: %w", i, err)
 					continue
 				}
 
-				// Decode tx_blob (binary transaction) using pooled buffers
-				txBlob, err := decodeHexWithPool(tx.TxBlob)
-				if err != nil {
-					errChan <- fmt.Errorf("decoding tx blob at index %d: %w", i, err)
-					continue
-				}
-
-				// Decode meta (binary metadata) using pooled buffers
-				metaBlob, err := decodeHexWithPool(tx.Meta)
-				if err != nil {
-					errChan <- fmt.Errorf("decoding meta blob at index %d: %w", i, err)
-					continue
-				}
-
-				// Use decoder to map transaction to protobuf (includes all fields and tx_details)
-				protoTx, err := f.decoder.MapTransactionToProto(txBlob, metaBlob, txHash, uint32(i))
+				// Pass hex strings directly - no unnecessary byte conversion
+				protoTx, err := f.decoder.MapTransactionToProto(tx.TxBlob, tx.Meta, txHash, uint32(i))
 				if err != nil {
 					f.logger.Warn("failed to map transaction to protobuf, skipping",
 						zap.Int("tx_index", i),
@@ -237,15 +207,9 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 		}()
 	}
 
-	// Feed transactions to workers
-	for i, tx := range ledger.Transactions {
-		txChan <- struct {
-			index int
-			tx    types.LedgerTransaction
-		}{
-			index: i,
-			tx:    tx,
-		}
+	// Feed transaction indices to workers (producer runs inline for simplicity)
+	for i := range ledger.Transactions {
+		txChan <- i
 	}
 	close(txChan)
 
@@ -259,7 +223,8 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	}
 
 	// Filter out nil transactions (failed mappings)
-	var validTransactions []*pbxrpl.Transaction
+	// Pre-allocate with capacity to avoid reallocation
+	validTransactions := make([]*pbxrpl.Transaction, 0, len(transactions))
 	for _, tx := range transactions {
 		if tx != nil {
 			validTransactions = append(validTransactions, tx)
@@ -267,64 +232,28 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	}
 	transactions = validTransactions
 
-	// 4. Build the block header with parallel hex decoding using pooled buffers
-	var ledgerHash, parentHash, accountHash, transactionHash []byte
-	var decodeWg sync.WaitGroup
-	var decodeErr error
-	var decodeErrMutex sync.Mutex
+	// 4. Build the block header - sequential decoding is faster than goroutine overhead for small hashes
+	ledgerHash, err := decodeHex(ledger.LedgerHash)
+	if err != nil {
+		return nil, false, fmt.Errorf("decoding ledger hash: %w", err)
+	}
 
-	decodeWg.Add(4)
+	parentHash, err := decodeHex(ledger.ParentHash)
+	if err != nil {
+		return nil, false, fmt.Errorf("decoding parent hash: %w", err)
+	}
 
-	go func() {
-		defer decodeWg.Done()
-		var err error
-		ledgerHash, err = decodeHexWithPool(ledger.LedgerHash)
-		if err != nil {
-			decodeErrMutex.Lock()
-			if decodeErr == nil {
-				decodeErr = fmt.Errorf("decoding ledger hash: %w", err)
-			}
-			decodeErrMutex.Unlock()
-		}
-	}()
+	// Optional hashes - don't fail on error
+	accountHash, err := decodeHex(ledger.AccountHash)
+	if err != nil {
+		f.logger.Debug("failed to decode account hash", zap.Error(err))
+		accountHash = nil
+	}
 
-	go func() {
-		defer decodeWg.Done()
-		var err error
-		parentHash, err = decodeHexWithPool(ledger.ParentHash)
-		if err != nil {
-			decodeErrMutex.Lock()
-			if decodeErr == nil {
-				decodeErr = fmt.Errorf("decoding parent hash: %w", err)
-			}
-			decodeErrMutex.Unlock()
-		}
-	}()
-
-	go func() {
-		defer decodeWg.Done()
-		var err error
-		accountHash, err = decodeHexWithPool(ledger.AccountHash)
-		if err != nil {
-			f.logger.Debug("failed to decode account hash", zap.Error(err))
-			accountHash = nil
-		}
-	}()
-
-	go func() {
-		defer decodeWg.Done()
-		var err error
-		transactionHash, err = decodeHexWithPool(ledger.TransactionHash)
-		if err != nil {
-			f.logger.Debug("failed to decode transaction hash", zap.Error(err))
-			transactionHash = nil
-		}
-	}()
-
-	decodeWg.Wait()
-
-	if decodeErr != nil {
-		return nil, false, decodeErr
+	transactionHash, err := decodeHex(ledger.TransactionHash)
+	if err != nil {
+		f.logger.Debug("failed to decode transaction hash", zap.Error(err))
+		transactionHash = nil
 	}
 
 	// Parse total coins (drops)
