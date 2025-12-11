@@ -12,7 +12,6 @@ import (
 	pbbstream "github.com/streamingfast/bstream/pb/sf/bstream/v1"
 	"github.com/xrpl-commons/firehose-xrpl/decoder"
 	pbxrpl "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1"
-	"github.com/xrpl-commons/firehose-xrpl/types"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -188,18 +187,18 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 		workerCount = 1 // Ensure at least one worker
 	}
 
-	txChan := make(chan struct {
-		index int
-		tx    types.LedgerTransaction
-	}, len(ledger.Transactions))
+	// Use index-only channel for zero-copy work distribution
+	// Buffer size matches worker pool for optimal throughput without memory spike
+	txChan := make(chan int, workerCount)
 
 	// Start worker pool
 	for w := 0; w < workerCount; w++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for txData := range txChan {
-				i, tx := txData.index, txData.tx
+			for i := range txChan {
+				// Access transaction directly from original slice (zero-copy)
+				tx := &ledger.Transactions[i]
 
 				// Decode hash using pooled buffers
 				txHash, err := decodeHexWithPool(tx.Hash)
@@ -237,15 +236,9 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 		}()
 	}
 
-	// Feed transactions to workers
-	for i, tx := range ledger.Transactions {
-		txChan <- struct {
-			index int
-			tx    types.LedgerTransaction
-		}{
-			index: i,
-			tx:    tx,
-		}
+	// Feed transaction indices to workers (producer runs inline for simplicity)
+	for i := range ledger.Transactions {
+		txChan <- i
 	}
 	close(txChan)
 
