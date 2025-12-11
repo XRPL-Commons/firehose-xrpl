@@ -1,0 +1,186 @@
+version: '3.8'
+
+services:
+  # Coordinator service to manage parallel pollers
+  coordinator:
+    image: alpine:latest
+    volumes:
+      - ./data:/data
+      - ./parallel-coordinator.sh:/parallel-coordinator.sh
+    command: ["sh", "/parallel-coordinator.sh"]
+    depends_on:
+      - poller-1
+      - poller-2
+      - poller-3
+    networks:
+      - firehose-net
+
+  # Parallel pollers - each handles a specific range
+  poller-1:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VERSION: dev
+    environment:
+      - POLLER_ID=1
+    volumes:
+      - ./data/poller-1:/data
+    entrypoint: ["/app/firecore"]
+    command:
+      - start
+      - reader-node
+      - --config-file=
+      - --log-format=stackdriver
+      - --log-to-file=false
+      - --data-dir=/data
+      - --common-one-block-store-url=/data/oneblock
+      - --common-first-streamable-block=80000000
+      - --reader-node-data-dir=/data/oneblock
+      - --reader-node-working-dir=/data/work
+      - --reader-node-path=/app/firexrpl
+      - --reader-node-arguments=fetch rpc 80000000 --endpoints https://s1.ripple.com:51234/ --state-dir /data --worker-pool-size 15 --block-fetch-batch-size 10 --end-block 81000000
+    networks:
+      - firehose-net
+
+  poller-2:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VERSION: dev
+    environment:
+      - POLLER_ID=2
+    volumes:
+      - ./data/poller-2:/data
+    entrypoint: ["/app/firecore"]
+    command:
+      - start
+      - reader-node
+      - --config-file=
+      - --log-format=stackdriver
+      - --log-to-file=false
+      - --data-dir=/data
+      - --common-one-block-store-url=/data/oneblock
+      - --common-first-streamable-block=81000001
+      - --reader-node-data-dir=/data/oneblock
+      - --reader-node-working-dir=/data/work
+      - --reader-node-path=/app/firexrpl
+      - --reader-node-arguments=fetch rpc 81000001 --endpoints https://s1.ripple.com:51234/ --state-dir /data --worker-pool-size 15 --block-fetch-batch-size 10 --end-block 82000000
+    networks:
+      - firehose-net
+
+  poller-3:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VERSION: dev
+    environment:
+      - POLLER_ID=3
+    volumes:
+      - ./data/poller-3:/data
+    entrypoint: ["/app/firecore"]
+    command:
+      - start
+      - reader-node
+      - --config-file=
+      - --log-format=stackdriver
+      - --log-to-file=false
+      - --data-dir=/data
+      - --common-one-block-store-url=/data/oneblock
+      - --common-first-streamable-block=82000001
+      - --reader-node-data-dir=/data/oneblock
+      - --reader-node-working-dir=/data/work
+      - --reader-node-path=/app/firexrpl
+      - --reader-node-arguments=fetch rpc 82000001 --endpoints https://s1.ripple.com:51234/ --state-dir /data --worker-pool-size 15 --block-fetch-batch-size 10 --end-block 83000000
+    networks:
+      - firehose-net
+
+  # Merger 1 - for poller 1 (80M-81M)
+  merger-1:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VERSION: dev
+    volumes:
+      - ./data/poller-1:/poller-data:ro
+      - ./data/merged-blocks:/merged-blocks
+      - ./data/merger-1:/data
+    entrypoint: ["/app/firecore"]
+    command:
+      - start
+      - merger
+      - --config-file=
+      - --log-format=stackdriver
+      - --log-to-file=false
+      - --data-dir=/data
+      - --common-one-block-store-url=/poller-data/oneblock
+      - --common-merged-blocks-store-url=/merged-blocks
+      - --common-first-streamable-block=80000000
+      - --merger-grpc-listen-addr=:9001
+    depends_on:
+      - poller-1
+    networks:
+      - firehose-net
+
+  # Merger 2 - for poller 2 (81M-82M)
+  merger-2:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VERSION: dev
+    volumes:
+      - ./data/poller-2:/poller-data:ro
+      - ./data/merged-blocks:/merged-blocks
+      - ./data/merger-2:/data
+    entrypoint: ["/app/firecore"]
+    command:
+      - start
+      - merger
+      - --config-file=
+      - --log-format=stackdriver
+      - --log-to-file=false
+      - --data-dir=/data
+      - --common-one-block-store-url=/poller-data/oneblock
+      - --common-merged-blocks-store-url=/merged-blocks
+      - --common-first-streamable-block=81000001
+      - --merger-grpc-listen-addr=:9002
+    depends_on:
+      - poller-2
+    networks:
+      - firehose-net
+
+  # Merger 3 - for poller 3 (82M-83M)
+  merger-3:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VERSION: dev
+    volumes:
+      - ./data/poller-3:/poller-data:ro
+      - ./data/merged-blocks:/merged-blocks
+      - ./data/merger-3:/data
+    entrypoint: ["/app/firecore"]
+    command:
+      - start
+      - merger
+      - --config-file=
+      - --log-format=stackdriver
+      - --log-to-file=false
+      - --data-dir=/data
+      - --common-one-block-store-url=/poller-data/oneblock
+      - --common-merged-blocks-store-url=/merged-blocks
+      - --common-first-streamable-block=82000001
+      - --merger-grpc-listen-addr=:9003
+    depends_on:
+      - poller-3
+    networks:
+      - firehose-net
+
+networks:
+  firehose-net:
+    driver: bridge
