@@ -64,34 +64,19 @@ func putBytesBuffer(buf *bytes.Buffer) {
 	bytesBufferPool.Put(buf)
 }
 
-// decodeHexWithPool decodes a hex string into a byte slice using pooled buffers
-// The caller must copy the result if they need to retain it after the pool buffer is returned
-func decodeHexWithPool(hexStr string) ([]byte, error) {
-	// Calculate the required size
-	expectedLen := hex.DecodedLen(len(hexStr))
+// decodeHex decodes a hex string into a byte slice
+// Direct allocation is faster than pool + copy for retained data
+func decodeHex(hexStr string) ([]byte, error) {
+	// Pre-allocate exact size needed
+	result := make([]byte, hex.DecodedLen(len(hexStr)))
 
-	// Get a buffer from the pool
-	buf := getBuffer()
-	defer putBuffer(buf)
-
-	// Ensure the buffer has enough capacity
-	if cap(*buf) < expectedLen {
-		*buf = make([]byte, expectedLen)
-	} else {
-		*buf = (*buf)[:expectedLen]
-	}
-
-	// Decode directly into the pooled buffer
-	n, err := hex.Decode(*buf, []byte(hexStr))
+	// Decode directly into final destination
+	n, err := hex.Decode(result, []byte(hexStr))
 	if err != nil {
 		return nil, err
 	}
 
-	// Create a copy to return (the original buffer goes back to the pool)
-	result := make([]byte, n)
-	copy(result, (*buf)[:n])
-
-	return result, nil
+	return result[:n], nil
 }
 
 // LastBlockInfo tracks the latest fetched block information
@@ -200,29 +185,15 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 				// Access transaction directly from original slice (zero-copy)
 				tx := &ledger.Transactions[i]
 
-				// Decode hash using pooled buffers
-				txHash, err := decodeHexWithPool(tx.Hash)
+				// Decode hash (still needed for protobuf)
+				txHash, err := decodeHex(tx.Hash)
 				if err != nil {
 					errChan <- fmt.Errorf("decoding tx hash at index %d: %w", i, err)
 					continue
 				}
 
-				// Decode tx_blob (binary transaction) using pooled buffers
-				txBlob, err := decodeHexWithPool(tx.TxBlob)
-				if err != nil {
-					errChan <- fmt.Errorf("decoding tx blob at index %d: %w", i, err)
-					continue
-				}
-
-				// Decode meta (binary metadata) using pooled buffers
-				metaBlob, err := decodeHexWithPool(tx.Meta)
-				if err != nil {
-					errChan <- fmt.Errorf("decoding meta blob at index %d: %w", i, err)
-					continue
-				}
-
-				// Use decoder to map transaction to protobuf (includes all fields and tx_details)
-				protoTx, err := f.decoder.MapTransactionToProto(txBlob, metaBlob, txHash, uint32(i))
+				// Pass hex strings directly - no unnecessary byte conversion
+				protoTx, err := f.decoder.MapTransactionToProto(tx.TxBlob, tx.Meta, txHash, uint32(i))
 				if err != nil {
 					f.logger.Warn("failed to map transaction to protobuf, skipping",
 						zap.Int("tx_index", i),
@@ -271,7 +242,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	go func() {
 		defer decodeWg.Done()
 		var err error
-		ledgerHash, err = decodeHexWithPool(ledger.LedgerHash)
+		ledgerHash, err = decodeHex(ledger.LedgerHash)
 		if err != nil {
 			decodeErrMutex.Lock()
 			if decodeErr == nil {
@@ -284,7 +255,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	go func() {
 		defer decodeWg.Done()
 		var err error
-		parentHash, err = decodeHexWithPool(ledger.ParentHash)
+		parentHash, err = decodeHex(ledger.ParentHash)
 		if err != nil {
 			decodeErrMutex.Lock()
 			if decodeErr == nil {
@@ -297,7 +268,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	go func() {
 		defer decodeWg.Done()
 		var err error
-		accountHash, err = decodeHexWithPool(ledger.AccountHash)
+		accountHash, err = decodeHex(ledger.AccountHash)
 		if err != nil {
 			f.logger.Debug("failed to decode account hash", zap.Error(err))
 			accountHash = nil
@@ -307,7 +278,7 @@ func (f *Fetcher) Fetch(ctx context.Context, client *Client, requestBlockNum uin
 	go func() {
 		defer decodeWg.Done()
 		var err error
-		transactionHash, err = decodeHexWithPool(ledger.TransactionHash)
+		transactionHash, err = decodeHex(ledger.TransactionHash)
 		if err != nil {
 			f.logger.Debug("failed to decode transaction hash", zap.Error(err))
 			transactionHash = nil

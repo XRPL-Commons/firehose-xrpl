@@ -3,13 +3,10 @@ package rpc
 import (
 	"bytes"
 	"context"
-	"crypto/sha512"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 	"time"
 
 	binarycodec "github.com/Peersyst/xrpl-go/binary-codec"
@@ -17,9 +14,6 @@ import (
 	"github.com/xrpl-commons/firehose-xrpl/types"
 	"go.uber.org/zap"
 )
-
-// HashPrefix for transaction ID calculation (TXN prefix = 0x54584E00)
-var txnHashPrefix = []byte{0x54, 0x58, 0x4E, 0x00}
 
 // Client wraps the xrpl-go RPC client for Firehose operations
 type Client struct {
@@ -127,13 +121,9 @@ func (c *Client) GetLedger(ctx context.Context, ledgerIndex uint64) (*types.Ledg
 		}
 	}(resp.Body)
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
-	}
-
+	// Stream JSON parsing - avoids buffering entire response in memory
 	var rawResp rawLedgerResponse
-	if err := json.Unmarshal(body, &rawResp); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&rawResp); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}
 
@@ -176,13 +166,13 @@ func (c *Client) GetLedger(ctx context.Context, ledgerIndex uint64) (*types.Ledg
 
 			// Extract fields from transaction map
 			if txMap, ok := tx.(map[string]interface{}); ok {
+				// Get hash directly from response (more efficient than computing)
+				if hash, ok := txMap["hash"].(string); ok {
+					ltx.Hash = hash
+				}
 				// Get tx_blob
 				if txBlob, ok := txMap["tx_blob"].(string); ok {
 					ltx.TxBlob = txBlob
-					// Compute transaction hash from tx_blob
-					ltx.Hash = c.computeTxHash(txBlob)
-					// Decode transaction to extract fields
-					c.decodeTransaction(&ltx, txBlob)
 				}
 				// Get meta (rippled uses "meta" in binary mode)
 				if meta, ok := txMap["meta"].(string); ok {
@@ -201,59 +191,6 @@ func (c *Client) GetLedger(ctx context.Context, ledgerIndex uint64) (*types.Ledg
 		Validated:   rawResp.Result.Validated,
 		Status:      "success",
 	}, nil
-}
-
-// computeTxHash computes the transaction hash from a tx_blob hex string
-// XRPL transaction hash = SHA-512Half(HashPrefix::TXN + signed_tx_blob)
-func (c *Client) computeTxHash(txBlobHex string) string {
-	txBytes, err := hex.DecodeString(txBlobHex)
-	if err != nil {
-		c.logger.Debug("failed to decode tx_blob for hash", zap.Error(err))
-		return ""
-	}
-
-	// Prepend the TXN hash prefix
-	data := append(txnHashPrefix, txBytes...)
-
-	// SHA-512 and take first 32 bytes (256 bits) = SHA-512Half
-	hash := sha512.Sum512(data)
-	return strings.ToUpper(hex.EncodeToString(hash[:32]))
-}
-
-// decodeTransaction decodes a tx_blob and extracts common fields
-func (c *Client) decodeTransaction(ltx *types.LedgerTransaction, txBlobHex string) {
-	decoded, err := binarycodec.Decode(txBlobHex)
-	if err != nil {
-		c.logger.Debug("failed to decode transaction", zap.Error(err))
-		return
-	}
-
-	// Extract TransactionType
-	if txType, ok := decoded["TransactionType"].(string); ok {
-		ltx.TransactionType = txType
-	}
-
-	// Extract Account
-	if account, ok := decoded["Account"].(string); ok {
-		ltx.Account = account
-	}
-
-	// Extract Fee (can be string or number)
-	if fee, ok := decoded["Fee"].(string); ok {
-		ltx.Fee = fee
-	} else if feeNum, ok := decoded["Fee"].(float64); ok {
-		ltx.Fee = fmt.Sprintf("%.0f", feeNum)
-	}
-
-	// Extract Sequence
-	if seq, ok := decoded["Sequence"].(float64); ok {
-		ltx.Sequence = uint32(seq)
-	}
-
-	// Extract Destination (for Payment, etc.)
-	if dest, ok := decoded["Destination"].(string); ok {
-		ltx.Destination = dest
-	}
 }
 
 // GetServerInfo returns server information including available ledger range

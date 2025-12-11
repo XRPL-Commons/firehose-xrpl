@@ -89,7 +89,8 @@ func (d *Decoder) GetTransactionResult(metaBlob []byte) string {
 
 // MapTransactionToProto converts a decoded FlatTransaction and metadata to protobuf
 // This is the main entry point used by the fetcher
-func (d *Decoder) MapTransactionToProto(txBlob, metaBlob []byte, txHash []byte, txIndex uint32) (*pbxrpl.Transaction, error) {
+// Accepts hex strings directly to avoid unnecessary encoding round-trips
+func (d *Decoder) MapTransactionToProto(txBlobHex, metaBlobHex string, txHash []byte, txIndex uint32) (*pbxrpl.Transaction, error) {
 	// Decode the transaction and metadata in parallel
 	var flatTx xrpltx.FlatTransaction
 	var meta map[string]interface{}
@@ -100,12 +101,12 @@ func (d *Decoder) MapTransactionToProto(txBlob, metaBlob []byte, txHash []byte, 
 
 	go func() {
 		defer wg.Done()
-		flatTx, txErr = d.DecodeTransactionFromBytes(txBlob)
+		flatTx, txErr = d.DecodeTransactionFromHex(txBlobHex)
 	}()
 
 	go func() {
 		defer wg.Done()
-		meta, metaErr = d.DecodeMetadataFromBytes(metaBlob)
+		meta, metaErr = d.DecodeMetadataFromHex(metaBlobHex)
 	}()
 
 	wg.Wait()
@@ -121,6 +122,16 @@ func (d *Decoder) MapTransactionToProto(txBlob, metaBlob []byte, txHash []byte, 
 	result := ""
 	if txResult, ok := meta["TransactionResult"].(string); ok {
 		result = txResult
+	}
+
+	// Decode hex to bytes for mapper (done once here instead of in fetcher + here)
+	txBlob, err := hex.DecodeString(txBlobHex)
+	if err != nil {
+		return nil, fmt.Errorf("decoding tx blob hex: %w", err)
+	}
+	metaBlob, err := hex.DecodeString(metaBlobHex)
+	if err != nil {
+		return nil, fmt.Errorf("decoding meta blob hex: %w", err)
 	}
 
 	// Use the mapper to convert to protobuf
