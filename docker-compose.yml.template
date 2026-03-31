@@ -1,0 +1,32 @@
+services:
+  ${APP_NAME}:
+    image: "${IMAGE_NAME}"
+    container_name: firecore
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - AWS_ACCESS_KEY_ID=${DO_SPACES_KEY}
+      - AWS_SECRET_ACCESS_KEY=${DO_SPACES_SECRET}
+    volumes:
+      - ./firehose.yaml:/app/firehose.yaml:ro
+    working_dir: /app
+    command: >
+      start firehose substreams-tier1 substreams-tier2
+      --config-file=./firehose.yaml
+    networks:
+      - ${TRAEFIK_NETWORK}
+    labels:
+      - "traefik.enable=false"
+    deploy:
+      resources:
+        limits:
+          cpus: '${CPU_LIMIT}'
+          memory: '${MEMORY_LIMIT}'
+        reservations:
+          cpus: '${CPU_RESERVATION}'
+          memory: '${MEMORY_RESERVATION}'
+
+networks:
+  ${TRAEFIK_NETWORK}:
+    external: true

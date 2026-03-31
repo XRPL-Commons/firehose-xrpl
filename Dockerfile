@@ -1,6 +1,6 @@
 ARG FIRECORE_VERSION=v1.10.1
 
-FROM golang:1.23-bookworm AS build
+FROM golang:1.24-bookworm AS build
 WORKDIR /app
 
 # Copy go mod files first for better caching
