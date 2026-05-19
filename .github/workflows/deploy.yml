@@ -1,26 +1,23 @@
-name: Build and Deploy firehose-xrpl
+name: Trigger Deployment
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
-  deploy:
-    uses: XRPL-Commons/infrastructure_management/.github/workflows/reusable_docker_node_app.yaml@main
-    with:
-      environment: production
-      app_name: 'firecore'
-      node_version: '22'
-      app_domain: 'mainnet.streams.xrpl-commons.org'
-      deploy_dir: 'firehose-xrpl'
-      host_port: '9000'
-      cpu_limit: '1.0'
-      memory_limit: '2G'
-      cpu_reservation: '0.5'
-      memory_reservation: '1G'
-    secrets: inherit
+  trigger-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deployment in firehose-infra
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.INFRA_DEPLOY_PAT }}
+          repository: XRPL-Commons/firehose-infra
+          event-type: deploy-firehose-xrpl
+          client-payload: >-
+            {
+              "ref": "${{ github.sha }}",
+              "triggered_by": "${{ github.actor }}",
+              "source_run_id": "${{ github.run_id }}"
+            }
