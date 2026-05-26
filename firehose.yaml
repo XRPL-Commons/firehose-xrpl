@@ -2,7 +2,7 @@ start:
   flags:
     common-merged-blocks-store-url: "s3://fra1.digitaloceanspaces.com/firehose-xrpl-mainnet-data/merged-blocks?region=fra1"
     common-one-block-store-url: "s3://fra1.digitaloceanspaces.com/firehose-xrpl-mainnet-data/oneblock?region=fra1"
-    common-first-streamable-block: 32570
+    common-first-streamable-block: 104000000
     common-live-blocks-addr: ""
     firehose-grpc-listen-addr: ":9000"
     substreams-tier1-grpc-listen-addr: ":9001"
@@ -10,5 +10,13 @@ start:
     substreams-tier1-subrequests-insecure: true
     substreams-tier1-subrequests-endpoint: ":9002"
     substreams-tier2-grpc-listen-addr: ":9002"
+    reader-node-path: "/app/firexrpl"
+    reader-node-data-dir: "/data/oneblock"
+    reader-node-working-dir: "/data/work"
+    reader-node-grpc-listen-addr: ":9010"
+    reader-node-manager-api-addr: ":8080"
+    # The endpoint is read from the XRPL_RPC_ENDPOINT container env var (firehose-core
+    # does not expand env vars inside reader-node-arguments). See firexrpl fetcher.
+    reader-node-arguments: "fetch rpc 104000000 --state-dir /data/poller --worker-pool-size 20 --block-fetch-batch-size 5"
     advertise-chain-name: "xrpl"
     advertise-block-id-encoding: "hex"
