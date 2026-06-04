@@ -12,8 +12,8 @@ import (
 
 // Mapper handles mapping from goxrpl types to protobuf types
 type Mapper struct {
-	logger      *zap.Logger
-	txMappers   map[string]func(*pbxrpl.Transaction, xrpltx.FlatTransaction)
+	logger    *zap.Logger
+	txMappers map[string]func(*pbxrpl.Transaction, xrpltx.FlatTransaction)
 }
 
 // NewMapper creates a new mapper with pre-built transaction type dispatch map
@@ -24,56 +24,156 @@ func NewMapper(logger *zap.Logger) *Mapper {
 
 	// Build hashmap for O(1) transaction type lookup instead of O(n) switch
 	m.txMappers = map[string]func(*pbxrpl.Transaction, xrpltx.FlatTransaction){
-		"Payment":                   func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_Payment{Payment: m.mapPayment(flat)} },
-		"OfferCreate":               func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_OfferCreate{OfferCreate: m.mapOfferCreate(flat)} },
-		"OfferCancel":               func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_OfferCancel{OfferCancel: m.mapOfferCancel(flat)} },
-		"TrustSet":                  func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_TrustSet{TrustSet: m.mapTrustSet(flat)} },
-		"AccountSet":                func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_AccountSet{AccountSet: m.mapAccountSet(flat)} },
-		"AccountDelete":             func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_AccountDelete{AccountDelete: m.mapAccountDelete(flat)} },
-		"SetRegularKey":             func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_SetRegularKey{SetRegularKey: m.mapSetRegularKey(flat)} },
-		"SignerListSet":             func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_SignerListSet{SignerListSet: m.mapSignerListSet(flat)} },
-		"EscrowCreate":              func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_EscrowCreate{EscrowCreate: m.mapEscrowCreate(flat)} },
-		"EscrowFinish":              func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_EscrowFinish{EscrowFinish: m.mapEscrowFinish(flat)} },
-		"EscrowCancel":              func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_EscrowCancel{EscrowCancel: m.mapEscrowCancel(flat)} },
-		"PaymentChannelCreate":      func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_PaymentChannelCreate{PaymentChannelCreate: m.mapPaymentChannelCreate(flat)} },
-		"PaymentChannelFund":        func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_PaymentChannelFund{PaymentChannelFund: m.mapPaymentChannelFund(flat)} },
-		"PaymentChannelClaim":       func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_PaymentChannelClaim{PaymentChannelClaim: m.mapPaymentChannelClaim(flat)} },
-		"CheckCreate":               func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_CheckCreate{CheckCreate: m.mapCheckCreate(flat)} },
-		"CheckCash":                 func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_CheckCash{CheckCash: m.mapCheckCash(flat)} },
-		"CheckCancel":               func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_CheckCancel{CheckCancel: m.mapCheckCancel(flat)} },
-		"DepositPreauth":            func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_DepositPreauth{DepositPreauth: m.mapDepositPreauth(flat)} },
-		"TicketCreate":              func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_TicketCreate{TicketCreate: m.mapTicketCreate(flat)} },
-		"NFTokenMint":               func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_NftokenMint{NftokenMint: m.mapNFTokenMint(flat)} },
-		"NFTokenBurn":               func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_NftokenBurn{NftokenBurn: m.mapNFTokenBurn(flat)} },
-		"NFTokenCreateOffer":        func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_NftokenCreateOffer{NftokenCreateOffer: m.mapNFTokenCreateOffer(flat)} },
-		"NFTokenCancelOffer":        func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_NftokenCancelOffer{NftokenCancelOffer: m.mapNFTokenCancelOffer(flat)} },
-		"NFTokenAcceptOffer":        func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_NftokenAcceptOffer{NftokenAcceptOffer: m.mapNFTokenAcceptOffer(flat)} },
-		"Clawback":                  func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_Clawback{Clawback: m.mapClawback(flat)} },
-		"AMMCreate":                 func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_AmmCreate{AmmCreate: m.mapAMMCreate(flat)} },
-		"AMMDeposit":                func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_AmmDeposit{AmmDeposit: m.mapAMMDeposit(flat)} },
-		"AMMWithdraw":               func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_AmmWithdraw{AmmWithdraw: m.mapAMMWithdraw(flat)} },
-		"AMMVote":                   func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_AmmVote{AmmVote: m.mapAMMVote(flat)} },
-		"AMMBid":                    func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_AmmBid{AmmBid: m.mapAMMBid(flat)} },
-		"AMMDelete":                 func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_AmmDelete{AmmDelete: m.mapAMMDelete(flat)} },
-		"AMMClawback":               func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_AmmClawback{AmmClawback: m.mapAMMClawback(flat)} },
-		"DIDSet":                    func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_DidSet{DidSet: m.mapDIDSet(flat)} },
-		"DIDDelete":                 func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_DidDelete{DidDelete: m.mapDIDDelete()} },
-		"OracleSet":                 func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_OracleSet{OracleSet: m.mapOracleSet(flat)} },
-		"OracleDelete":              func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_OracleDelete{OracleDelete: m.mapOracleDelete(flat)} },
-		"MPTokenIssuanceCreate":     func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_MptokenIssuanceCreate{MptokenIssuanceCreate: m.mapMPTokenIssuanceCreate(flat)} },
-		"MPTokenIssuanceDestroy":    func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_MptokenIssuanceDestroy{MptokenIssuanceDestroy: m.mapMPTokenIssuanceDestroy(flat)} },
-		"MPTokenIssuanceSet":        func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_MptokenIssuanceSet{MptokenIssuanceSet: m.mapMPTokenIssuanceSet(flat)} },
-		"MPTokenAuthorize":          func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_MptokenAuthorize{MptokenAuthorize: m.mapMPTokenAuthorize(flat)} },
-		"CredentialCreate":          func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_CredentialCreate{CredentialCreate: m.mapCredentialCreate(flat)} },
-		"CredentialAccept":          func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_CredentialAccept{CredentialAccept: m.mapCredentialAccept(flat)} },
-		"CredentialDelete":          func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_CredentialDelete{CredentialDelete: m.mapCredentialDelete(flat)} },
-		"PermissionedDomainSet":     func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_PermissionedDomainSet{PermissionedDomainSet: m.mapPermissionedDomainSet(flat)} },
-		"PermissionedDomainDelete":  func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_PermissionedDomainDelete{PermissionedDomainDelete: m.mapPermissionedDomainDelete(flat)} },
-		"DelegateSet":               func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_DelegateSet{DelegateSet: m.mapDelegateSet(flat)} },
-		"Batch":                     func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_Batch{Batch: m.mapBatch(flat)} },
-		"EnableAmendment":           func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_EnableAmendment{EnableAmendment: m.mapEnableAmendment(flat)} },
-		"SetFee":                    func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_SetFee{SetFee: m.mapSetFee(flat)} },
-		"UNLModify":                 func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) { tx.TxDetails = &pbxrpl.Transaction_UnlModify{UnlModify: m.mapUNLModify(flat)} },
+		"Payment": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_Payment{Payment: m.mapPayment(flat)}
+		},
+		"OfferCreate": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_OfferCreate{OfferCreate: m.mapOfferCreate(flat)}
+		},
+		"OfferCancel": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_OfferCancel{OfferCancel: m.mapOfferCancel(flat)}
+		},
+		"TrustSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_TrustSet{TrustSet: m.mapTrustSet(flat)}
+		},
+		"AccountSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_AccountSet{AccountSet: m.mapAccountSet(flat)}
+		},
+		"AccountDelete": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_AccountDelete{AccountDelete: m.mapAccountDelete(flat)}
+		},
+		"SetRegularKey": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_SetRegularKey{SetRegularKey: m.mapSetRegularKey(flat)}
+		},
+		"SignerListSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_SignerListSet{SignerListSet: m.mapSignerListSet(flat)}
+		},
+		"EscrowCreate": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_EscrowCreate{EscrowCreate: m.mapEscrowCreate(flat)}
+		},
+		"EscrowFinish": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_EscrowFinish{EscrowFinish: m.mapEscrowFinish(flat)}
+		},
+		"EscrowCancel": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_EscrowCancel{EscrowCancel: m.mapEscrowCancel(flat)}
+		},
+		"PaymentChannelCreate": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_PaymentChannelCreate{PaymentChannelCreate: m.mapPaymentChannelCreate(flat)}
+		},
+		"PaymentChannelFund": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_PaymentChannelFund{PaymentChannelFund: m.mapPaymentChannelFund(flat)}
+		},
+		"PaymentChannelClaim": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_PaymentChannelClaim{PaymentChannelClaim: m.mapPaymentChannelClaim(flat)}
+		},
+		"CheckCreate": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_CheckCreate{CheckCreate: m.mapCheckCreate(flat)}
+		},
+		"CheckCash": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_CheckCash{CheckCash: m.mapCheckCash(flat)}
+		},
+		"CheckCancel": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_CheckCancel{CheckCancel: m.mapCheckCancel(flat)}
+		},
+		"DepositPreauth": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_DepositPreauth{DepositPreauth: m.mapDepositPreauth(flat)}
+		},
+		"TicketCreate": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_TicketCreate{TicketCreate: m.mapTicketCreate(flat)}
+		},
+		"NFTokenMint": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_NftokenMint{NftokenMint: m.mapNFTokenMint(flat)}
+		},
+		"NFTokenBurn": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_NftokenBurn{NftokenBurn: m.mapNFTokenBurn(flat)}
+		},
+		"NFTokenCreateOffer": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_NftokenCreateOffer{NftokenCreateOffer: m.mapNFTokenCreateOffer(flat)}
+		},
+		"NFTokenCancelOffer": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_NftokenCancelOffer{NftokenCancelOffer: m.mapNFTokenCancelOffer(flat)}
+		},
+		"NFTokenAcceptOffer": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_NftokenAcceptOffer{NftokenAcceptOffer: m.mapNFTokenAcceptOffer(flat)}
+		},
+		"Clawback": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_Clawback{Clawback: m.mapClawback(flat)}
+		},
+		"AMMCreate": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_AmmCreate{AmmCreate: m.mapAMMCreate(flat)}
+		},
+		"AMMDeposit": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_AmmDeposit{AmmDeposit: m.mapAMMDeposit(flat)}
+		},
+		"AMMWithdraw": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_AmmWithdraw{AmmWithdraw: m.mapAMMWithdraw(flat)}
+		},
+		"AMMVote": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_AmmVote{AmmVote: m.mapAMMVote(flat)}
+		},
+		"AMMBid": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_AmmBid{AmmBid: m.mapAMMBid(flat)}
+		},
+		"AMMDelete": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_AmmDelete{AmmDelete: m.mapAMMDelete(flat)}
+		},
+		"AMMClawback": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_AmmClawback{AmmClawback: m.mapAMMClawback(flat)}
+		},
+		"DIDSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_DidSet{DidSet: m.mapDIDSet(flat)}
+		},
+		"DIDDelete": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_DidDelete{DidDelete: m.mapDIDDelete()}
+		},
+		"OracleSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_OracleSet{OracleSet: m.mapOracleSet(flat)}
+		},
+		"OracleDelete": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_OracleDelete{OracleDelete: m.mapOracleDelete(flat)}
+		},
+		"MPTokenIssuanceCreate": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_MptokenIssuanceCreate{MptokenIssuanceCreate: m.mapMPTokenIssuanceCreate(flat)}
+		},
+		"MPTokenIssuanceDestroy": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_MptokenIssuanceDestroy{MptokenIssuanceDestroy: m.mapMPTokenIssuanceDestroy(flat)}
+		},
+		"MPTokenIssuanceSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_MptokenIssuanceSet{MptokenIssuanceSet: m.mapMPTokenIssuanceSet(flat)}
+		},
+		"MPTokenAuthorize": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_MptokenAuthorize{MptokenAuthorize: m.mapMPTokenAuthorize(flat)}
+		},
+		"CredentialCreate": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_CredentialCreate{CredentialCreate: m.mapCredentialCreate(flat)}
+		},
+		"CredentialAccept": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_CredentialAccept{CredentialAccept: m.mapCredentialAccept(flat)}
+		},
+		"CredentialDelete": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_CredentialDelete{CredentialDelete: m.mapCredentialDelete(flat)}
+		},
+		"PermissionedDomainSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_PermissionedDomainSet{PermissionedDomainSet: m.mapPermissionedDomainSet(flat)}
+		},
+		"PermissionedDomainDelete": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_PermissionedDomainDelete{PermissionedDomainDelete: m.mapPermissionedDomainDelete(flat)}
+		},
+		"DelegateSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_DelegateSet{DelegateSet: m.mapDelegateSet(flat)}
+		},
+		"Batch": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_Batch{Batch: m.mapBatch(flat)}
+		},
+		"EnableAmendment": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_EnableAmendment{EnableAmendment: m.mapEnableAmendment(flat)}
+		},
+		"SetFee": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_SetFee{SetFee: m.mapSetFee(flat)}
+		},
+		"UNLModify": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_UnlModify{UnlModify: m.mapUNLModify(flat)}
+		},
 		// XChain transactions removed - deprecated and will never be in prod
 	}
 
