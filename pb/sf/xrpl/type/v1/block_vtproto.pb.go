@@ -585,6 +585,141 @@ func (m *Transaction_Batch) CloneVT() isTransaction_TxDetails {
 	return r
 }
 
+func (m *Transaction_VaultCreate) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_VaultCreate)(nil)
+	}
+	r := new(Transaction_VaultCreate)
+	r.VaultCreate = m.VaultCreate.CloneVT()
+	return r
+}
+
+func (m *Transaction_VaultSet) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_VaultSet)(nil)
+	}
+	r := new(Transaction_VaultSet)
+	r.VaultSet = m.VaultSet.CloneVT()
+	return r
+}
+
+func (m *Transaction_VaultDelete) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_VaultDelete)(nil)
+	}
+	r := new(Transaction_VaultDelete)
+	r.VaultDelete = m.VaultDelete.CloneVT()
+	return r
+}
+
+func (m *Transaction_VaultDeposit) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_VaultDeposit)(nil)
+	}
+	r := new(Transaction_VaultDeposit)
+	r.VaultDeposit = m.VaultDeposit.CloneVT()
+	return r
+}
+
+func (m *Transaction_VaultWithdraw) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_VaultWithdraw)(nil)
+	}
+	r := new(Transaction_VaultWithdraw)
+	r.VaultWithdraw = m.VaultWithdraw.CloneVT()
+	return r
+}
+
+func (m *Transaction_VaultClawback) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_VaultClawback)(nil)
+	}
+	r := new(Transaction_VaultClawback)
+	r.VaultClawback = m.VaultClawback.CloneVT()
+	return r
+}
+
+func (m *Transaction_LoanBrokerSet) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_LoanBrokerSet)(nil)
+	}
+	r := new(Transaction_LoanBrokerSet)
+	r.LoanBrokerSet = m.LoanBrokerSet.CloneVT()
+	return r
+}
+
+func (m *Transaction_LoanBrokerDelete) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_LoanBrokerDelete)(nil)
+	}
+	r := new(Transaction_LoanBrokerDelete)
+	r.LoanBrokerDelete = m.LoanBrokerDelete.CloneVT()
+	return r
+}
+
+func (m *Transaction_LoanBrokerCoverDeposit) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_LoanBrokerCoverDeposit)(nil)
+	}
+	r := new(Transaction_LoanBrokerCoverDeposit)
+	r.LoanBrokerCoverDeposit = m.LoanBrokerCoverDeposit.CloneVT()
+	return r
+}
+
+func (m *Transaction_LoanBrokerCoverWithdraw) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_LoanBrokerCoverWithdraw)(nil)
+	}
+	r := new(Transaction_LoanBrokerCoverWithdraw)
+	r.LoanBrokerCoverWithdraw = m.LoanBrokerCoverWithdraw.CloneVT()
+	return r
+}
+
+func (m *Transaction_LoanBrokerCoverClawback) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_LoanBrokerCoverClawback)(nil)
+	}
+	r := new(Transaction_LoanBrokerCoverClawback)
+	r.LoanBrokerCoverClawback = m.LoanBrokerCoverClawback.CloneVT()
+	return r
+}
+
+func (m *Transaction_LoanSet) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_LoanSet)(nil)
+	}
+	r := new(Transaction_LoanSet)
+	r.LoanSet = m.LoanSet.CloneVT()
+	return r
+}
+
+func (m *Transaction_LoanDelete) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_LoanDelete)(nil)
+	}
+	r := new(Transaction_LoanDelete)
+	r.LoanDelete = m.LoanDelete.CloneVT()
+	return r
+}
+
+func (m *Transaction_LoanManage) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_LoanManage)(nil)
+	}
+	r := new(Transaction_LoanManage)
+	r.LoanManage = m.LoanManage.CloneVT()
+	return r
+}
+
+func (m *Transaction_LoanPay) CloneVT() isTransaction_TxDetails {
+	if m == nil {
+		return (*Transaction_LoanPay)(nil)
+	}
+	r := new(Transaction_LoanPay)
+	r.LoanPay = m.LoanPay.CloneVT()
+	return r
+}
+
 func (m *Transaction_EnableAmendment) CloneVT() isTransaction_TxDetails {
 	if m == nil {
 		return (*Transaction_EnableAmendment)(nil)
@@ -2030,6 +2165,381 @@ func (this *Transaction_Batch) EqualVT(thatIface isTransaction_TxDetails) bool {
 		}
 		if q == nil {
 			q = &Batch{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_VaultCreate) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_VaultCreate)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.VaultCreate, that.VaultCreate; p != q {
+		if p == nil {
+			p = &VaultCreate{}
+		}
+		if q == nil {
+			q = &VaultCreate{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_VaultSet) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_VaultSet)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.VaultSet, that.VaultSet; p != q {
+		if p == nil {
+			p = &VaultSet{}
+		}
+		if q == nil {
+			q = &VaultSet{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_VaultDelete) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_VaultDelete)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.VaultDelete, that.VaultDelete; p != q {
+		if p == nil {
+			p = &VaultDelete{}
+		}
+		if q == nil {
+			q = &VaultDelete{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_VaultDeposit) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_VaultDeposit)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.VaultDeposit, that.VaultDeposit; p != q {
+		if p == nil {
+			p = &VaultDeposit{}
+		}
+		if q == nil {
+			q = &VaultDeposit{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_VaultWithdraw) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_VaultWithdraw)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.VaultWithdraw, that.VaultWithdraw; p != q {
+		if p == nil {
+			p = &VaultWithdraw{}
+		}
+		if q == nil {
+			q = &VaultWithdraw{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_VaultClawback) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_VaultClawback)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.VaultClawback, that.VaultClawback; p != q {
+		if p == nil {
+			p = &VaultClawback{}
+		}
+		if q == nil {
+			q = &VaultClawback{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_LoanBrokerSet) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_LoanBrokerSet)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.LoanBrokerSet, that.LoanBrokerSet; p != q {
+		if p == nil {
+			p = &LoanBrokerSet{}
+		}
+		if q == nil {
+			q = &LoanBrokerSet{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_LoanBrokerDelete) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_LoanBrokerDelete)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.LoanBrokerDelete, that.LoanBrokerDelete; p != q {
+		if p == nil {
+			p = &LoanBrokerDelete{}
+		}
+		if q == nil {
+			q = &LoanBrokerDelete{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_LoanBrokerCoverDeposit) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_LoanBrokerCoverDeposit)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.LoanBrokerCoverDeposit, that.LoanBrokerCoverDeposit; p != q {
+		if p == nil {
+			p = &LoanBrokerCoverDeposit{}
+		}
+		if q == nil {
+			q = &LoanBrokerCoverDeposit{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_LoanBrokerCoverWithdraw) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_LoanBrokerCoverWithdraw)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.LoanBrokerCoverWithdraw, that.LoanBrokerCoverWithdraw; p != q {
+		if p == nil {
+			p = &LoanBrokerCoverWithdraw{}
+		}
+		if q == nil {
+			q = &LoanBrokerCoverWithdraw{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_LoanBrokerCoverClawback) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_LoanBrokerCoverClawback)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.LoanBrokerCoverClawback, that.LoanBrokerCoverClawback; p != q {
+		if p == nil {
+			p = &LoanBrokerCoverClawback{}
+		}
+		if q == nil {
+			q = &LoanBrokerCoverClawback{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_LoanSet) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_LoanSet)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.LoanSet, that.LoanSet; p != q {
+		if p == nil {
+			p = &LoanSet{}
+		}
+		if q == nil {
+			q = &LoanSet{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_LoanDelete) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_LoanDelete)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.LoanDelete, that.LoanDelete; p != q {
+		if p == nil {
+			p = &LoanDelete{}
+		}
+		if q == nil {
+			q = &LoanDelete{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_LoanManage) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_LoanManage)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.LoanManage, that.LoanManage; p != q {
+		if p == nil {
+			p = &LoanManage{}
+		}
+		if q == nil {
+			q = &LoanManage{}
+		}
+		if !p.EqualVT(q) {
+			return false
+		}
+	}
+	return true
+}
+
+func (this *Transaction_LoanPay) EqualVT(thatIface isTransaction_TxDetails) bool {
+	that, ok := thatIface.(*Transaction_LoanPay)
+	if !ok {
+		return false
+	}
+	if this == that {
+		return true
+	}
+	if this == nil && that != nil || this != nil && that == nil {
+		return false
+	}
+	if p, q := this.LoanPay, that.LoanPay; p != q {
+		if p == nil {
+			p = &LoanPay{}
+		}
+		if q == nil {
+			q = &LoanPay{}
 		}
 		if !p.EqualVT(q) {
 			return false
@@ -3508,6 +4018,321 @@ func (m *Transaction_Batch) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	}
 	return len(dAtA) - i, nil
 }
+func (m *Transaction_VaultCreate) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_VaultCreate) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultCreate != nil {
+		size, err := m.VaultCreate.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0x92
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_VaultSet) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_VaultSet) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultSet != nil {
+		size, err := m.VaultSet.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0x9a
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_VaultDelete) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_VaultDelete) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultDelete != nil {
+		size, err := m.VaultDelete.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xa2
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_VaultDeposit) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_VaultDeposit) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultDeposit != nil {
+		size, err := m.VaultDeposit.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xaa
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_VaultWithdraw) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_VaultWithdraw) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultWithdraw != nil {
+		size, err := m.VaultWithdraw.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xb2
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_VaultClawback) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_VaultClawback) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultClawback != nil {
+		size, err := m.VaultClawback.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xba
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanBrokerSet) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_LoanBrokerSet) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanBrokerSet != nil {
+		size, err := m.LoanBrokerSet.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xe2
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanBrokerDelete) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_LoanBrokerDelete) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanBrokerDelete != nil {
+		size, err := m.LoanBrokerDelete.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xea
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanBrokerCoverDeposit) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_LoanBrokerCoverDeposit) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanBrokerCoverDeposit != nil {
+		size, err := m.LoanBrokerCoverDeposit.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xf2
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanBrokerCoverWithdraw) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_LoanBrokerCoverWithdraw) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanBrokerCoverWithdraw != nil {
+		size, err := m.LoanBrokerCoverWithdraw.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xfa
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanBrokerCoverClawback) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_LoanBrokerCoverClawback) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanBrokerCoverClawback != nil {
+		size, err := m.LoanBrokerCoverClawback.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xe
+		i--
+		dAtA[i] = 0x82
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanSet) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_LoanSet) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanSet != nil {
+		size, err := m.LoanSet.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xe
+		i--
+		dAtA[i] = 0x8a
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanDelete) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_LoanDelete) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanDelete != nil {
+		size, err := m.LoanDelete.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xe
+		i--
+		dAtA[i] = 0x92
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanManage) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_LoanManage) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanManage != nil {
+		size, err := m.LoanManage.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xe
+		i--
+		dAtA[i] = 0x9a
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanPay) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Transaction_LoanPay) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanPay != nil {
+		size, err := m.LoanPay.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xe
+		i--
+		dAtA[i] = 0xa2
+	}
+	return len(dAtA) - i, nil
+}
 func (m *Transaction_EnableAmendment) MarshalToVT(dAtA []byte) (int, error) {
 	size := m.SizeVT()
 	return m.MarshalToSizedBufferVT(dAtA[:size])
@@ -3849,6 +4674,111 @@ func (m *Transaction) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i -= size
 	}
 	if msg, ok := m.TxDetails.(*Transaction_EnableAmendment); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_LoanPay); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_LoanManage); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_LoanDelete); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_LoanSet); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_LoanBrokerCoverClawback); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_LoanBrokerCoverWithdraw); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_LoanBrokerCoverDeposit); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_LoanBrokerDelete); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_LoanBrokerSet); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_VaultClawback); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_VaultWithdraw); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_VaultDeposit); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_VaultDelete); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_VaultSet); ok {
+		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+	}
+	if msg, ok := m.TxDetails.(*Transaction_VaultCreate); ok {
 		size, err := msg.MarshalToSizedBufferVTStrict(dAtA[:i])
 		if err != nil {
 			return 0, err
@@ -5346,6 +6276,321 @@ func (m *Transaction_Batch) MarshalToSizedBufferVTStrict(dAtA []byte) (int, erro
 	}
 	return len(dAtA) - i, nil
 }
+func (m *Transaction_VaultCreate) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_VaultCreate) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultCreate != nil {
+		size, err := m.VaultCreate.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0x92
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_VaultSet) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_VaultSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultSet != nil {
+		size, err := m.VaultSet.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0x9a
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_VaultDelete) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_VaultDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultDelete != nil {
+		size, err := m.VaultDelete.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xa2
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_VaultDeposit) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_VaultDeposit) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultDeposit != nil {
+		size, err := m.VaultDeposit.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xaa
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_VaultWithdraw) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_VaultWithdraw) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultWithdraw != nil {
+		size, err := m.VaultWithdraw.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xb2
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_VaultClawback) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_VaultClawback) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.VaultClawback != nil {
+		size, err := m.VaultClawback.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xba
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanBrokerSet) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_LoanBrokerSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanBrokerSet != nil {
+		size, err := m.LoanBrokerSet.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xe2
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanBrokerDelete) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_LoanBrokerDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanBrokerDelete != nil {
+		size, err := m.LoanBrokerDelete.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xea
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanBrokerCoverDeposit) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_LoanBrokerCoverDeposit) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanBrokerCoverDeposit != nil {
+		size, err := m.LoanBrokerCoverDeposit.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xf2
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanBrokerCoverWithdraw) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_LoanBrokerCoverWithdraw) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanBrokerCoverWithdraw != nil {
+		size, err := m.LoanBrokerCoverWithdraw.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xd
+		i--
+		dAtA[i] = 0xfa
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanBrokerCoverClawback) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_LoanBrokerCoverClawback) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanBrokerCoverClawback != nil {
+		size, err := m.LoanBrokerCoverClawback.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xe
+		i--
+		dAtA[i] = 0x82
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanSet) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_LoanSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanSet != nil {
+		size, err := m.LoanSet.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xe
+		i--
+		dAtA[i] = 0x8a
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanDelete) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_LoanDelete) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanDelete != nil {
+		size, err := m.LoanDelete.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xe
+		i--
+		dAtA[i] = 0x92
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanManage) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_LoanManage) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanManage != nil {
+		size, err := m.LoanManage.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xe
+		i--
+		dAtA[i] = 0x9a
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Transaction_LoanPay) MarshalToVTStrict(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
+}
+
+func (m *Transaction_LoanPay) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LoanPay != nil {
+		size, err := m.LoanPay.MarshalToSizedBufferVTStrict(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0xe
+		i--
+		dAtA[i] = 0xa2
+	}
+	return len(dAtA) - i, nil
+}
 func (m *Transaction_EnableAmendment) MarshalToVTStrict(dAtA []byte) (int, error) {
 	size := m.SizeVT()
 	return m.MarshalToSizedBufferVTStrict(dAtA[:size])
@@ -6210,6 +7455,186 @@ func (m *Transaction_Batch) SizeVT() (n int) {
 	_ = l
 	if m.Batch != nil {
 		l = m.Batch.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_VaultCreate) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.VaultCreate != nil {
+		l = m.VaultCreate.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_VaultSet) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.VaultSet != nil {
+		l = m.VaultSet.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_VaultDelete) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.VaultDelete != nil {
+		l = m.VaultDelete.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_VaultDeposit) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.VaultDeposit != nil {
+		l = m.VaultDeposit.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_VaultWithdraw) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.VaultWithdraw != nil {
+		l = m.VaultWithdraw.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_VaultClawback) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.VaultClawback != nil {
+		l = m.VaultClawback.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_LoanBrokerSet) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LoanBrokerSet != nil {
+		l = m.LoanBrokerSet.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_LoanBrokerDelete) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LoanBrokerDelete != nil {
+		l = m.LoanBrokerDelete.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_LoanBrokerCoverDeposit) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LoanBrokerCoverDeposit != nil {
+		l = m.LoanBrokerCoverDeposit.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_LoanBrokerCoverWithdraw) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LoanBrokerCoverWithdraw != nil {
+		l = m.LoanBrokerCoverWithdraw.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_LoanBrokerCoverClawback) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LoanBrokerCoverClawback != nil {
+		l = m.LoanBrokerCoverClawback.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_LoanSet) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LoanSet != nil {
+		l = m.LoanSet.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_LoanDelete) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LoanDelete != nil {
+		l = m.LoanDelete.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_LoanManage) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LoanManage != nil {
+		l = m.LoanManage.SizeVT()
+		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
+	}
+	return n
+}
+func (m *Transaction_LoanPay) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LoanPay != nil {
+		l = m.LoanPay.SizeVT()
 		n += 2 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	return n
@@ -9264,6 +10689,621 @@ func (m *Transaction) UnmarshalVT(dAtA []byte) error {
 					return err
 				}
 				m.TxDetails = &Transaction_Batch{Batch: v}
+			}
+			iNdEx = postIndex
+		case 210:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultCreate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultCreate); ok {
+				if err := oneof.VaultCreate.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultCreate{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultCreate{VaultCreate: v}
+			}
+			iNdEx = postIndex
+		case 211:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultSet", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultSet); ok {
+				if err := oneof.VaultSet.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultSet{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultSet{VaultSet: v}
+			}
+			iNdEx = postIndex
+		case 212:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultDelete", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultDelete); ok {
+				if err := oneof.VaultDelete.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultDelete{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultDelete{VaultDelete: v}
+			}
+			iNdEx = postIndex
+		case 213:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultDeposit", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultDeposit); ok {
+				if err := oneof.VaultDeposit.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultDeposit{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultDeposit{VaultDeposit: v}
+			}
+			iNdEx = postIndex
+		case 214:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultWithdraw", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultWithdraw); ok {
+				if err := oneof.VaultWithdraw.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultWithdraw{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultWithdraw{VaultWithdraw: v}
+			}
+			iNdEx = postIndex
+		case 215:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultClawback", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultClawback); ok {
+				if err := oneof.VaultClawback.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultClawback{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultClawback{VaultClawback: v}
+			}
+			iNdEx = postIndex
+		case 220:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanBrokerSet", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanBrokerSet); ok {
+				if err := oneof.LoanBrokerSet.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanBrokerSet{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanBrokerSet{LoanBrokerSet: v}
+			}
+			iNdEx = postIndex
+		case 221:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanBrokerDelete", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanBrokerDelete); ok {
+				if err := oneof.LoanBrokerDelete.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanBrokerDelete{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanBrokerDelete{LoanBrokerDelete: v}
+			}
+			iNdEx = postIndex
+		case 222:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanBrokerCoverDeposit", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanBrokerCoverDeposit); ok {
+				if err := oneof.LoanBrokerCoverDeposit.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanBrokerCoverDeposit{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanBrokerCoverDeposit{LoanBrokerCoverDeposit: v}
+			}
+			iNdEx = postIndex
+		case 223:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanBrokerCoverWithdraw", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanBrokerCoverWithdraw); ok {
+				if err := oneof.LoanBrokerCoverWithdraw.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanBrokerCoverWithdraw{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanBrokerCoverWithdraw{LoanBrokerCoverWithdraw: v}
+			}
+			iNdEx = postIndex
+		case 224:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanBrokerCoverClawback", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanBrokerCoverClawback); ok {
+				if err := oneof.LoanBrokerCoverClawback.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanBrokerCoverClawback{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanBrokerCoverClawback{LoanBrokerCoverClawback: v}
+			}
+			iNdEx = postIndex
+		case 225:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanSet", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanSet); ok {
+				if err := oneof.LoanSet.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanSet{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanSet{LoanSet: v}
+			}
+			iNdEx = postIndex
+		case 226:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanDelete", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanDelete); ok {
+				if err := oneof.LoanDelete.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanDelete{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanDelete{LoanDelete: v}
+			}
+			iNdEx = postIndex
+		case 227:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanManage", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanManage); ok {
+				if err := oneof.LoanManage.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanManage{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanManage{LoanManage: v}
+			}
+			iNdEx = postIndex
+		case 228:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanPay", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanPay); ok {
+				if err := oneof.LoanPay.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanPay{}
+				if err := v.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanPay{LoanPay: v}
 			}
 			iNdEx = postIndex
 		case 900:
@@ -12586,6 +14626,621 @@ func (m *Transaction) UnmarshalVTUnsafe(dAtA []byte) error {
 					return err
 				}
 				m.TxDetails = &Transaction_Batch{Batch: v}
+			}
+			iNdEx = postIndex
+		case 210:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultCreate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultCreate); ok {
+				if err := oneof.VaultCreate.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultCreate{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultCreate{VaultCreate: v}
+			}
+			iNdEx = postIndex
+		case 211:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultSet", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultSet); ok {
+				if err := oneof.VaultSet.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultSet{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultSet{VaultSet: v}
+			}
+			iNdEx = postIndex
+		case 212:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultDelete", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultDelete); ok {
+				if err := oneof.VaultDelete.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultDelete{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultDelete{VaultDelete: v}
+			}
+			iNdEx = postIndex
+		case 213:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultDeposit", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultDeposit); ok {
+				if err := oneof.VaultDeposit.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultDeposit{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultDeposit{VaultDeposit: v}
+			}
+			iNdEx = postIndex
+		case 214:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultWithdraw", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultWithdraw); ok {
+				if err := oneof.VaultWithdraw.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultWithdraw{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultWithdraw{VaultWithdraw: v}
+			}
+			iNdEx = postIndex
+		case 215:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultClawback", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_VaultClawback); ok {
+				if err := oneof.VaultClawback.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &VaultClawback{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_VaultClawback{VaultClawback: v}
+			}
+			iNdEx = postIndex
+		case 220:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanBrokerSet", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanBrokerSet); ok {
+				if err := oneof.LoanBrokerSet.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanBrokerSet{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanBrokerSet{LoanBrokerSet: v}
+			}
+			iNdEx = postIndex
+		case 221:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanBrokerDelete", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanBrokerDelete); ok {
+				if err := oneof.LoanBrokerDelete.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanBrokerDelete{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanBrokerDelete{LoanBrokerDelete: v}
+			}
+			iNdEx = postIndex
+		case 222:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanBrokerCoverDeposit", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanBrokerCoverDeposit); ok {
+				if err := oneof.LoanBrokerCoverDeposit.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanBrokerCoverDeposit{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanBrokerCoverDeposit{LoanBrokerCoverDeposit: v}
+			}
+			iNdEx = postIndex
+		case 223:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanBrokerCoverWithdraw", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanBrokerCoverWithdraw); ok {
+				if err := oneof.LoanBrokerCoverWithdraw.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanBrokerCoverWithdraw{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanBrokerCoverWithdraw{LoanBrokerCoverWithdraw: v}
+			}
+			iNdEx = postIndex
+		case 224:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanBrokerCoverClawback", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanBrokerCoverClawback); ok {
+				if err := oneof.LoanBrokerCoverClawback.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanBrokerCoverClawback{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanBrokerCoverClawback{LoanBrokerCoverClawback: v}
+			}
+			iNdEx = postIndex
+		case 225:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanSet", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanSet); ok {
+				if err := oneof.LoanSet.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanSet{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanSet{LoanSet: v}
+			}
+			iNdEx = postIndex
+		case 226:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanDelete", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanDelete); ok {
+				if err := oneof.LoanDelete.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanDelete{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanDelete{LoanDelete: v}
+			}
+			iNdEx = postIndex
+		case 227:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanManage", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanManage); ok {
+				if err := oneof.LoanManage.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanManage{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanManage{LoanManage: v}
+			}
+			iNdEx = postIndex
+		case 228:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanPay", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protohelpers.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return protohelpers.ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if oneof, ok := m.TxDetails.(*Transaction_LoanPay); ok {
+				if err := oneof.LoanPay.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+			} else {
+				v := &LoanPay{}
+				if err := v.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
+					return err
+				}
+				m.TxDetails = &Transaction_LoanPay{LoanPay: v}
 			}
 			iNdEx = postIndex
 		case 900:

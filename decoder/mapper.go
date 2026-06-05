@@ -165,6 +165,51 @@ func NewMapper(logger *zap.Logger) *Mapper {
 		"Batch": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
 			tx.TxDetails = &pbxrpl.Transaction_Batch{Batch: m.mapBatch(flat)}
 		},
+		"VaultCreate": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_VaultCreate{VaultCreate: m.mapVaultCreate(flat)}
+		},
+		"VaultSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_VaultSet{VaultSet: m.mapVaultSet(flat)}
+		},
+		"VaultDelete": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_VaultDelete{VaultDelete: m.mapVaultDelete(flat)}
+		},
+		"VaultDeposit": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_VaultDeposit{VaultDeposit: m.mapVaultDeposit(flat)}
+		},
+		"VaultWithdraw": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_VaultWithdraw{VaultWithdraw: m.mapVaultWithdraw(flat)}
+		},
+		"VaultClawback": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_VaultClawback{VaultClawback: m.mapVaultClawback(flat)}
+		},
+		"LoanBrokerSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_LoanBrokerSet{LoanBrokerSet: m.mapLoanBrokerSet(flat)}
+		},
+		"LoanBrokerDelete": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_LoanBrokerDelete{LoanBrokerDelete: m.mapLoanBrokerDelete(flat)}
+		},
+		"LoanBrokerCoverDeposit": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_LoanBrokerCoverDeposit{LoanBrokerCoverDeposit: m.mapLoanBrokerCoverDeposit(flat)}
+		},
+		"LoanBrokerCoverWithdraw": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_LoanBrokerCoverWithdraw{LoanBrokerCoverWithdraw: m.mapLoanBrokerCoverWithdraw(flat)}
+		},
+		"LoanBrokerCoverClawback": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_LoanBrokerCoverClawback{LoanBrokerCoverClawback: m.mapLoanBrokerCoverClawback(flat)}
+		},
+		"LoanSet": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_LoanSet{LoanSet: m.mapLoanSet(flat)}
+		},
+		"LoanDelete": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_LoanDelete{LoanDelete: m.mapLoanDelete(flat)}
+		},
+		"LoanManage": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_LoanManage{LoanManage: m.mapLoanManage(flat)}
+		},
+		"LoanPay": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
+			tx.TxDetails = &pbxrpl.Transaction_LoanPay{LoanPay: m.mapLoanPay(flat)}
+		},
 		"EnableAmendment": func(tx *pbxrpl.Transaction, flat xrpltx.FlatTransaction) {
 			tx.TxDetails = &pbxrpl.Transaction_EnableAmendment{EnableAmendment: m.mapEnableAmendment(flat)}
 		},
@@ -319,13 +364,13 @@ func (m *Mapper) MapTransactionToProto(flatTx xrpltx.FlatTransaction, txBlob, me
 	}
 
 	sequence := uint32(0)
-	if seq, ok := flatTx["Sequence"].(float64); ok {
-		sequence = uint32(seq)
+	if seq, ok := asUint32(flatTx["Sequence"]); ok {
+		sequence = seq
 	}
 
 	flags := uint32(0)
-	if f, ok := flatTx["Flags"].(float64); ok {
-		flags = uint32(f)
+	if f, ok := asUint32(flatTx["Flags"]); ok {
+		flags = f
 	}
 
 	// Build base transaction
@@ -351,8 +396,8 @@ func (m *Mapper) MapTransactionToProto(flatTx xrpltx.FlatTransaction, txBlob, me
 		protoTx.Delegate = delegate
 	}
 
-	if lastLedgerSeq, ok := flatTx["LastLedgerSequence"].(float64); ok {
-		protoTx.LastLedgerSequence = uint32(lastLedgerSeq)
+	if lastLedgerSeq, ok := asUint32(flatTx["LastLedgerSequence"]); ok {
+		protoTx.LastLedgerSequence = lastLedgerSeq
 	}
 
 	// Map memos
@@ -360,8 +405,8 @@ func (m *Mapper) MapTransactionToProto(flatTx xrpltx.FlatTransaction, txBlob, me
 		protoTx.Memos = m.mapMemosFromFlat(memosRaw)
 	}
 
-	if networkID, ok := flatTx["NetworkID"].(float64); ok {
-		protoTx.NetworkId = uint32(networkID)
+	if networkID, ok := asUint32(flatTx["NetworkID"]); ok {
+		protoTx.NetworkId = networkID
 	}
 
 	// Map signers
@@ -369,16 +414,16 @@ func (m *Mapper) MapTransactionToProto(flatTx xrpltx.FlatTransaction, txBlob, me
 		protoTx.Signers = m.mapSignersFromFlat(signersRaw)
 	}
 
-	if sourceTag, ok := flatTx["SourceTag"].(float64); ok {
-		protoTx.SourceTag = uint32(sourceTag)
+	if sourceTag, ok := asUint32(flatTx["SourceTag"]); ok {
+		protoTx.SourceTag = sourceTag
 	}
 
 	if signingPubKey, ok := flatTx["SigningPubKey"].(string); ok {
 		protoTx.SigningPubKey = signingPubKey
 	}
 
-	if ticketSeq, ok := flatTx["TicketSequence"].(float64); ok {
-		protoTx.TicketSequence = uint32(ticketSeq)
+	if ticketSeq, ok := asUint32(flatTx["TicketSequence"]); ok {
+		protoTx.TicketSequence = ticketSeq
 	}
 
 	if txnSig, ok := flatTx["TxnSignature"].(string); ok {
@@ -515,8 +560,8 @@ func (m *Mapper) mapPayment(flat xrpltx.FlatTransaction) *pbxrpl.Payment {
 		payment.InvoiceId = invoiceID
 	}
 
-	if destTag, ok := flat["DestinationTag"].(float64); ok {
-		payment.DestinationTag = uint32(destTag)
+	if destTag, ok := asUint32(flat["DestinationTag"]); ok {
+		payment.DestinationTag = destTag
 	}
 
 	if credIDs, ok := flat["CredentialIDs"].([]interface{}); ok {
@@ -544,12 +589,12 @@ func (m *Mapper) mapOfferCreate(flat xrpltx.FlatTransaction) *pbxrpl.OfferCreate
 	offer.TakerGets = m.mapAmountFromFlat(flat["TakerGets"])
 	offer.TakerPays = m.mapAmountFromFlat(flat["TakerPays"])
 
-	if exp, ok := flat["Expiration"].(float64); ok {
-		offer.Expiration = uint32(exp)
+	if exp, ok := asUint32(flat["Expiration"]); ok {
+		offer.Expiration = exp
 	}
 
-	if offerSeq, ok := flat["OfferSequence"].(float64); ok {
-		offer.OfferSequence = uint32(offerSeq)
+	if offerSeq, ok := asUint32(flat["OfferSequence"]); ok {
+		offer.OfferSequence = offerSeq
 	}
 
 	if domainID, ok := flat["DomainID"].(string); ok {
@@ -562,8 +607,8 @@ func (m *Mapper) mapOfferCreate(flat xrpltx.FlatTransaction) *pbxrpl.OfferCreate
 func (m *Mapper) mapOfferCancel(flat xrpltx.FlatTransaction) *pbxrpl.OfferCancel {
 	cancel := &pbxrpl.OfferCancel{}
 
-	if offerSeq, ok := flat["OfferSequence"].(float64); ok {
-		cancel.OfferSequence = uint32(offerSeq)
+	if offerSeq, ok := asUint32(flat["OfferSequence"]); ok {
+		cancel.OfferSequence = offerSeq
 	}
 
 	return cancel
@@ -575,12 +620,12 @@ func (m *Mapper) mapTrustSet(flat xrpltx.FlatTransaction) *pbxrpl.TrustSet {
 
 	trust.LimitAmount = m.mapAmountFromFlat(flat["LimitAmount"])
 
-	if qualityIn, ok := flat["QualityIn"].(float64); ok {
-		trust.QualityIn = uint32(qualityIn)
+	if qualityIn, ok := asUint32(flat["QualityIn"]); ok {
+		trust.QualityIn = qualityIn
 	}
 
-	if qualityOut, ok := flat["QualityOut"].(float64); ok {
-		trust.QualityOut = uint32(qualityOut)
+	if qualityOut, ok := asUint32(flat["QualityOut"]); ok {
+		trust.QualityOut = qualityOut
 	}
 
 	return trust
@@ -590,12 +635,12 @@ func (m *Mapper) mapTrustSet(flat xrpltx.FlatTransaction) *pbxrpl.TrustSet {
 func (m *Mapper) mapAccountSet(flat xrpltx.FlatTransaction) *pbxrpl.AccountSet {
 	acct := &pbxrpl.AccountSet{}
 
-	if setFlag, ok := flat["SetFlag"].(float64); ok {
-		acct.SetFlag = uint32(setFlag)
+	if setFlag, ok := asUint32(flat["SetFlag"]); ok {
+		acct.SetFlag = setFlag
 	}
 
-	if clearFlag, ok := flat["ClearFlag"].(float64); ok {
-		acct.ClearFlag = uint32(clearFlag)
+	if clearFlag, ok := asUint32(flat["ClearFlag"]); ok {
+		acct.ClearFlag = clearFlag
 	}
 
 	if domain, ok := flat["Domain"].(string); ok {
@@ -610,12 +655,12 @@ func (m *Mapper) mapAccountSet(flat xrpltx.FlatTransaction) *pbxrpl.AccountSet {
 		acct.MessageKey = msgKey
 	}
 
-	if transferRate, ok := flat["TransferRate"].(float64); ok {
-		acct.TransferRate = uint32(transferRate)
+	if transferRate, ok := asUint32(flat["TransferRate"]); ok {
+		acct.TransferRate = transferRate
 	}
 
-	if tickSize, ok := flat["TickSize"].(float64); ok {
-		acct.TickSize = uint32(tickSize)
+	if tickSize, ok := asUint32(flat["TickSize"]); ok {
+		acct.TickSize = tickSize
 	}
 
 	if minter, ok := flat["NFTokenMinter"].(string); ok {
@@ -626,8 +671,8 @@ func (m *Mapper) mapAccountSet(flat xrpltx.FlatTransaction) *pbxrpl.AccountSet {
 		acct.WalletLocator = walletLocator
 	}
 
-	if walletSize, ok := flat["WalletSize"].(float64); ok {
-		acct.WalletSize = uint32(walletSize)
+	if walletSize, ok := asUint32(flat["WalletSize"]); ok {
+		acct.WalletSize = walletSize
 	}
 
 	return acct
@@ -640,8 +685,8 @@ func (m *Mapper) mapAccountDelete(flat xrpltx.FlatTransaction) *pbxrpl.AccountDe
 		del.Destination = dest
 	}
 
-	if destTag, ok := flat["DestinationTag"].(float64); ok {
-		del.DestinationTag = uint32(destTag)
+	if destTag, ok := asUint32(flat["DestinationTag"]); ok {
+		del.DestinationTag = destTag
 	}
 
 	if credIDs, ok := flat["CredentialIDs"].([]interface{}); ok {
@@ -664,8 +709,8 @@ func (m *Mapper) mapSetRegularKey(flat xrpltx.FlatTransaction) *pbxrpl.SetRegula
 func (m *Mapper) mapSignerListSet(flat xrpltx.FlatTransaction) *pbxrpl.SignerListSet {
 	sls := &pbxrpl.SignerListSet{}
 
-	if quorum, ok := flat["SignerQuorum"].(float64); ok {
-		sls.SignerQuorum = uint32(quorum)
+	if quorum, ok := asUint32(flat["SignerQuorum"]); ok {
+		sls.SignerQuorum = quorum
 	}
 
 	if entries, ok := flat["SignerEntries"].([]interface{}); ok {
@@ -685,20 +730,20 @@ func (m *Mapper) mapEscrowCreate(flat xrpltx.FlatTransaction) *pbxrpl.EscrowCrea
 
 	escrow.Amount = m.mapAmountFromFlat(flat["Amount"])
 
-	if cancelAfter, ok := flat["CancelAfter"].(float64); ok {
-		escrow.CancelAfter = uint32(cancelAfter)
+	if cancelAfter, ok := asUint32(flat["CancelAfter"]); ok {
+		escrow.CancelAfter = cancelAfter
 	}
 
-	if finishAfter, ok := flat["FinishAfter"].(float64); ok {
-		escrow.FinishAfter = uint32(finishAfter)
+	if finishAfter, ok := asUint32(flat["FinishAfter"]); ok {
+		escrow.FinishAfter = finishAfter
 	}
 
 	if condition, ok := flat["Condition"].(string); ok {
 		escrow.Condition = condition
 	}
 
-	if destTag, ok := flat["DestinationTag"].(float64); ok {
-		escrow.DestinationTag = uint32(destTag)
+	if destTag, ok := asUint32(flat["DestinationTag"]); ok {
+		escrow.DestinationTag = destTag
 	}
 
 	return escrow
@@ -711,8 +756,8 @@ func (m *Mapper) mapEscrowFinish(flat xrpltx.FlatTransaction) *pbxrpl.EscrowFini
 		finish.Owner = owner
 	}
 
-	if offerSeq, ok := flat["OfferSequence"].(float64); ok {
-		finish.OfferSequence = uint32(offerSeq)
+	if offerSeq, ok := asUint32(flat["OfferSequence"]); ok {
+		finish.OfferSequence = offerSeq
 	}
 
 	if condition, ok := flat["Condition"].(string); ok {
@@ -737,8 +782,8 @@ func (m *Mapper) mapEscrowCancel(flat xrpltx.FlatTransaction) *pbxrpl.EscrowCanc
 		cancel.Owner = owner
 	}
 
-	if offerSeq, ok := flat["OfferSequence"].(float64); ok {
-		cancel.OfferSequence = uint32(offerSeq)
+	if offerSeq, ok := asUint32(flat["OfferSequence"]); ok {
+		cancel.OfferSequence = offerSeq
 	}
 
 	return cancel
@@ -754,20 +799,20 @@ func (m *Mapper) mapPaymentChannelCreate(flat xrpltx.FlatTransaction) *pbxrpl.Pa
 
 	pc.Amount = m.mapAmountFromFlat(flat["Amount"])
 
-	if settleDelay, ok := flat["SettleDelay"].(float64); ok {
-		pc.SettleDelay = uint32(settleDelay)
+	if settleDelay, ok := asUint32(flat["SettleDelay"]); ok {
+		pc.SettleDelay = settleDelay
 	}
 
 	if pubKey, ok := flat["PublicKey"].(string); ok {
 		pc.PublicKey = pubKey
 	}
 
-	if cancelAfter, ok := flat["CancelAfter"].(float64); ok {
-		pc.CancelAfter = uint32(cancelAfter)
+	if cancelAfter, ok := asUint32(flat["CancelAfter"]); ok {
+		pc.CancelAfter = cancelAfter
 	}
 
-	if destTag, ok := flat["DestinationTag"].(float64); ok {
-		pc.DestinationTag = uint32(destTag)
+	if destTag, ok := asUint32(flat["DestinationTag"]); ok {
+		pc.DestinationTag = destTag
 	}
 
 	return pc
@@ -782,8 +827,8 @@ func (m *Mapper) mapPaymentChannelFund(flat xrpltx.FlatTransaction) *pbxrpl.Paym
 
 	fund.Amount = m.mapAmountFromFlat(flat["Amount"])
 
-	if expiration, ok := flat["Expiration"].(float64); ok {
-		fund.Expiration = uint32(expiration)
+	if expiration, ok := asUint32(flat["Expiration"]); ok {
+		fund.Expiration = expiration
 	}
 
 	return fund
@@ -824,12 +869,12 @@ func (m *Mapper) mapCheckCreate(flat xrpltx.FlatTransaction) *pbxrpl.CheckCreate
 
 	check.SendMax = m.mapAmountFromFlat(flat["SendMax"])
 
-	if expiration, ok := flat["Expiration"].(float64); ok {
-		check.Expiration = uint32(expiration)
+	if expiration, ok := asUint32(flat["Expiration"]); ok {
+		check.Expiration = expiration
 	}
 
-	if destTag, ok := flat["DestinationTag"].(float64); ok {
-		check.DestinationTag = uint32(destTag)
+	if destTag, ok := asUint32(flat["DestinationTag"]); ok {
+		check.DestinationTag = destTag
 	}
 
 	if invoiceID, ok := flat["InvoiceID"].(string); ok {
@@ -883,8 +928,8 @@ func (m *Mapper) mapDepositPreauth(flat xrpltx.FlatTransaction) *pbxrpl.DepositP
 func (m *Mapper) mapTicketCreate(flat xrpltx.FlatTransaction) *pbxrpl.TicketCreate {
 	ticket := &pbxrpl.TicketCreate{}
 
-	if count, ok := flat["TicketCount"].(float64); ok {
-		ticket.TicketCount = uint32(count)
+	if count, ok := asUint32(flat["TicketCount"]); ok {
+		ticket.TicketCount = count
 	}
 
 	return ticket
@@ -894,16 +939,16 @@ func (m *Mapper) mapTicketCreate(flat xrpltx.FlatTransaction) *pbxrpl.TicketCrea
 func (m *Mapper) mapNFTokenMint(flat xrpltx.FlatTransaction) *pbxrpl.NFTokenMint {
 	mint := &pbxrpl.NFTokenMint{}
 
-	if taxon, ok := flat["NFTokenTaxon"].(float64); ok {
-		mint.NftokenTaxon = uint32(taxon)
+	if taxon, ok := asUint32(flat["NFTokenTaxon"]); ok {
+		mint.NftokenTaxon = taxon
 	}
 
 	if issuer, ok := flat["Issuer"].(string); ok {
 		mint.Issuer = issuer
 	}
 
-	if transferFee, ok := flat["TransferFee"].(float64); ok {
-		mint.TransferFee = uint32(transferFee)
+	if transferFee, ok := asUint32(flat["TransferFee"]); ok {
+		mint.TransferFee = transferFee
 	}
 
 	if uri, ok := flat["URI"].(string); ok {
@@ -912,8 +957,8 @@ func (m *Mapper) mapNFTokenMint(flat xrpltx.FlatTransaction) *pbxrpl.NFTokenMint
 
 	mint.Amount = m.mapAmountFromFlat(flat["Amount"])
 
-	if expiration, ok := flat["Expiration"].(float64); ok {
-		mint.Expiration = uint32(expiration)
+	if expiration, ok := asUint32(flat["Expiration"]); ok {
+		mint.Expiration = expiration
 	}
 
 	if dest, ok := flat["Destination"].(string); ok {
@@ -954,8 +999,8 @@ func (m *Mapper) mapNFTokenCreateOffer(flat xrpltx.FlatTransaction) *pbxrpl.NFTo
 		offer.Destination = dest
 	}
 
-	if expiration, ok := flat["Expiration"].(float64); ok {
-		offer.Expiration = uint32(expiration)
+	if expiration, ok := asUint32(flat["Expiration"]); ok {
+		offer.Expiration = expiration
 	}
 
 	return offer
@@ -1007,8 +1052,8 @@ func (m *Mapper) mapAMMCreate(flat xrpltx.FlatTransaction) *pbxrpl.AMMCreate {
 	amm.Amount = m.mapAmountFromFlat(flat["Amount"])
 	amm.Amount2 = m.mapAmountFromFlat(flat["Amount2"])
 
-	if tradingFee, ok := flat["TradingFee"].(float64); ok {
-		amm.TradingFee = uint32(tradingFee)
+	if tradingFee, ok := asUint32(flat["TradingFee"]); ok {
+		amm.TradingFee = tradingFee
 	}
 
 	return amm
@@ -1024,8 +1069,8 @@ func (m *Mapper) mapAMMDeposit(flat xrpltx.FlatTransaction) *pbxrpl.AMMDeposit {
 	deposit.EPrice = m.mapAmountFromFlat(flat["EPrice"])
 	deposit.LpTokenOut = m.mapAmountFromFlat(flat["LPTokenOut"])
 
-	if tradingFee, ok := flat["TradingFee"].(float64); ok {
-		deposit.TradingFee = uint32(tradingFee)
+	if tradingFee, ok := asUint32(flat["TradingFee"]); ok {
+		deposit.TradingFee = tradingFee
 	}
 
 	return deposit
@@ -1050,8 +1095,8 @@ func (m *Mapper) mapAMMVote(flat xrpltx.FlatTransaction) *pbxrpl.AMMVote {
 	vote.Asset = m.mapAssetFromFlat(flat["Asset"])
 	vote.Asset2 = m.mapAssetFromFlat(flat["Asset2"])
 
-	if tradingFee, ok := flat["TradingFee"].(float64); ok {
-		vote.TradingFee = uint32(tradingFee)
+	if tradingFee, ok := asUint32(flat["TradingFee"]); ok {
+		vote.TradingFee = tradingFee
 	}
 
 	return vote
@@ -1122,8 +1167,8 @@ func (m *Mapper) mapDIDDelete() *pbxrpl.DIDDelete {
 func (m *Mapper) mapOracleSet(flat xrpltx.FlatTransaction) *pbxrpl.OracleSet {
 	oracle := &pbxrpl.OracleSet{}
 
-	if oracleDocID, ok := flat["OracleDocumentID"].(float64); ok {
-		oracle.OracleDocumentId = uint32(oracleDocID)
+	if oracleDocID, ok := asUint32(flat["OracleDocumentID"]); ok {
+		oracle.OracleDocumentId = oracleDocID
 	}
 
 	if provider, ok := flat["Provider"].(string); ok {
@@ -1134,8 +1179,8 @@ func (m *Mapper) mapOracleSet(flat xrpltx.FlatTransaction) *pbxrpl.OracleSet {
 		oracle.AssetClass = assetClass
 	}
 
-	if lastUpdateTime, ok := flat["LastUpdateTime"].(float64); ok {
-		oracle.LastUpdateTime = uint32(lastUpdateTime)
+	if lastUpdateTime, ok := asUint32(flat["LastUpdateTime"]); ok {
+		oracle.LastUpdateTime = lastUpdateTime
 	}
 
 	if priceDataSeries, ok := flat["PriceDataSeries"].([]interface{}); ok {
@@ -1148,8 +1193,8 @@ func (m *Mapper) mapOracleSet(flat xrpltx.FlatTransaction) *pbxrpl.OracleSet {
 func (m *Mapper) mapOracleDelete(flat xrpltx.FlatTransaction) *pbxrpl.OracleDelete {
 	del := &pbxrpl.OracleDelete{}
 
-	if oracleDocID, ok := flat["OracleDocumentID"].(float64); ok {
-		del.OracleDocumentId = uint32(oracleDocID)
+	if oracleDocID, ok := asUint32(flat["OracleDocumentID"]); ok {
+		del.OracleDocumentId = oracleDocID
 	}
 
 	return del
@@ -1159,8 +1204,8 @@ func (m *Mapper) mapOracleDelete(flat xrpltx.FlatTransaction) *pbxrpl.OracleDele
 func (m *Mapper) mapMPTokenIssuanceCreate(flat xrpltx.FlatTransaction) *pbxrpl.MPTokenIssuanceCreate {
 	create := &pbxrpl.MPTokenIssuanceCreate{}
 
-	if assetScale, ok := flat["AssetScale"].(float64); ok {
-		create.AssetScale = uint32(assetScale)
+	if assetScale, ok := asUint32(flat["AssetScale"]); ok {
+		create.AssetScale = assetScale
 	}
 
 	if maxAmount, ok := flat["MaximumAmount"].(string); ok {
@@ -1169,8 +1214,8 @@ func (m *Mapper) mapMPTokenIssuanceCreate(flat xrpltx.FlatTransaction) *pbxrpl.M
 		}
 	}
 
-	if transferFee, ok := flat["TransferFee"].(float64); ok {
-		create.TransferFee = uint32(transferFee)
+	if transferFee, ok := asUint32(flat["TransferFee"]); ok {
+		create.TransferFee = transferFee
 	}
 
 	if metadata, ok := flat["MPTokenMetadata"].(string); ok {
@@ -1234,8 +1279,8 @@ func (m *Mapper) mapCredentialCreate(flat xrpltx.FlatTransaction) *pbxrpl.Creden
 		cred.Uri = uri
 	}
 
-	if expiration, ok := flat["Expiration"].(float64); ok {
-		cred.Expiration = uint32(expiration)
+	if expiration, ok := asUint32(flat["Expiration"]); ok {
+		cred.Expiration = expiration
 	}
 
 	return cred
@@ -1324,8 +1369,8 @@ func (m *Mapper) mapEnableAmendment(flat xrpltx.FlatTransaction) *pbxrpl.EnableA
 		amend.Amendment = amendment
 	}
 
-	if ledgerSeq, ok := flat["LedgerSequence"].(float64); ok {
-		amend.LedgerSequence = uint32(ledgerSeq)
+	if ledgerSeq, ok := asUint32(flat["LedgerSequence"]); ok {
+		amend.LedgerSequence = ledgerSeq
 	}
 
 	return amend
@@ -1340,20 +1385,20 @@ func (m *Mapper) mapSetFee(flat xrpltx.FlatTransaction) *pbxrpl.SetFee {
 		}
 	}
 
-	if refFeeUnits, ok := flat["ReferenceFeeUnits"].(float64); ok {
-		fee.ReferenceFeeUnits = uint32(refFeeUnits)
+	if refFeeUnits, ok := asUint32(flat["ReferenceFeeUnits"]); ok {
+		fee.ReferenceFeeUnits = refFeeUnits
 	}
 
-	if reserveBase, ok := flat["ReserveBase"].(float64); ok {
-		fee.ReserveBase = uint32(reserveBase)
+	if reserveBase, ok := asUint32(flat["ReserveBase"]); ok {
+		fee.ReserveBase = reserveBase
 	}
 
-	if reserveInc, ok := flat["ReserveIncrement"].(float64); ok {
-		fee.ReserveIncrement = uint32(reserveInc)
+	if reserveInc, ok := asUint32(flat["ReserveIncrement"]); ok {
+		fee.ReserveIncrement = reserveInc
 	}
 
-	if ledgerSeq, ok := flat["LedgerSequence"].(float64); ok {
-		fee.LedgerSequence = uint32(ledgerSeq)
+	if ledgerSeq, ok := asUint32(flat["LedgerSequence"]); ok {
+		fee.LedgerSequence = ledgerSeq
 	}
 
 	return fee
@@ -1362,11 +1407,11 @@ func (m *Mapper) mapSetFee(flat xrpltx.FlatTransaction) *pbxrpl.SetFee {
 func (m *Mapper) mapUNLModify(flat xrpltx.FlatTransaction) *pbxrpl.UNLModify {
 	unl := &pbxrpl.UNLModify{}
 
-	if ledgerSeq, ok := flat["LedgerSequence"].(float64); ok {
-		unl.LedgerSequence = uint32(ledgerSeq)
+	if ledgerSeq, ok := asUint32(flat["LedgerSequence"]); ok {
+		unl.LedgerSequence = ledgerSeq
 	}
 
-	if unlModifyDisabling, ok := flat["UNLModifyDisabling"].(float64); ok {
+	if unlModifyDisabling, ok := asUint32(flat["UNLModifyDisabling"]); ok {
 		unl.UnlModifyDisabling = unlModifyDisabling != 0
 	}
 
@@ -1377,7 +1422,361 @@ func (m *Mapper) mapUNLModify(flat xrpltx.FlatTransaction) *pbxrpl.UNLModify {
 	return unl
 }
 
+// Vault transactions (single-asset vault)
+
+func (m *Mapper) mapVaultCreate(flat xrpltx.FlatTransaction) *pbxrpl.VaultCreate {
+	create := &pbxrpl.VaultCreate{}
+
+	create.Asset = m.mapAssetFromFlat(flat["Asset"])
+
+	if assetsMax, ok := flat["AssetsMaximum"].(string); ok {
+		create.AssetsMaximum = assetsMax
+	}
+
+	if metadata, ok := flat["MPTokenMetadata"].(string); ok {
+		create.MptokenMetadata = metadata
+	}
+
+	if domainID, ok := flat["DomainID"].(string); ok {
+		create.DomainId = domainID
+	}
+
+	if policy, ok := asUint32(flat["WithdrawalPolicy"]); ok {
+		create.WithdrawalPolicy = policy
+	}
+
+	if data, ok := flat["Data"].(string); ok {
+		create.Data = data
+	}
+
+	if scale, ok := asUint32(flat["Scale"]); ok {
+		create.Scale = scale
+	}
+
+	return create
+}
+
+func (m *Mapper) mapVaultSet(flat xrpltx.FlatTransaction) *pbxrpl.VaultSet {
+	set := &pbxrpl.VaultSet{}
+
+	if vaultID, ok := flat["VaultID"].(string); ok {
+		set.VaultId = vaultID
+	}
+
+	if assetsMax, ok := flat["AssetsMaximum"].(string); ok {
+		set.AssetsMaximum = assetsMax
+	}
+
+	if domainID, ok := flat["DomainID"].(string); ok {
+		set.DomainId = domainID
+	}
+
+	if data, ok := flat["Data"].(string); ok {
+		set.Data = data
+	}
+
+	return set
+}
+
+func (m *Mapper) mapVaultDelete(flat xrpltx.FlatTransaction) *pbxrpl.VaultDelete {
+	del := &pbxrpl.VaultDelete{}
+
+	if vaultID, ok := flat["VaultID"].(string); ok {
+		del.VaultId = vaultID
+	}
+
+	return del
+}
+
+func (m *Mapper) mapVaultDeposit(flat xrpltx.FlatTransaction) *pbxrpl.VaultDeposit {
+	deposit := &pbxrpl.VaultDeposit{}
+
+	if vaultID, ok := flat["VaultID"].(string); ok {
+		deposit.VaultId = vaultID
+	}
+
+	deposit.Amount = m.mapAmountFromFlat(flat["Amount"])
+
+	return deposit
+}
+
+func (m *Mapper) mapVaultWithdraw(flat xrpltx.FlatTransaction) *pbxrpl.VaultWithdraw {
+	withdraw := &pbxrpl.VaultWithdraw{}
+
+	if vaultID, ok := flat["VaultID"].(string); ok {
+		withdraw.VaultId = vaultID
+	}
+
+	withdraw.Amount = m.mapAmountFromFlat(flat["Amount"])
+
+	if dest, ok := flat["Destination"].(string); ok {
+		withdraw.Destination = dest
+	}
+
+	if destTag, ok := asUint32(flat["DestinationTag"]); ok {
+		withdraw.DestinationTag = destTag
+	}
+
+	return withdraw
+}
+
+func (m *Mapper) mapVaultClawback(flat xrpltx.FlatTransaction) *pbxrpl.VaultClawback {
+	clawback := &pbxrpl.VaultClawback{}
+
+	if vaultID, ok := flat["VaultID"].(string); ok {
+		clawback.VaultId = vaultID
+	}
+
+	if holder, ok := flat["Holder"].(string); ok {
+		clawback.Holder = holder
+	}
+
+	clawback.Amount = m.mapAmountFromFlat(flat["Amount"])
+
+	return clawback
+}
+
+// Lending transactions (lending protocol)
+
+func (m *Mapper) mapLoanBrokerSet(flat xrpltx.FlatTransaction) *pbxrpl.LoanBrokerSet {
+	set := &pbxrpl.LoanBrokerSet{}
+
+	if vaultID, ok := flat["VaultID"].(string); ok {
+		set.VaultId = vaultID
+	}
+
+	if brokerID, ok := flat["LoanBrokerID"].(string); ok {
+		set.LoanBrokerId = brokerID
+	}
+
+	if data, ok := flat["Data"].(string); ok {
+		set.Data = data
+	}
+
+	if feeRate, ok := asUint32(flat["ManagementFeeRate"]); ok {
+		set.ManagementFeeRate = feeRate
+	}
+
+	if debtMax, ok := flat["DebtMaximum"].(string); ok {
+		set.DebtMaximum = debtMax
+	}
+
+	if coverMin, ok := asUint32(flat["CoverRateMinimum"]); ok {
+		set.CoverRateMinimum = coverMin
+	}
+
+	if coverLiq, ok := asUint32(flat["CoverRateLiquidation"]); ok {
+		set.CoverRateLiquidation = coverLiq
+	}
+
+	return set
+}
+
+func (m *Mapper) mapLoanBrokerDelete(flat xrpltx.FlatTransaction) *pbxrpl.LoanBrokerDelete {
+	del := &pbxrpl.LoanBrokerDelete{}
+
+	if brokerID, ok := flat["LoanBrokerID"].(string); ok {
+		del.LoanBrokerId = brokerID
+	}
+
+	return del
+}
+
+func (m *Mapper) mapLoanBrokerCoverDeposit(flat xrpltx.FlatTransaction) *pbxrpl.LoanBrokerCoverDeposit {
+	deposit := &pbxrpl.LoanBrokerCoverDeposit{}
+
+	if brokerID, ok := flat["LoanBrokerID"].(string); ok {
+		deposit.LoanBrokerId = brokerID
+	}
+
+	deposit.Amount = m.mapAmountFromFlat(flat["Amount"])
+
+	return deposit
+}
+
+func (m *Mapper) mapLoanBrokerCoverWithdraw(flat xrpltx.FlatTransaction) *pbxrpl.LoanBrokerCoverWithdraw {
+	withdraw := &pbxrpl.LoanBrokerCoverWithdraw{}
+
+	if brokerID, ok := flat["LoanBrokerID"].(string); ok {
+		withdraw.LoanBrokerId = brokerID
+	}
+
+	withdraw.Amount = m.mapAmountFromFlat(flat["Amount"])
+
+	if dest, ok := flat["Destination"].(string); ok {
+		withdraw.Destination = dest
+	}
+
+	if destTag, ok := asUint32(flat["DestinationTag"]); ok {
+		withdraw.DestinationTag = destTag
+	}
+
+	return withdraw
+}
+
+func (m *Mapper) mapLoanBrokerCoverClawback(flat xrpltx.FlatTransaction) *pbxrpl.LoanBrokerCoverClawback {
+	clawback := &pbxrpl.LoanBrokerCoverClawback{}
+
+	if brokerID, ok := flat["LoanBrokerID"].(string); ok {
+		clawback.LoanBrokerId = brokerID
+	}
+
+	clawback.Amount = m.mapAmountFromFlat(flat["Amount"])
+
+	return clawback
+}
+
+func (m *Mapper) mapLoanSet(flat xrpltx.FlatTransaction) *pbxrpl.LoanSet {
+	loan := &pbxrpl.LoanSet{}
+
+	if brokerID, ok := flat["LoanBrokerID"].(string); ok {
+		loan.LoanBrokerId = brokerID
+	}
+
+	if data, ok := flat["Data"].(string); ok {
+		loan.Data = data
+	}
+
+	if counterparty, ok := flat["Counterparty"].(string); ok {
+		loan.Counterparty = counterparty
+	}
+
+	if sig, ok := flat["CounterpartySignature"].(map[string]interface{}); ok {
+		loan.CounterpartySignature = m.mapCounterpartySignature(sig)
+	}
+
+	if fee, ok := flat["LoanOriginationFee"].(string); ok {
+		loan.LoanOriginationFee = fee
+	}
+
+	if fee, ok := flat["LoanServiceFee"].(string); ok {
+		loan.LoanServiceFee = fee
+	}
+
+	if fee, ok := flat["LatePaymentFee"].(string); ok {
+		loan.LatePaymentFee = fee
+	}
+
+	if fee, ok := flat["ClosePaymentFee"].(string); ok {
+		loan.ClosePaymentFee = fee
+	}
+
+	if rate, ok := asUint32(flat["OverpaymentFee"]); ok {
+		loan.OverpaymentFee = rate
+	}
+
+	if rate, ok := asUint32(flat["InterestRate"]); ok {
+		loan.InterestRate = rate
+	}
+
+	if rate, ok := asUint32(flat["LateInterestRate"]); ok {
+		loan.LateInterestRate = rate
+	}
+
+	if rate, ok := asUint32(flat["CloseInterestRate"]); ok {
+		loan.CloseInterestRate = rate
+	}
+
+	if rate, ok := asUint32(flat["OverpaymentInterestRate"]); ok {
+		loan.OverpaymentInterestRate = rate
+	}
+
+	if principal, ok := flat["PrincipalRequested"].(string); ok {
+		loan.PrincipalRequested = principal
+	}
+
+	if total, ok := asUint32(flat["PaymentTotal"]); ok {
+		loan.PaymentTotal = total
+	}
+
+	if interval, ok := asUint32(flat["PaymentInterval"]); ok {
+		loan.PaymentInterval = interval
+	}
+
+	if grace, ok := asUint32(flat["GracePeriod"]); ok {
+		loan.GracePeriod = grace
+	}
+
+	return loan
+}
+
+func (m *Mapper) mapLoanDelete(flat xrpltx.FlatTransaction) *pbxrpl.LoanDelete {
+	del := &pbxrpl.LoanDelete{}
+
+	if loanID, ok := flat["LoanID"].(string); ok {
+		del.LoanId = loanID
+	}
+
+	return del
+}
+
+func (m *Mapper) mapLoanManage(flat xrpltx.FlatTransaction) *pbxrpl.LoanManage {
+	manage := &pbxrpl.LoanManage{}
+
+	if loanID, ok := flat["LoanID"].(string); ok {
+		manage.LoanId = loanID
+	}
+
+	return manage
+}
+
+func (m *Mapper) mapLoanPay(flat xrpltx.FlatTransaction) *pbxrpl.LoanPay {
+	pay := &pbxrpl.LoanPay{}
+
+	if loanID, ok := flat["LoanID"].(string); ok {
+		pay.LoanId = loanID
+	}
+
+	pay.Amount = m.mapAmountFromFlat(flat["Amount"])
+
+	return pay
+}
+
+// mapCounterpartySignature maps the inner counterparty signature object of a
+// LoanSet (single-signature or multi-signature form).
+func (m *Mapper) mapCounterpartySignature(sig map[string]interface{}) *pbxrpl.CounterpartySignature {
+	cs := &pbxrpl.CounterpartySignature{}
+
+	if pubKey, ok := sig["SigningPubKey"].(string); ok {
+		cs.SigningPubKey = pubKey
+	}
+
+	if txnSig, ok := sig["TxnSignature"].(string); ok {
+		cs.TxnSignature = txnSig
+	}
+
+	if signers, ok := sig["Signers"].([]interface{}); ok {
+		cs.Signers = m.mapSignersFromFlat(signers)
+	}
+
+	return cs
+}
+
 // Helper functions for complex nested structures
+
+// asUint32 extracts an unsigned 32-bit integer from a decoded transaction
+// field. The XRPL binary codec (binarycodec.Decode) decodes UInt8 and UInt16
+// fields as int and UInt32 fields as uint32 — never float64 — so a plain
+// float64 type assertion silently drops every integer field. float64 is still
+// accepted here for robustness against any JSON-sourced values.
+func asUint32(v interface{}) (uint32, bool) {
+	switch n := v.(type) {
+	case uint32:
+		return n, true
+	case int:
+		return uint32(n), true
+	case int32:
+		return uint32(n), true
+	case int64:
+		return uint32(n), true
+	case uint64:
+		return uint32(n), true
+	case float64:
+		return uint32(n), true
+	default:
+		return 0, false
+	}
+}
 
 func (m *Mapper) mapStringArray(arr []interface{}) []string {
 	result := make([]string, 0, len(arr))
@@ -1448,8 +1847,8 @@ func (m *Mapper) mapSignerEntries(entriesRaw []interface{}) []*pbxrpl.SignerEntr
 				if account, ok := entry["Account"].(string); ok {
 					se.Account = account
 				}
-				if weight, ok := entry["SignerWeight"].(float64); ok {
-					se.SignerWeight = uint32(weight)
+				if weight, ok := asUint32(entry["SignerWeight"]); ok {
+					se.SignerWeight = weight
 				}
 				if walletLocator, ok := entry["WalletLocator"].(string); ok {
 					se.WalletLocator = walletLocator
@@ -1477,20 +1876,6 @@ func (m *Mapper) mapAuthAccounts(accountsRaw []interface{}) []*pbxrpl.AuthAccoun
 	return result
 }
 
-func (m *Mapper) mapIssue(issueMap map[string]interface{}) *pbxrpl.Asset {
-	issue := &pbxrpl.Asset{}
-
-	if currency, ok := issueMap["currency"].(string); ok {
-		issue.Currency = currency
-	}
-
-	if issuer, ok := issueMap["issuer"].(string); ok {
-		issue.Issuer = issuer
-	}
-
-	return issue
-}
-
 func (m *Mapper) mapPriceDataSeries(seriesRaw []interface{}) []*pbxrpl.PriceData {
 	result := make([]*pbxrpl.PriceData, 0, len(seriesRaw))
 	for _, dataRaw := range seriesRaw {
@@ -1508,8 +1893,8 @@ func (m *Mapper) mapPriceDataSeries(seriesRaw []interface{}) []*pbxrpl.PriceData
 						pd.AssetPrice = parsed
 					}
 				}
-				if scale, ok := data["Scale"].(float64); ok {
-					pd.Scale = uint32(scale)
+				if scale, ok := asUint32(data["Scale"]); ok {
+					pd.Scale = scale
 				}
 				result = append(result, pd)
 			}
