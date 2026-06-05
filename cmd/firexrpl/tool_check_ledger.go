@@ -130,8 +130,8 @@ func runToolCheckLedger(cmd *cobra.Command, args []string) error {
 					if feeStr, ok := decoded["Fee"].(string); ok {
 						fmt.Printf("Fee:     %s drops\n", feeStr)
 					}
-					if seq, ok := decoded["Sequence"].(float64); ok {
-						fmt.Printf("Sequence: %d\n", uint32(seq))
+					if seq, ok := decoded["Sequence"].(uint32); ok {
+						fmt.Printf("Sequence: %d\n", seq)
 					}
 				}
 

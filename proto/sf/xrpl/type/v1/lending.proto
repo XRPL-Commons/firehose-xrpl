@@ -1,0 +1,177 @@
+syntax = "proto3";
+package sf.xrpl.type.v1;
+
+option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrpl";
+
+import "sf/xrpl/type/v1/amount.proto";
+import "sf/xrpl/type/v1/signer.proto";
+
+// LoanBrokerSet - Creates or updates a Loan Broker
+// An update is performed when loan_broker_id is set; otherwise a new broker is
+// created over the referenced vault.
+// Reference: https://xrpl.org/loanbrokerset.html
+message LoanBrokerSet {
+  // Vault ledger entry ID the broker draws liquidity from (hex)
+  string vault_id = 1;
+
+  // (Optional) Loan Broker ledger entry ID to update (hex); absent on create
+  string loan_broker_id = 2;
+
+  // (Optional) Arbitrary data associated with the broker (hex)
+  string data = 3;
+
+  // (Optional) Management fee rate, in 1/10 basis points
+  uint32 management_fee_rate = 4;
+
+  // (Optional) Maximum outstanding debt the broker may issue
+  // STNumber, serialized as a decimal/scientific string
+  string debt_maximum = 5;
+
+  // (Optional) Minimum first-loss-cover rate, in 1/10 basis points
+  uint32 cover_rate_minimum = 6;
+
+  // (Optional) Liquidation cover rate, in 1/10 basis points
+  uint32 cover_rate_liquidation = 7;
+}
+
+// LoanBrokerDelete - Deletes an empty Loan Broker
+// Reference: https://xrpl.org/loanbrokerdelete.html
+message LoanBrokerDelete {
+  // Loan Broker ledger entry ID to delete (hex)
+  string loan_broker_id = 1;
+}
+
+// LoanBrokerCoverDeposit - Deposits first-loss capital into a Loan Broker
+// Reference: https://xrpl.org/loanbrokercoverdeposit.html
+message LoanBrokerCoverDeposit {
+  // Loan Broker ledger entry ID (hex)
+  string loan_broker_id = 1;
+
+  // Amount of cover to deposit
+  Amount amount = 2;
+}
+
+// LoanBrokerCoverWithdraw - Withdraws first-loss capital from a Loan Broker
+// Reference: https://xrpl.org/loanbrokercoverwithdraw.html
+message LoanBrokerCoverWithdraw {
+  // Loan Broker ledger entry ID (hex)
+  string loan_broker_id = 1;
+
+  // Amount of cover to withdraw
+  Amount amount = 2;
+
+  // (Optional) Account to receive the withdrawn cover (defaults to sender)
+  string destination = 3;
+
+  // (Optional) Destination tag for the recipient
+  uint32 destination_tag = 4;
+}
+
+// LoanBrokerCoverClawback - Claws back first-loss capital from a Loan Broker
+// Reference: https://xrpl.org/loanbrokercoverclawback.html
+message LoanBrokerCoverClawback {
+  // (Optional) Loan Broker ledger entry ID (hex)
+  string loan_broker_id = 1;
+
+  // (Optional) Amount of cover to claw back (zero/absent claws back all)
+  Amount amount = 2;
+}
+
+// CounterpartySignature - Inner signature object authorizing a loan
+// The borrower (counterparty) signs the loan terms; this object holds either a
+// single signature (signing_pub_key + txn_signature) or a multi-signature
+// (signers). It is excluded from the transaction's own signature.
+message CounterpartySignature {
+  // Public key used to create the single-signature (hex), empty if multi-signed
+  string signing_pub_key = 1;
+
+  // Single-signature over the loan terms (hex), empty if multi-signed
+  string txn_signature = 2;
+
+  // Multi-signature entries, empty if single-signed
+  repeated Signer signers = 3;
+}
+
+// LoanSet - Creates a Loan against a Loan Broker
+// Reference: https://xrpl.org/loanset.html
+message LoanSet {
+  // Loan Broker ledger entry ID issuing the loan (hex)
+  string loan_broker_id = 1;
+
+  // (Optional) Arbitrary data associated with the loan (hex)
+  string data = 2;
+
+  // (Optional) Borrower account counterparty to the loan
+  string counterparty = 3;
+
+  // (Optional) Counterparty's signature authorizing the loan terms
+  CounterpartySignature counterparty_signature = 4;
+
+  // (Optional) One-time loan origination fee
+  // STNumber, serialized as a decimal/scientific string
+  string loan_origination_fee = 5;
+
+  // (Optional) Periodic loan service fee
+  // STNumber, serialized as a decimal/scientific string
+  string loan_service_fee = 6;
+
+  // (Optional) Fee charged on late payments
+  // STNumber, serialized as a decimal/scientific string
+  string late_payment_fee = 7;
+
+  // (Optional) Fee charged on closing the loan
+  // STNumber, serialized as a decimal/scientific string
+  string close_payment_fee = 8;
+
+  // (Optional) Overpayment fee rate, in 1/10 basis points
+  uint32 overpayment_fee = 9;
+
+  // (Optional) Interest rate, in 1/10 basis points
+  uint32 interest_rate = 10;
+
+  // (Optional) Late interest rate, in 1/10 basis points
+  uint32 late_interest_rate = 11;
+
+  // (Optional) Close interest rate, in 1/10 basis points
+  uint32 close_interest_rate = 12;
+
+  // (Optional) Overpayment interest rate, in 1/10 basis points
+  uint32 overpayment_interest_rate = 13;
+
+  // Principal amount requested by the borrower
+  // STNumber, serialized as a decimal/scientific string
+  string principal_requested = 14;
+
+  // (Optional) Total number of payments over the loan's life
+  uint32 payment_total = 15;
+
+  // (Optional) Interval between payments, in seconds
+  uint32 payment_interval = 16;
+
+  // (Optional) Grace period before a payment is considered late, in seconds
+  uint32 grace_period = 17;
+}
+
+// LoanDelete - Deletes a fully-repaid or defaulted Loan
+// Reference: https://xrpl.org/loandelete.html
+message LoanDelete {
+  // Loan ledger entry ID to delete (hex)
+  string loan_id = 1;
+}
+
+// LoanManage - Manages a Loan's delinquency status (operations via Flags)
+// Reference: https://xrpl.org/loanmanage.html
+message LoanManage {
+  // Loan ledger entry ID to manage (hex)
+  string loan_id = 1;
+}
+
+// LoanPay - Makes a payment against a Loan
+// Reference: https://xrpl.org/loanpay.html
+message LoanPay {
+  // Loan ledger entry ID being paid (hex)
+  string loan_id = 1;
+
+  // Amount paid against the loan
+  Amount amount = 2;
+}

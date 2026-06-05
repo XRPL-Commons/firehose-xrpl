@@ -26,7 +26,7 @@ func (m *VaultCreate) CloneVT() *VaultCreate {
 	}
 	r := new(VaultCreate)
 	r.Asset = m.Asset.CloneVT()
-	r.AssetsMaximum = m.AssetsMaximum.CloneVT()
+	r.AssetsMaximum = m.AssetsMaximum
 	r.MptokenMetadata = m.MptokenMetadata
 	r.DomainId = m.DomainId
 	r.WithdrawalPolicy = m.WithdrawalPolicy
@@ -49,7 +49,7 @@ func (m *VaultSet) CloneVT() *VaultSet {
 	}
 	r := new(VaultSet)
 	r.VaultId = m.VaultId
-	r.AssetsMaximum = m.AssetsMaximum.CloneVT()
+	r.AssetsMaximum = m.AssetsMaximum
 	r.DomainId = m.DomainId
 	r.Data = m.Data
 	if len(m.unknownFields) > 0 {
@@ -146,7 +146,7 @@ func (this *VaultCreate) EqualVT(that *VaultCreate) bool {
 	if !this.Asset.EqualVT(that.Asset) {
 		return false
 	}
-	if !this.AssetsMaximum.EqualVT(that.AssetsMaximum) {
+	if this.AssetsMaximum != that.AssetsMaximum {
 		return false
 	}
 	if this.MptokenMetadata != that.MptokenMetadata {
@@ -183,7 +183,7 @@ func (this *VaultSet) EqualVT(that *VaultSet) bool {
 	if this.VaultId != that.VaultId {
 		return false
 	}
-	if !this.AssetsMaximum.EqualVT(that.AssetsMaximum) {
+	if this.AssetsMaximum != that.AssetsMaximum {
 		return false
 	}
 	if this.DomainId != that.DomainId {
@@ -357,13 +357,10 @@ func (m *VaultCreate) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.AssetsMaximum != nil {
-		size, err := m.AssetsMaximum.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+	if len(m.AssetsMaximum) > 0 {
+		i -= len(m.AssetsMaximum)
+		copy(dAtA[i:], m.AssetsMaximum)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.AssetsMaximum)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -424,13 +421,10 @@ func (m *VaultSet) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.AssetsMaximum != nil {
-		size, err := m.AssetsMaximum.MarshalToSizedBufferVT(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+	if len(m.AssetsMaximum) > 0 {
+		i -= len(m.AssetsMaximum)
+		copy(dAtA[i:], m.AssetsMaximum)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.AssetsMaximum)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -714,13 +708,10 @@ func (m *VaultCreate) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.AssetsMaximum != nil {
-		size, err := m.AssetsMaximum.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+	if len(m.AssetsMaximum) > 0 {
+		i -= len(m.AssetsMaximum)
+		copy(dAtA[i:], m.AssetsMaximum)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.AssetsMaximum)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -781,13 +772,10 @@ func (m *VaultSet) MarshalToSizedBufferVTStrict(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.AssetsMaximum != nil {
-		size, err := m.AssetsMaximum.MarshalToSizedBufferVTStrict(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = protohelpers.EncodeVarint(dAtA, i, uint64(size))
+	if len(m.AssetsMaximum) > 0 {
+		i -= len(m.AssetsMaximum)
+		copy(dAtA[i:], m.AssetsMaximum)
+		i = protohelpers.EncodeVarint(dAtA, i, uint64(len(m.AssetsMaximum)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1020,8 +1008,8 @@ func (m *VaultCreate) SizeVT() (n int) {
 		l = m.Asset.SizeVT()
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
-	if m.AssetsMaximum != nil {
-		l = m.AssetsMaximum.SizeVT()
+	l = len(m.AssetsMaximum)
+	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	l = len(m.MptokenMetadata)
@@ -1056,8 +1044,8 @@ func (m *VaultSet) SizeVT() (n int) {
 	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
-	if m.AssetsMaximum != nil {
-		l = m.AssetsMaximum.SizeVT()
+	l = len(m.AssetsMaximum)
+	if l > 0 {
 		n += 1 + l + protohelpers.SizeOfVarint(uint64(l))
 	}
 	l = len(m.DomainId)
@@ -1220,7 +1208,7 @@ func (m *VaultCreate) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetsMaximum", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -1230,27 +1218,23 @@ func (m *VaultCreate) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return protohelpers.ErrInvalidLength
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return protohelpers.ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.AssetsMaximum == nil {
-				m.AssetsMaximum = &Amount{}
-			}
-			if err := m.AssetsMaximum.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.AssetsMaximum = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -1473,7 +1457,7 @@ func (m *VaultSet) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetsMaximum", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -1483,27 +1467,23 @@ func (m *VaultSet) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return protohelpers.ErrInvalidLength
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return protohelpers.ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.AssetsMaximum == nil {
-				m.AssetsMaximum = &Amount{}
-			}
-			if err := m.AssetsMaximum.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.AssetsMaximum = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -2183,7 +2163,7 @@ func (m *VaultCreate) UnmarshalVTUnsafe(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetsMaximum", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -2193,27 +2173,27 @@ func (m *VaultCreate) UnmarshalVTUnsafe(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return protohelpers.ErrInvalidLength
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return protohelpers.ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.AssetsMaximum == nil {
-				m.AssetsMaximum = &Amount{}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
 			}
-			if err := m.AssetsMaximum.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.AssetsMaximum = stringValue
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -2452,7 +2432,7 @@ func (m *VaultSet) UnmarshalVTUnsafe(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetsMaximum", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return protohelpers.ErrIntOverflow
@@ -2462,27 +2442,27 @@ func (m *VaultSet) UnmarshalVTUnsafe(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return protohelpers.ErrInvalidLength
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return protohelpers.ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.AssetsMaximum == nil {
-				m.AssetsMaximum = &Amount{}
+			var stringValue string
+			if intStringLen > 0 {
+				stringValue = unsafe.String(&dAtA[iNdEx], intStringLen)
 			}
-			if err := m.AssetsMaximum.UnmarshalVTUnsafe(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.AssetsMaximum = stringValue
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {

@@ -1,0 +1,95 @@
+syntax = "proto3";
+package sf.xrpl.type.v1;
+
+option go_package = "github.com/xrpl-commons/firehose-xrpl/pb/sf/xrpl/type/v1;pbxrpl";
+
+import "sf/xrpl/type/v1/amount.proto";
+
+// VaultCreate - Creates a single-asset vault
+// Reference: https://xrpl.org/vaultcreate.html
+message VaultCreate {
+  // Asset the vault holds (XRP, issued currency, or MPT)
+  Asset asset = 1;
+
+  // (Optional) Maximum total assets the vault may hold
+  // STNumber, serialized as a decimal/scientific string
+  string assets_maximum = 2;
+
+  // (Optional) Arbitrary metadata for the vault's share (LP) MPToken (hex)
+  string mptoken_metadata = 3;
+
+  // (Optional) Permissioned domain ledger entry ID restricting depositors (hex)
+  string domain_id = 4;
+
+  // (Optional) Withdrawal policy governing how assets can be withdrawn
+  uint32 withdrawal_policy = 5;
+
+  // (Optional) Arbitrary data associated with the vault (hex)
+  string data = 6;
+
+  // (Optional) Scale (decimal places) of the vault's share tokens
+  uint32 scale = 7;
+}
+
+// VaultSet - Updates the mutable fields of an existing vault
+// Reference: https://xrpl.org/vaultset.html
+message VaultSet {
+  // Vault ledger entry ID to update (hex)
+  string vault_id = 1;
+
+  // (Optional) Maximum total assets the vault may hold
+  // STNumber, serialized as a decimal/scientific string
+  string assets_maximum = 2;
+
+  // (Optional) Permissioned domain ledger entry ID restricting depositors (hex)
+  string domain_id = 3;
+
+  // (Optional) Arbitrary data associated with the vault (hex)
+  string data = 4;
+}
+
+// VaultDelete - Deletes an empty vault
+// Reference: https://xrpl.org/vaultdelete.html
+message VaultDelete {
+  // Vault ledger entry ID to delete (hex)
+  string vault_id = 1;
+}
+
+// VaultDeposit - Deposits assets into a vault in exchange for shares
+// Reference: https://xrpl.org/vaultdeposit.html
+message VaultDeposit {
+  // Vault ledger entry ID to deposit into (hex)
+  string vault_id = 1;
+
+  // Amount of asset to deposit
+  Amount amount = 2;
+}
+
+// VaultWithdraw - Withdraws assets from a vault by redeeming shares
+// Reference: https://xrpl.org/vaultwithdraw.html
+message VaultWithdraw {
+  // Vault ledger entry ID to withdraw from (hex)
+  string vault_id = 1;
+
+  // Amount of asset to withdraw
+  Amount amount = 2;
+
+  // (Optional) Account to receive the withdrawn assets (defaults to sender)
+  string destination = 3;
+
+  // (Optional) Destination tag for the recipient
+  uint32 destination_tag = 4;
+}
+
+// VaultClawback - Claws back assets from a vault depositor
+// Reference: https://xrpl.org/vaultclawback.html
+message VaultClawback {
+  // Vault ledger entry ID to claw back from (hex)
+  string vault_id = 1;
+
+  // Account whose vault shares are clawed back
+  string holder = 2;
+
+  // (Optional) Amount of asset to claw back (zero/absent claws back all)
+  Amount amount = 3;
+}

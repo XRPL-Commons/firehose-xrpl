@@ -29,6 +29,8 @@ import "sf/xrpl/type/v1/permissioned_domain.proto";
 import "sf/xrpl/type/v1/delegate.proto";
 import "sf/xrpl/type/v1/system.proto";
 import "sf/xrpl/type/v1/batch.proto";
+import "sf/xrpl/type/v1/vault.proto";
+import "sf/xrpl/type/v1/lending.proto";
 
 // Block represents an XRPL validated ledger
 message Block {
@@ -228,6 +230,25 @@ message Transaction {
 
     // Batch transaction
     Batch batch = 200;
+
+    // Vault transactions (single-asset vault)
+    VaultCreate vault_create = 210;
+    VaultSet vault_set = 211;
+    VaultDelete vault_delete = 212;
+    VaultDeposit vault_deposit = 213;
+    VaultWithdraw vault_withdraw = 214;
+    VaultClawback vault_clawback = 215;
+
+    // Lending transactions (lending protocol)
+    LoanBrokerSet loan_broker_set = 220;
+    LoanBrokerDelete loan_broker_delete = 221;
+    LoanBrokerCoverDeposit loan_broker_cover_deposit = 222;
+    LoanBrokerCoverWithdraw loan_broker_cover_withdraw = 223;
+    LoanBrokerCoverClawback loan_broker_cover_clawback = 224;
+    LoanSet loan_set = 225;
+    LoanDelete loan_delete = 226;
+    LoanManage loan_manage = 227;
+    LoanPay loan_pay = 228;
 
     // System transactions (pseudo-transactions)
     EnableAmendment enable_amendment = 900;
