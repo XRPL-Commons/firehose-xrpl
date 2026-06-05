@@ -1,0 +1,11 @@
+version: "2"
+
+linters:
+  # Standard set: errcheck, govet, ineffassign, staticcheck, unused.
+  default: standard
+  exclusions:
+    # Skip files carrying a "DO NOT EDIT" generated header.
+    generated: lax
+    paths:
+      # Generated protobuf bindings.
+      - pb/

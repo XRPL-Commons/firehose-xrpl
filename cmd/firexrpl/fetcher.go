@@ -106,7 +106,7 @@ func fetchRunE(logger *zap.Logger, tracer logging.Tracer) firecore.CommandExecut
 		}
 
 		workerPoolSize := sflags.MustGetInt(cmd, "worker-pool-size")
-	fetcher := rpc.NewFetcherWithWorkerPool(fetchInterval, latestBlockRetryInterval, workerPoolSize, logger)
+		fetcher := rpc.NewFetcherWithWorkerPool(fetchInterval, latestBlockRetryInterval, workerPoolSize, logger)
 
 		poller := blockpoller.New(
 			fetcher,
