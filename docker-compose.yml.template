@@ -3,6 +3,7 @@ services:
     image: "${IMAGE_NAME}"
     container_name: firecore
     restart: unless-stopped
+    # XRPL_RPC_ENDPOINT is injected from .env and read by the firexrpl poller.
     env_file:
       - .env
     environment:
@@ -10,9 +11,10 @@ services:
       - AWS_SECRET_ACCESS_KEY=${DO_SPACES_SECRET}
     volumes:
       - ./firehose.yaml:/app/firehose.yaml:ro
+      - firecore-data:/data
     working_dir: /app
     command: >
-      start firehose substreams-tier1 substreams-tier2
+      start firehose substreams-tier1 substreams-tier2 reader-node merger
       --config-file=./firehose.yaml
     networks:
       - ${TRAEFIK_NETWORK}
@@ -26,6 +28,9 @@ services:
         reservations:
           cpus: '${CPU_RESERVATION}'
           memory: '${MEMORY_RESERVATION}'
+
+volumes:
+  firecore-data:
 
 networks:
   ${TRAEFIK_NETWORK}:

@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -41,7 +43,7 @@ XRPL Endpoints:
 		RunE: fetchRunE(logger, tracer),
 	}
 
-	cmd.Flags().StringArray("endpoints", []string{}, "List of XRPL RPC endpoints (comma-separated or multiple flags)")
+	cmd.Flags().StringArray("endpoints", []string{}, "List of XRPL RPC endpoints (comma-separated or multiple flags). Falls back to the XRPL_RPC_ENDPOINT environment variable when unset.")
 	cmd.Flags().String("state-dir", "/data/poller", "Directory to store poller state")
 	cmd.Flags().Duration("interval-between-fetch", 0, "Interval between consecutive fetches")
 	cmd.Flags().Duration("latest-block-retry-interval", time.Second, "Interval to wait before retrying when waiting for new ledger")
@@ -79,7 +81,18 @@ func fetchRunE(logger *zap.Logger, tracer logging.Tracer) firecore.CommandExecut
 
 		rpcEndpoints := sflags.MustGetStringArray(cmd, "endpoints")
 		if len(rpcEndpoints) == 0 {
-			return fmt.Errorf("at least one --endpoints must be provided")
+			// Fall back to the XRPL_RPC_ENDPOINT env var so the endpoint can be
+			// injected through the container environment (e.g. firehose .env file)
+			// rather than baked into reader-node-arguments, which firehose-core
+			// does not expand environment variables in.
+			for _, endpoint := range strings.Split(os.Getenv("XRPL_RPC_ENDPOINT"), ",") {
+				if endpoint = strings.TrimSpace(endpoint); endpoint != "" {
+					rpcEndpoints = append(rpcEndpoints, endpoint)
+				}
+			}
+		}
+		if len(rpcEndpoints) == 0 {
+			return fmt.Errorf("no RPC endpoint provided: pass --endpoints or set the XRPL_RPC_ENDPOINT environment variable")
 		}
 
 		// Get HTTP connection pool settings
